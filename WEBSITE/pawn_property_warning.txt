@@ -1,0 +1,51 @@
+#include <a_samp>
+#include <a_mysql>
+
+// Asumsi table MySQL
+// CREATE TABLE IF NOT EXISTS ucp_inbox_messages (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     username VARCHAR(255) NOT NULL,
+//     title VARCHAR(255) NOT NULL,
+//     message TEXT NOT NULL,
+//     type ENUM('System', 'Admin', 'Voucher') DEFAULT 'System',
+//     is_read BOOLEAN DEFAULT FALSE,
+//     template VARCHAR(50) DEFAULT NULL,
+//     metadata JSON DEFAULT NULL
+// );
+
+new MySQL:handle; // Asumsikan koneksi db
+
+forward OnPropertyInactivityWarning(const ucpname[], const propertyType[], propertyId, const propertyZone[], inactiveDays, daysRemaining);
+
+public OnPropertyInactivityWarning(const ucpname[], const propertyType[], propertyId, const propertyZone[], inactiveDays, daysRemaining)
+{
+    new query[1024];
+    new titleStr[128];
+    format(titleStr, sizeof(titleStr), "Peringatan Sistem: Inaktivitas Properti (%s)", propertyType);
+    
+    // Escape string values if needed (propertyType, propertyZone) but using mysql_format %e is safe enough.
+    mysql_format(handle, query, sizeof(query), 
+        "INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata) "
+        "VALUES ('%e', '%e', '', 'System', 0, 'PropertyInactivityWarning', "
+        "'{\"propertyType\": \"%e\", \"propertyId\": %d, \"propertyZone\": \"%e\", \"inactiveDays\": %d, \"daysRemaining\": %d}')",
+        ucpname, titleStr, propertyType, propertyId, propertyZone, inactiveDays, daysRemaining);
+        
+    mysql_tquery(handle, query, "", "");
+    return 1;
+}
+
+// Fungsi ini biasanya dipanggil oleh timer jam / hari untuk melakukan pengecekan house/business inactivity
+CheckPropertyInactivity()
+{
+    // Contoh Pseudo-code:
+    // for(new i = 0; i < MAX_HOUSES; i++) {
+    //     if(HouseInfo[i][hOwned] && gettime() - HouseInfo[i][hLastVisited] > (10 * 86400)) {
+    //         new inactiveDays = (gettime() - HouseInfo[i][hLastVisited]) / 86400;
+    //         new daysRemaining = 14 - inactiveDays; // Misal batas asell adalah 14 hari
+    //         if(daysRemaining > 0 && daysRemaining <= 4) {
+    //             OnPropertyInactivityWarning("UcpOwnerName", "Rumah", i, "Vinewood", inactiveDays, daysRemaining);
+    //         }
+    //     }
+    // }
+    return 1;
+}

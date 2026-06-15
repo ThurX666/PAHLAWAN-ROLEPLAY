@@ -1,0 +1,57 @@
+#include <a_samp>
+#include <a_mysql>
+
+// Asumsi table MySQL
+// CREATE TABLE IF NOT EXISTS ucp_inbox_messages (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     username VARCHAR(255) NOT NULL,
+//     title VARCHAR(255) NOT NULL,
+//     message TEXT NOT NULL,
+//     type ENUM('System', 'Admin', 'Voucher') DEFAULT 'System',
+//     is_read BOOLEAN DEFAULT FALSE,
+//     template VARCHAR(50) DEFAULT NULL,
+//     metadata JSON DEFAULT NULL
+// );
+
+new MySQL:handle; // Asumsikan koneksi db
+
+forward OnPlayerWarn(playerid, adminid, const reason[]);
+
+public OnPlayerWarn(playerid, adminid, const reason[])
+{
+    new ucpname[MAX_PLAYER_NAME], charname[MAX_PLAYER_NAME], adminname[MAX_PLAYER_NAME];
+    
+    // Asumsikan helper get name
+    GetPlayerName(playerid, charname, sizeof(charname));
+    GetPlayerName(adminid, adminname, sizeof(adminname));
+    
+    // Ambil UCP name dari array/variable player kamu
+    format(ucpname, sizeof(ucpname), "PlayerUCP"); // Ganti dg fungsi GetUserUCP(playerid)
+    
+    // Simulasi penambahan warn (Asumsikan ada variabel pWarn)
+    // PlayerInfo[playerid][pWarn]++;
+    new currentWarn = 1; // get warn from pWarn
+    
+    new query[1024];
+    mysql_format(handle, query, sizeof(query), "INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata) VALUES ('%e', 'Peringatan Server: Pelanggaran Rules (%e)', '', 'System', 0, 'ServerWarning', '{\"characterName\": \"%e\", \"adminName\": \"%e\", \"reason\": \"%e\", \"currentWarn\": %d}')",
+        ucpname, reason, charname, adminname, reason, currentWarn);
+        
+    mysql_tquery(handle, query, "", "");
+    
+    SendClientMessage(playerid, -1, "{FF0000}[WARNING]: {FFFFFF}Kamu mendapatkan peringatan dari admin. Silahkan cek UCP Inbox kamu untuk detailnya.");
+    return 1;
+}
+
+CMD:warn(playerid, params[])
+{
+    // Cek admin dsb
+    
+    new targetid, reason[128];
+    if(sscanf(params, "us[128]", targetid, reason)) return SendClientMessage(playerid, -1, "USAGE: /warn [playerid] [reason]");
+    
+    if(IsPlayerConnected(targetid))
+    {
+        OnPlayerWarn(targetid, playerid, reason);
+    }
+    return 1;
+}

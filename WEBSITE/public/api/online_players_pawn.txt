@@ -1,0 +1,86 @@
+/*
+ * Pahlawan Roleplay - UCP Live Player List
+ * Paste and adapt this code into your gamemode.
+ * Requirements: MySQL plugin (e.g., BlueG/maddinat0r)
+ */
+
+#include <a_samp>
+#include <a_mysql>
+
+// Adjust this depending on your MySQL connection handle name
+extern MySQL:g_SQL;
+
+// Call this function when a player logs in or spawns successfully
+forward UpdatePlayerOnlineStatus(playerid, color);
+public UpdatePlayerOnlineStatus(playerid, color)
+{
+    if(!IsPlayerConnected(playerid)) return 1;
+
+    new name[MAX_PLAYER_NAME], query[256], hexColor[11];
+    GetPlayerName(playerid, name, sizeof(name));
+    
+    // Format the color to Hex (e.g. #RRGGBB)
+    format(hexColor, sizeof(hexColor), "#%06x", color >>> 8);
+
+    mysql_format(g_SQL, query, sizeof(query), 
+        "INSERT INTO `ucp_online_players` (`player_id`, `character_name`, `color`, `score`, `ping`, `login_time`) VALUES (%d, '%e', '%e', %d, %d, NOW()) " \
+        "ON DUPLICATE KEY UPDATE `character_name`=VALUES(`character_name`), `color`=VALUES(`color`), `score`=VALUES(`score`), `ping`=VALUES(`ping`)", 
+        playerid, name, hexColor, GetPlayerScore(playerid), GetPlayerPing(playerid));
+        
+    mysql_tquery(g_SQL, query, "", "");
+    return 1;
+}
+
+// Global timer to update all online players' score and ping periodically
+forward UpdateAllPlayersInList();
+public UpdateAllPlayersInList()
+{
+    new query[256];
+    
+    // For large player counts, building a batched query or updating individually works.
+    foreach(new i : Player)
+    {
+        if(IsPlayerConnected(i)) // Also ensure player is logged in
+        {
+            mysql_format(g_SQL, query, sizeof(query), 
+                "UPDATE `ucp_online_players` SET `score` = %d, `ping` = %d WHERE `player_id` = %d", 
+                GetPlayerScore(i), GetPlayerPing(i), i);
+                
+            mysql_tquery(g_SQL, query, "", "");
+        }
+    }
+    return 1;
+}
+
+// Call this function in OnPlayerDisconnect
+forward RemovePlayerOnlineStatus(playerid);
+public RemovePlayerOnlineStatus(playerid)
+{
+    new query[128];
+    mysql_format(g_SQL, query, sizeof(query), "DELETE FROM `ucp_online_players` WHERE `player_id` = %d", playerid);
+    mysql_tquery(g_SQL, query, "", "");
+    return 1;
+}
+
+// Optionally, you might want to truncate the table on server start (OnGameModeInit) 
+// to clean up "ghost" players from unexpected crashes
+forward ClearOnlinePlayersTable();
+public ClearOnlinePlayersTable()
+{
+    mysql_tquery(g_SQL, "TRUNCATE TABLE `ucp_online_players`", "", "");
+    return 1;
+}
+
+// You can run a timer under OnGameModeInit like:
+// SetTimer("UpdateAllPlayersInList", 60000, true); // every minute
+
+// OnGameModeInit:
+/*
+public OnGameModeInit()
+{
+    ClearOnlinePlayersTable();
+    SetTimer("UpdateAllPlayersInList", 60000, true);
+    // ...
+    return 1;
+}
+*/

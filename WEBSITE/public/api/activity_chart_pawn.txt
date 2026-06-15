@@ -1,0 +1,53 @@
+/*
+ * Pahlawan Roleplay - Activity Chart 
+ * Paste and adapt this code into your gamemode.
+ * Requirements: MySQL plugin (e.g., BlueG/maddinat0r)
+ * 
+ * NOTE: If you are already using "cron_activity.php" or the UCP's pseudo-cron 
+ * (PHP SAMP Query), YOU DO NOT NEED THIS SCRIPT. This is an alternative ONLY 
+ * IF your web server cannot query the SA-MP server via UDP.
+ */
+
+#include <a_samp>
+#include <a_mysql>
+
+extern MySQL:g_SQL;
+
+// Get total connected players
+stock GetOnlinePlayersCount()
+{
+    new count = 0;
+    // Assuming you are using y_iterate/foreach
+    foreach(new i : Player) 
+    {
+        if(IsPlayerConnected(i)) count++;
+    }
+    return count;
+}
+
+// Call this function in a 1-Minute Timer (e.g., inside OnGameModeInit using SetTimer)
+forward UpdateServerActivityChart();
+public UpdateServerActivityChart()
+{
+    new query[256], players = GetOnlinePlayersCount();
+    
+    // We insert a new row periodically. 
+    // The PHP Backend uses MAX() grouped by hour, so multiple rows are perfectly handled.
+    mysql_format(g_SQL, query, sizeof(query),
+        "INSERT INTO `ucp_server_activity` (`players_online`, `logged_at`) VALUES (%d, NOW())",
+        players
+    );
+    
+    mysql_tquery(g_SQL, query, "", "");
+    return 1;
+}
+
+// Example usage in OnGameModeInit:
+/*
+public OnGameModeInit()
+{
+    // Update chart data every 1 minute (60000 ms)
+    SetTimer("UpdateServerActivityChart", 60000, true);
+    return 1;
+}
+*/

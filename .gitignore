@@ -1,0 +1,90 @@
+# Root
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+*.local
+.git-nested-backups/
+
+# Environment and secrets
+.env
+.env.*
+*.secret
+
+# Node projects
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# BOT runtime and private config
+BOT/config.json
+BOT/PHRP-AI/config/app.json
+BOT/config/*.json
+BOT/PHRP-AI/config/*.json
+BOT/.cache/
+BOT/uploads/
+BOT/data/*.json
+BOT/data/transcripts/
+BOT/data/tickets.json
+BOT/data/testimonials.json
+BOT/data/staffon.json
+BOT/data/giveaways.json
+BOT/data/attendance.json
+BOT/*.rar
+
+# WEBSITE build/runtime
+WEBSITE/.env
+WEBSITE/.env.*
+WEBSITE/node_modules/
+WEBSITE/dist/
+WEBSITE/dist-ssr/
+WEBSITE/public/uploads/
+WEBSITE/public/api/config.php
+WEBSITE/public/api/.migrated_*
+
+# Database dumps are local and may contain private player/server data
+DATABASE/*
+!DATABASE/.gitkeep
+
+# GAMEMODE nested repositories and runtime/build artifacts
+GAMEMODE/.git/
+GAMEMODE/pawno/include/.git/
+GAMEMODE/server.cfg
+GAMEMODE/logs/
+GAMEMODE/*.log
+GAMEMODE/*_log.txt
+GAMEMODE/svlog.txt
+GAMEMODE/*.amx
+GAMEMODE/gamemodes/*.amx
+GAMEMODE/filterscripts/*.amx
+GAMEMODE/*.exe
+GAMEMODE/*.dll
+GAMEMODE/*.so
+GAMEMODE/samp03svr
+GAMEMODE/samp-npc
+GAMEMODE/announce
+GAMEMODE/pawno/*.exe
+GAMEMODE/pawno/*.dll
+GAMEMODE/pawno/*.pdb
+GAMEMODE/plugins/*.dll
+GAMEMODE/plugins/*.so
+GAMEMODE/npcmodes/*.amx
+GAMEMODE/pawno/include/*.dll
+GAMEMODE/pawno/include/*.so
+GAMEMODE/scriptfiles/*.amx
+GAMEMODE/scriptfiles/*.db
+GAMEMODE/scriptfiles/*.hmap
+GAMEMODE/scriptfiles/*.zip
+
+# Editor files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

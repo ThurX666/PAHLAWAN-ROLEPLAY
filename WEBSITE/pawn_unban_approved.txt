@@ -1,0 +1,49 @@
+#include <a_samp>
+#include <a_mysql>
+
+// Asumsi table MySQL
+// CREATE TABLE IF NOT EXISTS ucp_inbox_messages (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     username VARCHAR(255) NOT NULL,
+//     title VARCHAR(255) NOT NULL,
+//     message TEXT NOT NULL,
+//     type ENUM('System', 'Admin', 'Voucher') DEFAULT 'System',
+//     is_read BOOLEAN DEFAULT FALSE,
+//     template VARCHAR(50) DEFAULT NULL,
+//     metadata JSON DEFAULT NULL
+// );
+
+new MySQL:handle; // Asumsikan koneksi db
+
+forward OnPlayerUnbanned(const ucpname[], const adminname[]);
+
+public OnPlayerUnbanned(const ucpname[], const adminname[])
+{
+    new query[1024];
+    
+    // Asumsikan parameter string ini di escape agar tidak kena SQL Injection
+    mysql_format(handle, query, sizeof(query), "INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata) VALUES ('%e', 'Pemberitahuan: Permohonan Unban Disetujui', '', 'System', 0, 'UnbanApproved', '{\"adminName\": \"%e\"}')",
+        ucpname, adminname);
+        
+    mysql_tquery(handle, query, "", "");
+    return 1;
+}
+
+CMD:unban(playerid, params[])
+{
+    // Cek admin auth
+    
+    new ucpname[32];
+    if(sscanf(params, "s[32]", ucpname)) return SendClientMessage(playerid, -1, "USAGE: /unban [ucpname]");
+    
+    new adminname[MAX_PLAYER_NAME];
+    GetPlayerName(playerid, adminname, sizeof(adminname));
+    
+    // Logic untuk remove ban dari database
+    // mysql_tquery(handle, "DELETE FROM bans WHERE ucp = '%e'", ucpname);
+    
+    OnPlayerUnbanned(ucpname, adminname);
+    
+    SendClientMessage(playerid, -1, "{00FF00}[SUCCESS]: {FFFFFF}UCP berhasil di-unban, notifikasi Inbox telah dikirimkan.");
+    return 1;
+}

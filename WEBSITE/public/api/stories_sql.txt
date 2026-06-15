@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS `ucp_character_stories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `character_id` int(11) NOT NULL,
+  `character_name` varchar(255) NOT NULL,
+  `photo_url` varchar(255) DEFAULT NULL,
+  `skin_id` int(11) DEFAULT 0,
+  `content` text NOT NULL,
+  `status` enum('Pending','Revision','Active','Rejected') NOT NULL DEFAULT 'Pending',
+  `admin_feedback` text DEFAULT NULL,
+  `reviewed_by` varchar(255) DEFAULT NULL,
+  `reviewed_at` timestamp NULL DEFAULT NULL,
+  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO `ucp_character_stories` (`id`, `character_id`, `character_name`, `content`, `status`, `admin_feedback`) VALUES
+(1, 201, 'Ucok Subejo', 'Ucok lahir di Medan dan merantau ke Los Santos...', 'Pending', NULL),
+(2, 203, 'Budi Santoso', 'Budi adalah seorang dokter yang berdedikasi...', 'Revision', 'Tolong tambahkan detail masa kecil.');

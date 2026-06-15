@@ -1,0 +1,1 @@
+#include "core/activity/trashcollector/trashcollector_functions"

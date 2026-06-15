@@ -1,0 +1,2 @@
+gamemodes/main.amx filter=lfs diff=lfs merge=lfs -text
+scriptfiles/SAfull.hmap filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,523 @@
+*filter
+:ufw6-user-input - [0:0]
+:ufw6-user-output - [0:0]
+:ufw6-user-forward - [0:0]
+:ufw6-before-logging-input - [0:0]
+:ufw6-before-logging-output - [0:0]
+:ufw6-before-logging-forward - [0:0]
+:ufw6-user-logging-input - [0:0]
+:ufw6-user-logging-output - [0:0]
+:ufw6-user-logging-forward - [0:0]
+:ufw6-after-logging-input - [0:0]
+:ufw6-after-logging-output - [0:0]
+:ufw6-after-logging-forward - [0:0]
+:ufw6-logging-deny - [0:0]
+:ufw6-logging-allow - [0:0]
+:ufw6-user-limit - [0:0]
+:ufw6-user-limit-accept - [0:0]
+### RULES ###
+
+### tuple ### allow udp 3306 ::/0 any ::/0 in
+-A ufw6-user-input -p udp --dport 3306 -j ACCEPT
+
+### tuple ### allow udp 7777 ::/0 any ::/0 in
+-A ufw6-user-input -p udp --dport 7777 -j ACCEPT
+
+### tuple ### deny any 10000 ::/0 any ::/0 in
+-A ufw6-user-input -p tcp --dport 10000 -j DROP
+-A ufw6-user-input -p udp --dport 10000 -j DROP
+
+### tuple ### deny any 123 ::/0 any ::/0 in
+-A ufw6-user-input -p tcp --dport 123 -j DROP
+-A ufw6-user-input -p udp --dport 123 -j DROP
+
+### tuple ### allow udp 14764 ::/0 any ::/0 in
+-A ufw6-user-input -p udp --dport 14764 -j ACCEPT
+
+### tuple ### deny any any ::/0 any 2a03:b0c0::/48 in
+-A ufw6-user-input -s 2a03:b0c0::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:3::/48 in
+-A ufw6-user-input -s 2a03:b0c0:3::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:2::/48 in
+-A ufw6-user-input -s 2604:a880:2::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:fffc:: in
+-A ufw6-user-input -s 2a03:b0c0:fffc:: -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880::/48 in
+-A ufw6-user-input -s 2604:a880::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:ffff:: in
+-A ufw6-user-input -s 2a03:b0c0:ffff:: -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:3::/48 in
+-A ufw6-user-input -s 2604:a880:3::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:fffe:: in
+-A ufw6-user-input -s 2604:a880:fffe:: -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:fffe:: in
+-A ufw6-user-input -s 2a03:b0c0:fffe:: -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:fffc::/48 in
+-A ufw6-user-input -s 2a03:b0c0:fffc::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:800::/48 in
+-A ufw6-user-input -s 2604:a880:800::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:ffff::/48 in
+-A ufw6-user-input -s 2a03:b0c0:ffff::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:fffe::/48 in
+-A ufw6-user-input -s 2604:a880:fffe::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:fffe::/48 in
+-A ufw6-user-input -s 2a03:b0c0:fffe::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:cad::/48 in
+-A ufw6-user-input -s 2604:a880:cad::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:6180:10::/48 in
+-A ufw6-user-input -s 2400:6180:10::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:400::/48 in
+-A ufw6-user-input -s 2604:a880:400::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:1::/48 in
+-A ufw6-user-input -s 2a03:b0c0:1::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:6180::/48 in
+-A ufw6-user-input -s 2400:6180::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:6180:100::/40 in
+-A ufw6-user-input -s 2400:6180:100::/40 -j DROP
+
+### tuple ### deny any any ::/0 any 2a03:b0c0:2::/48 in
+-A ufw6-user-input -s 2a03:b0c0:2::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:1::/48 in
+-A ufw6-user-input -s 2604:a880:1::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a880:4::/48 in
+-A ufw6-user-input -s 2604:a880:4::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2001:df7:7400::/48 in
+-A ufw6-user-input -s 2001:df7:7400::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:4010::/44 in
+-A ufw6-user-input -s 2600:1901:4010::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:41a0::/44 in
+-A ufw6-user-input -s 2600:1900:41a0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4060::/44 in
+-A ufw6-user-input -s 2600:1900:4060::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8160::/44 in
+-A ufw6-user-input -s 2600:1901:8160::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:40f0::/44 in
+-A ufw6-user-input -s 2600:1900:40f0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1906::/31 in
+-A ufw6-user-input -s 2600:1906::/31 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:c0b0::/44 in
+-A ufw6-user-input -s 2600:1901:c0b0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:ffe0::/44 in
+-A ufw6-user-input -s 2600:1901:ffe0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8190::/44 in
+-A ufw6-user-input -s 2600:1901:8190::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:ffb0::/44 in
+-A ufw6-user-input -s 2600:1901:ffb0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4070::/44 in
+-A ufw6-user-input -s 2600:1900:4070::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:c120::/44 in
+-A ufw6-user-input -s 2600:1901:c120::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:41e0::/44 in
+-A ufw6-user-input -s 2600:1900:41e0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4160::/44 in
+-A ufw6-user-input -s 2600:1900:4160::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4030::/44 in
+-A ufw6-user-input -s 2600:1900:4030::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a940:300::/48 in
+-A ufw6-user-input -s 2604:a940:300::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:ffa0::/44 in
+-A ufw6-user-input -s 2600:1901:ffa0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:40a0::/44 in
+-A ufw6-user-input -s 2600:1900:40a0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8110::/44 in
+-A ufw6-user-input -s 2600:1901:8110::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:81b0::/44 in
+-A ufw6-user-input -s 2600:1901:81b0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4240::/48 in
+-A ufw6-user-input -s 2600:1900:4240::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4242::/48 in
+-A ufw6-user-input -s 2600:1900:4242::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:c0a0::/44 in
+-A ufw6-user-input -s 2600:1901:c0a0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8150::/44 in
+-A ufw6-user-input -s 2600:1901:8150::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:40e0::/44 in
+-A ufw6-user-input -s 2600:1900:40e0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4111::/48 in
+-A ufw6-user-input -s 2600:1900:4111::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4190::/44 in
+-A ufw6-user-input -s 2600:1900:4190::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:41b0::/44 in
+-A ufw6-user-input -s 2600:1900:41b0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:81a0::/44 in
+-A ufw6-user-input -s 2600:1901:81a0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1904::/31 in
+-A ufw6-user-input -s 2600:1904::/31 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:ffc0::/44 in
+-A ufw6-user-input -s 2600:1901:ffc0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:42d7::/48 in
+-A ufw6-user-input -s 2600:1900:42d7::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4050::/44 in
+-A ufw6-user-input -s 2600:1900:4050::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8180::/44 in
+-A ufw6-user-input -s 2600:1901:8180::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4100::/44 in
+-A ufw6-user-input -s 2600:1900:4100::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8130::/44 in
+-A ufw6-user-input -s 2600:1901:8130::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4090::/44 in
+-A ufw6-user-input -s 2600:1900:4090::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:5400::/44 in
+-A ufw6-user-input -s 2600:1900:5400::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:bdd0::/44 in
+-A ufw6-user-input -s 2600:1901:bdd0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:fff0::/44 in
+-A ufw6-user-input -s 2600:1901:fff0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4140::/44 in
+-A ufw6-user-input -s 2600:1900:4140::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:40d0::/44 in
+-A ufw6-user-input -s 2600:1900:40d0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8140::/44 in
+-A ufw6-user-input -s 2600:1901:8140::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4120::/44 in
+-A ufw6-user-input -s 2600:1900:4120::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:81f0::/44 in
+-A ufw6-user-input -s 2600:1901:81f0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:41c0::/44 in
+-A ufw6-user-input -s 2600:1900:41c0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8170::/44 in
+-A ufw6-user-input -s 2600:1901:8170::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:c0c0::/44 in
+-A ufw6-user-input -s 2600:1901:c0c0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2620:121:5050::/44 in
+-A ufw6-user-input -s 2620:121:5050::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:42d6::/48 in
+-A ufw6-user-input -s 2600:1900:42d6::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4040::/44 in
+-A ufw6-user-input -s 2600:1900:4040::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:42d4::/48 in
+-A ufw6-user-input -s 2600:1900:42d4::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8120::/44 in
+-A ufw6-user-input -s 2600:1901:8120::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:40b0::/44 in
+-A ufw6-user-input -s 2600:1900:40b0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:8100::/44 in
+-A ufw6-user-input -s 2600:1901:8100::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:81c0::/44 in
+-A ufw6-user-input -s 2600:1901:81c0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4000::/44 in
+-A ufw6-user-input -s 2600:1900:4000::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4150::/44 in
+-A ufw6-user-input -s 2600:1900:4150::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:ff80::/44 in
+-A ufw6-user-input -s 2600:1901:ff80::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a940:301::/48 in
+-A ufw6-user-input -s 2604:a940:301::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2606:f4c0:2000::/36 in
+-A ufw6-user-input -s 2606:f4c0:2000::/36 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4170::/44 in
+-A ufw6-user-input -s 2600:1900:4170::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4020::/44 in
+-A ufw6-user-input -s 2600:1900:4020::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2407:30c0:280::/48 in
+-A ufw6-user-input -s 2407:30c0:280::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2620:117:bff0::/44 in
+-A ufw6-user-input -s 2620:117:bff0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2604:a940:302::/48 in
+-A ufw6-user-input -s 2604:a940:302::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:42d5::/48 in
+-A ufw6-user-input -s 2600:1900:42d5::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4180::/44 in
+-A ufw6-user-input -s 2600:1900:4180::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4080::/44 in
+-A ufw6-user-input -s 2600:1900:4080::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4010::/44 in
+-A ufw6-user-input -s 2600:1900:4010::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4245::/48 in
+-A ufw6-user-input -s 2600:1900:4245::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:41d0::/44 in
+-A ufw6-user-input -s 2600:1900:41d0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4243::/48 in
+-A ufw6-user-input -s 2600:1900:4243::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4241::/48 in
+-A ufw6-user-input -s 2600:1900:4241::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:4244::/48 in
+-A ufw6-user-input -s 2600:1900:4244::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:40c0::/44 in
+-A ufw6-user-input -s 2600:1900:40c0::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2a01:280:200::/40 in
+-A ufw6-user-input -s 2a01:280:200::/40 -j DROP
+
+### tuple ### deny any any ::/0 any 2001:df0:27b::/48 in
+-A ufw6-user-input -s 2001:df0:27b::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2001:df1:7800::/48 in
+-A ufw6-user-input -s 2001:df1:7800::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1900:8000::/44 in
+-A ufw6-user-input -s 2600:1900:8000::/44 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:1901:4400::/39 in
+-A ufw6-user-input -s 2600:1901:4400::/39 -j DROP
+
+### tuple ### deny any any ::/0 any 2a01:7e01::/32 in
+-A ufw6-user-input -s 2a01:7e01::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:15::/48 in
+-A ufw6-user-input -s 2600:3c0f:15::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:21::/48 in
+-A ufw6-user-input -s 2600:3c0f:21::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c07::/32 in
+-A ufw6-user-input -s 2600:3c07::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:8905::/32 in
+-A ufw6-user-input -s 2400:8905::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:27::/48 in
+-A ufw6-user-input -s 2600:3c0f:27::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:8901::/32 in
+-A ufw6-user-input -s 2400:8901::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c09::/32 in
+-A ufw6-user-input -s 2600:3c09::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2a01:7e03::/32 in
+-A ufw6-user-input -s 2a01:7e03::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0c::/32 in
+-A ufw6-user-input -s 2600:3c0c::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:17::/48 in
+-A ufw6-user-input -s 2600:3c0f:17::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:8902::/32 in
+-A ufw6-user-input -s 2400:8902::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0a::/32 in
+-A ufw6-user-input -s 2600:3c0a::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:20::/48 in
+-A ufw6-user-input -s 2600:3c0f:20::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:8904::/32 in
+-A ufw6-user-input -s 2400:8904::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0e::/32 in
+-A ufw6-user-input -s 2600:3c0e::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c01::/32 in
+-A ufw6-user-input -s 2600:3c01::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c05::/32 in
+-A ufw6-user-input -s 2600:3c05::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0d::/32 in
+-A ufw6-user-input -s 2600:3c0d::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:8903::/32 in
+-A ufw6-user-input -s 2400:8903::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2a01:7e00::/32 in
+-A ufw6-user-input -s 2a01:7e00::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:14::/48 in
+-A ufw6-user-input -s 2600:3c0f:14::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:22::/48 in
+-A ufw6-user-input -s 2600:3c0f:22::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c06::/32 in
+-A ufw6-user-input -s 2600:3c06::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:3::/48 in
+-A ufw6-user-input -s 2600:3c0f:3::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:8906::/32 in
+-A ufw6-user-input -s 2400:8906::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:28::/48 in
+-A ufw6-user-input -s 2600:3c0f:28::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c03::/32 in
+-A ufw6-user-input -s 2600:3c03::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:30::/48 in
+-A ufw6-user-input -s 2600:3c0f:30::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:11::/48 in
+-A ufw6-user-input -s 2600:3c0f:11::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:4::/48 in
+-A ufw6-user-input -s 2600:3c0f:4::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:13::/48 in
+-A ufw6-user-input -s 2600:3c0f:13::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0b::/32 in
+-A ufw6-user-input -s 2600:3c0b::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c00::/32 in
+-A ufw6-user-input -s 2600:3c00::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:29::/48 in
+-A ufw6-user-input -s 2600:3c0f:29::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c08::/32 in
+-A ufw6-user-input -s 2600:3c08::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c04::/32 in
+-A ufw6-user-input -s 2600:3c04::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:19::/48 in
+-A ufw6-user-input -s 2600:3c0f:19::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2a02:26f0:1280::/48 in
+-A ufw6-user-input -s 2a02:26f0:1280::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:2::/48 in
+-A ufw6-user-input -s 2600:3c0f:2::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:18::/48 in
+-A ufw6-user-input -s 2600:3c0f:18::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2400:8907::/32 in
+-A ufw6-user-input -s 2400:8907::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:9::/48 in
+-A ufw6-user-input -s 2600:3c0f:9::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:10::/48 in
+-A ufw6-user-input -s 2600:3c0f:10::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:25::/48 in
+-A ufw6-user-input -s 2600:3c0f:25::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:6::/48 in
+-A ufw6-user-input -s 2600:3c0f:6::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c02::/32 in
+-A ufw6-user-input -s 2600:3c02::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2a01:7e04::/32 in
+-A ufw6-user-input -s 2a01:7e04::/32 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:16::/48 in
+-A ufw6-user-input -s 2600:3c0f:16::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:23::/48 in
+-A ufw6-user-input -s 2600:3c0f:23::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:7::/48 in
+-A ufw6-user-input -s 2600:3c0f:7::/48 -j DROP
+
+### tuple ### deny any any ::/0 any 2600:3c0f:26::/48 in
+-A ufw6-user-input -s 2600:3c0f:26::/48 -j DROP
+
+### END RULES ###
+
+### LOGGING ###
+-A ufw6-after-logging-input -j LOG --log-prefix "[UFW BLOCK] " -m limit --limit 3/min --limit-burst 10
+-A ufw6-after-logging-forward -j LOG --log-prefix "[UFW BLOCK] " -m limit --limit 3/min --limit-burst 10
+-I ufw6-logging-deny -m conntrack --ctstate INVALID -j RETURN -m limit --limit 3/min --limit-burst 10
+-A ufw6-logging-deny -j LOG --log-prefix "[UFW BLOCK] " -m limit --limit 3/min --limit-burst 10
+-A ufw6-logging-allow -j LOG --log-prefix "[UFW ALLOW] " -m limit --limit 3/min --limit-burst 10
+### END LOGGING ###
+
+### RATE LIMITING ###
+-A ufw6-user-limit -m limit --limit 3/minute -j LOG --log-prefix "[UFW LIMIT BLOCK] "
+-A ufw6-user-limit -j REJECT
+-A ufw6-user-limit-accept -j ACCEPT
+### END RATE LIMITING ###
+COMMIT

@@ -1,0 +1,52 @@
+#include <a_samp>
+#include <a_mysql>
+
+// Asumsi table MySQL
+// CREATE TABLE IF NOT EXISTS ucp_inbox_messages (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     username VARCHAR(255) NOT NULL,
+//     title VARCHAR(255) NOT NULL,
+//     message TEXT NOT NULL,
+//     type ENUM('System', 'Admin', 'Voucher') DEFAULT 'System',
+//     is_read BOOLEAN DEFAULT FALSE,
+//     template VARCHAR(50) DEFAULT NULL,
+//     metadata JSON DEFAULT NULL
+// );
+
+new MySQL:handle; // Asumsikan koneksi db
+
+forward OnPlayerNameChanged(const ucpname[], const oldName[], const newName[]);
+
+public OnPlayerNameChanged(const ucpname[], const oldName[], const newName[])
+{
+    new query[1024];
+    
+    // Escape string values using mysql_format %e
+    mysql_format(handle, query, sizeof(query), 
+        "INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata) "
+        "VALUES ('%e', 'Informasi Nama Baru Karakter Sukses', '', 'System', 0, 'NamechangeSuccess', "
+        "'{\"oldName\": \"%e\", \"newName\": \"%e\"}')",
+        ucpname, oldName, newName);
+        
+    mysql_tquery(handle, query, "", "");
+    return 1;
+}
+
+// Fungsi ini biasanya dipanggil setelah admin secara In-Game/UCP menyetujui request Change Name
+CMD:acceptcn(playerid, params[])
+{
+    // Cek admin auth
+    
+    new ucpname[32], oldName[MAX_PLAYER_NAME], newName[MAX_PLAYER_NAME];
+    
+    if(sscanf(params, "s[32]s[24]s[24]", ucpname, oldName, newName)) 
+        return SendClientMessage(playerid, -1, "USAGE: /acceptcn [ucpname] [oldname] [newname]");
+    
+    // Logic untuk mengganti nama di database
+    // mysql_tquery(handle, "UPDATE characters SET name = '%e' WHERE name = '%e' AND ucp = '%e'", newName, oldName, ucpname);
+    
+    OnPlayerNameChanged(ucpname, oldName, newName);
+    
+    SendClientMessage(playerid, -1, "{00FF00}[SUCCESS]: {FFFFFF}Pengajuan ganti nama berhasil disetujui, notifikasi Inbox telah dikirimkan.");
+    return 1;
+}

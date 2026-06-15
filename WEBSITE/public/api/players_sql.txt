@@ -1,0 +1,6 @@
+-- MySQL Database Schema for Admin Players Page
+
+-- Main characters logic relies on `player_characters` table from SA:MP server
+-- Added `discord_id` column to `player_ucp` table previously via migration
+
+-- Admin Logs Trail (Sudah dipindah ke logs_sql.txt)

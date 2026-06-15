@@ -1,0 +1,38 @@
+-- Script Database untuk Support System & Inbox
+
+-- 1. Tabel Tiket Bantuan
+CREATE TABLE IF NOT EXISTS ucp_support_tickets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(22) NOT NULL,
+    subject VARCHAR(255) NOT NULL,
+    category VARCHAR(50),
+    status ENUM('Open', 'Proses', 'Dijawab', 'Ditutup') DEFAULT 'Open',
+    last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 2. Tabel Pesan di Dalam Tiket
+CREATE TABLE IF NOT EXISTS ucp_support_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_id INT,
+    sender_name VARCHAR(22),
+    message_text TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ticket_id) REFERENCES ucp_support_tickets(id) ON DELETE CASCADE
+);
+
+-- 3. Tabel Kotak Masuk (Inbox)
+CREATE TABLE IF NOT EXISTS ucp_inbox_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(22) NOT NULL,
+    title VARCHAR(255),
+    message TEXT,
+    type VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_read BOOLEAN DEFAULT FALSE,
+    voucher_code VARCHAR(50),
+    item_name VARCHAR(100),
+    item_description TEXT,
+    item_price INT,
+    template VARCHAR(50) DEFAULT NULL,
+    metadata JSON DEFAULT NULL
+);

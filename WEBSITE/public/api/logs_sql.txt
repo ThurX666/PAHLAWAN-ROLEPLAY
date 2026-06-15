@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS `ucp_admin_logs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `admin_name` varchar(255) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `target_player` varchar(255) DEFAULT NULL,
+  `details` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO `ucp_admin_logs` (`id`, `admin_name`, `action`, `target_player`, `details`) VALUES 
+(1, 'System', 'SYSTEM_START', 'Server', 'Log system initialized');

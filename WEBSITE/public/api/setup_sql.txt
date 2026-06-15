@@ -1,0 +1,24 @@
+CREATE TABLE IF NOT EXISTS `ucp_system_settings` (
+  `setting_key` varchar(50) NOT NULL,
+  `setting_value` text DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO `ucp_system_settings` (`setting_key`, `setting_value`) VALUES
+('server_name', 'Pahlawan Roleplay'),
+('maintenance_mode', '0'),
+('discord_bot_token', ''),
+('discord_guild_id', ''),
+('discord_webhook_url', ''),
+('discord_client_id', ''),
+('discord_client_secret', ''),
+('discord_role_warga_id', ''),
+('pusher_app_id', ''),
+('pusher_key', ''),
+('pusher_secret', ''),
+('pusher_cluster', 'ap1'),
+('smtp_host', 'smtp.gmail.com'),
+('smtp_port', '587'),
+('smtp_user', ''),
+('smtp_pass', '');

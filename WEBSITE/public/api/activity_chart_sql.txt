@@ -1,0 +1,39 @@
+CREATE TABLE IF NOT EXISTS `ucp_server_activity` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `players_online` INT NOT NULL DEFAULT 0,
+  `logged_at` DATETIME NOT NULL
+);
+
+-- Catatan: Anda harus memiliki cron job atau plugin server game yang secara berkala
+-- memasukkan jumlah pemain ke dalam tabel ini. Contoh, setiap jam:
+-- INSERT INTO `ucp_server_activity` (`players_online`, `logged_at`) VALUES (450, NOW());
+
+-- Berikut adalah mock data untuk keperluan testing (24 Jam, 7 Hari, 4 Minggu).
+-- Jalankan query ini agar chart memiliki data saat API dijalankan di sistem asli Anda.
+
+-- Dummy Data 24 Jam Terakhir
+INSERT INTO `ucp_server_activity` (`players_online`, `logged_at`) VALUES
+(120, DATE_SUB(NOW(), INTERVAL 23 HOUR)),
+(80, DATE_SUB(NOW(), INTERVAL 20 HOUR)),
+(250, DATE_SUB(NOW(), INTERVAL 16 HOUR)),
+(480, DATE_SUB(NOW(), INTERVAL 12 HOUR)),
+(750, DATE_SUB(NOW(), INTERVAL 8 HOUR)),
+(920, DATE_SUB(NOW(), INTERVAL 4 HOUR)),
+(610, DATE_SUB(NOW(), INTERVAL 1 HOUR));
+
+-- Dummy Data 7 Hari Terakhir
+INSERT INTO `ucp_server_activity` (`players_online`, `logged_at`) VALUES
+(400, DATE_SUB(NOW(), INTERVAL 6 DAY)),
+(300, DATE_SUB(NOW(), INTERVAL 5 DAY)),
+(550, DATE_SUB(NOW(), INTERVAL 4 DAY)),
+(450, DATE_SUB(NOW(), INTERVAL 3 DAY)),
+(800, DATE_SUB(NOW(), INTERVAL 2 DAY)),
+(950, DATE_SUB(NOW(), INTERVAL 1 DAY)),
+(900, NOW());
+
+-- Dummy Data 4 Minggu Terakhir
+INSERT INTO `ucp_server_activity` (`players_online`, `logged_at`) VALUES
+(850, DATE_SUB(NOW(), INTERVAL 27 DAY)),
+(920, DATE_SUB(NOW(), INTERVAL 20 DAY)),
+(880, DATE_SUB(NOW(), INTERVAL 13 DAY)),
+(980, DATE_SUB(NOW(), INTERVAL 6 DAY));

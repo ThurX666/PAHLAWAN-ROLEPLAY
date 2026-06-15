@@ -1,0 +1,60 @@
+#include <a_samp>
+#include <a_mysql>
+
+// Asumsi table MySQL
+// CREATE TABLE IF NOT EXISTS ucp_inbox_messages (
+//     id INT AUTO_INCREMENT PRIMARY KEY,
+//     username VARCHAR(255) NOT NULL,
+//     title VARCHAR(255) NOT NULL,
+//     message TEXT NOT NULL,
+//     type ENUM('System', 'Admin', 'Voucher') DEFAULT 'System',
+//     is_read BOOLEAN DEFAULT FALSE,
+//     template VARCHAR(50) DEFAULT NULL,
+//     metadata JSON DEFAULT NULL
+// );
+
+new MySQL:handle; // Asumsikan koneksi db
+
+forward OnVipExpired(playerid);
+
+public OnVipExpired(playerid)
+{
+    new ucpname[MAX_PLAYER_NAME];
+    
+    // Asumsikan helper get name
+    format(ucpname, sizeof(ucpname), "PlayerUCP"); // Ganti dg fungsi GetUserUCP(playerid)
+    
+    // Get VIP Tier dari enum/variable player (Bronze, Silver, Gold)
+    new vipLevel = 1; // contoh 1 = Bronze
+    new vipTierStr[32];
+    
+    switch(vipLevel)
+    {
+        case 1: strpack(vipTierStr, "Bronze");
+        case 2: strpack(vipTierStr, "Silver");
+        case 3: strpack(vipTierStr, "Gold");
+        default: strpack(vipTierStr, "Bronze");
+    }
+    
+    new query[1024];
+    mysql_format(handle, query, sizeof(query), "INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata) VALUES ('%e', 'Pemberitahuan: Status VIP %e Berakhir', '', 'System', 0, 'VipExpired', '{\"vipTier\": \"%e\"}')",
+        ucpname, vipTierStr, vipTierStr);
+        
+    mysql_tquery(handle, query, "", "");
+    
+    SendClientMessage(playerid, -1, "{FFFF00}[INFO]: {FFFFFF}Status VIP anda telah berakhir. Cek UCP Inbox untuk info lebih lanjut.");
+    return 1;
+}
+
+// Function ini dipanggil saat login atau timer pergantian hari untuk cek expired VIP
+CheckPlayerVipStatus(playerid)
+{
+    // Check if player's VIP time < gettime()
+    // if(PlayerInfo[playerid][pVipTime] < gettime() && PlayerInfo[playerid][pVipLevel] > 0)
+    // {
+    //      OnVipExpired(playerid);
+    //      PlayerInfo[playerid][pVipLevel] = 0;
+    //      PlayerInfo[playerid][pVipTime] = 0;
+    // }
+    return 1;
+}

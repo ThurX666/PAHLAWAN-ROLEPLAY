@@ -1,0 +1,15 @@
+-- Membuat Tabel Profil Pengguna (Bisa direlasikan dengan tabel users utama dengan username = username)
+CREATE TABLE IF NOT EXISTS ucp_user_profiles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(22) NOT NULL UNIQUE,
+    ooc_name VARCHAR(100),
+    birth_date DATE,
+    phone_number VARCHAR(20),
+    address VARCHAR(255),
+    gender VARCHAR(20),
+    discord_id VARCHAR(50),
+    is_locked TINYINT(1) DEFAULT 0,
+    is_2fa_enabled TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

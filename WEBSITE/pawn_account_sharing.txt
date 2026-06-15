@@ -1,0 +1,65 @@
+#include <a_samp>
+#include <a_mysql>
+
+/*
+ * [Pahlawan Roleplay] - Sistem Deteksi Account Sharing (UCP Share)
+ * Script ini merupakan panduan cara memasukkan peringatan "Account Sharing" ke dalam database
+ * agar selaras dengan Front-End (Web UCP)
+ */
+
+new MySQL:handle; // Asumsi handle koneksi MYSQL
+
+// Fungsi simulasi dipanggil saat admin melakukan deteksi/banned IP berganda atau dari sistem Auto-Detect
+public OnAccountSharingDetected(playerid, const target_ucp[])
+{
+    // Cek apakah UCP ada/tersedia
+    if(strlen(target_ucp) < 1) return 0;
+    
+    // Variabel untuk log
+    new query[1024];
+    new adminName[] = "System_AutoDetect"; // Atau nama admin jika dieksekusi oleh command admin
+    new reason[] = "Account Sharing (Share UCP)";
+    new currentWarn = 2; // Contoh mendapatkan penalti warn 2
+    
+    // Format JSON Metadata sesuai dengan yang dibutuhkan Web UCP
+    // Gunakan mysql_format untuk mencegah SQL Injection, masukkan json metadata yang proper
+    mysql_format(handle, query, sizeof(query), "INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata) VALUES ('%e', 'Peringatan Server: Account Sharing (Share UCP)', '', 'System', 0, 'ServerWarning', '{\"characterName\": \"Semua Karakter\", \"adminName\": \"%e\", \"reason\": \"%e\", \"currentWarn\": %d}')",
+        target_ucp, adminName, reason, currentWarn);
+        
+    // Eksekusi query tanpa callback lanjutan
+    mysql_tquery(handle, query, "", "");
+    
+    // Beri tahu player jika sedang online in-game
+    SendClientMessage(playerid, -1, "{FF0000}[SERVER WARNING]: {FFFFFF}Sistem mendeteksi indikasi Account Sharing pada akun UCP Anda!");
+    SendClientMessage(playerid, -1, "{FF0000}[SERVER WARNING]: {FFFFFF}Silahkan cek Web UCP Anda segera untuk membaca detail peringatannya.");
+    
+    return 1;
+}
+
+// Contoh Command Manual untuk Admin untuk mengirim warning sharing akun ke UCP Player
+CMD:warnshare(playerid, params[])
+{
+    // Cek otorisasi admin (asumsi ada enum PlayerInfo)
+    // if(PlayerInfo[playerid][pAdmin] < 3) return SendClientMessage(playerid, -1, "Anda tidak memiliki akses command ini!");
+    
+    new targetid;
+    if(sscanf(params, "u", targetid)) return SendClientMessage(playerid, -1, "USAGE: /warnshare [playerid]");
+    
+    if(IsPlayerConnected(targetid))
+    {
+        new target_ucp[MAX_PLAYER_NAME];
+        
+        // Asumsi GetUserUCP mengisi target_ucp
+        // GetUserUCP(targetid, target_ucp, sizeof(target_ucp));
+        format(target_ucp, sizeof(target_ucp), "Ucok_Slepbeuw"); // dummy mock
+        
+        OnAccountSharingDetected(targetid, target_ucp);
+        SendClientMessage(playerid, -1, "Anda berhasil mengirim Peringatan Account Sharing ke UCP Player tersebut.");
+    }
+    else
+    {
+        SendClientMessage(playerid, -1, "Player tidak ditemukan.");
+    }
+    
+    return 1;
+}

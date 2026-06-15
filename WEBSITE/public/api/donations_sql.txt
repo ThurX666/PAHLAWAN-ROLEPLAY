@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS `ucp_promo_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `is_active` tinyint(1) NOT NULL DEFAULT 0,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `discount_percent` int(11) NOT NULL DEFAULT 0,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO `ucp_promo_config` (`id`, `is_active`, `title`, `description`, `discount_percent`) VALUES
+(1, 1, 'Promo Ramadhan Ceria', 'Dapatkan bonus 10% Gold Coin untuk semua donasi!', 10);
+
+CREATE TABLE IF NOT EXISTS `ucp_promo_items` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `type` enum('Vehicle', 'Property', 'Item') NOT NULL DEFAULT 'Item',
+  `price_gold` int(11) NOT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `qty` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO `ucp_promo_items` (`id`, `name`, `type`, `price_gold`, `description`, `qty`, `is_active`) VALUES
+(1, 'Infernus Sport Edition', 'Vehicle', 5000, 'Kendaraan Infernus edisi terbatas dengan kecepatan tinggi.', 5, 1);
+
+CREATE TABLE IF NOT EXISTS `ucp_transactions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `account` varchar(22) NOT NULL,
+  `player_name` varchar(255) DEFAULT NULL,
+  `sender_name` varchar(255) DEFAULT NULL,
+  `type` varchar(50) DEFAULT 'donation',
+  `item_name` varchar(255) NOT NULL,
+  `quantity` int(11) DEFAULT 1,
+  `amount` varchar(50) NOT NULL,
+  `payment_method` varchar(50) NOT NULL,
+  `status` enum('Pending','Success','Rejected') NOT NULL DEFAULT 'Pending',
+  `proof_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT IGNORE INTO `ucp_transactions` (`id`, `account`, `player_name`, `sender_name`, `item_name`, `amount`, `payment_method`, `status`) VALUES
+(1, 'Admin', 'Arjuna_Wijaya', 'Arjuna', '5000 GC', 'Rp 50.000', 'BCA', 'Pending'),
+(2, 'Admin', 'Budi_Santoso', 'Budi S', 'VIP Gold 30 Hari', 'Rp 100.000', 'QRIS', 'Success');

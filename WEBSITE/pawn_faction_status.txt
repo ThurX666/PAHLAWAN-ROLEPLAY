@@ -1,0 +1,50 @@
+#include <a_samp>
+#include <a_mysql>
+
+/*
+ * [Pahlawan Roleplay] - Sistem Pemberitahuan Faction Acceptance ke Web UCP
+ * Script ini merupakan panduan cara memasukkan peringatan "Informasi Faction: Anda Diterima!" ke dalam database
+ * agar selaras dengan Front-End (Web UCP)
+ */
+
+new MySQL:handle; // Asumsi handle koneksi MYSQL
+
+// Fungsi simulasi dipanggil saat Leader Faksi menerima (invite) player / offline invite.
+public OnPlayerAcceptedToFaction(const target_ucp[], const target_character[], const faction_name[])
+{
+    // Cek apakah UCP ada/tersedia
+    if(strlen(target_ucp) < 1) return 0;
+    
+    new query[1024];
+    
+    // Format JSON Metadata sesuai dengan yang dibutuhkan Web UCP
+    // Gunakan mysql_format untuk mencegah SQL Injection
+    // Kita simpan factionName dan characterName di field metadata
+    mysql_format(handle, query, sizeof(query), "INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata) VALUES ('%e', 'Informasi Faction: Anda Diterima!', '', 'System', 0, 'FactionAccepted', '{\"factionName\": \"%e\", \"characterName\": \"%e\"}')",
+        target_ucp, faction_name, target_character);
+        
+    // Eksekusi query
+    mysql_tquery(handle, query, "", "");
+    
+    return 1;
+}
+
+// Contoh Command Manual untuk Leader faksi (Offline Invite)
+CMD:ofacinvite(playerid, params[])
+{
+    // Cek otorisasi Leader Faksi/Admin
+    // if(PlayerInfo[playerid][pFactionRank] < LEADER) return SendClientMessage(playerid, -1, "Not authorized.");
+    
+    new target_name[MAX_PLAYER_NAME];
+    if(sscanf(params, "s[24]", target_name)) return SendClientMessage(playerid, -1, "USAGE: /ofacinvite [character_name_with_underscore]");
+    
+    // Silakan tambahkan logika cek database untuk nama karakter
+    // Untuk contoh ini kita asumsikan target_ucp adalah pemilih target_name
+    new dummy_ucp[] = "Ucok_Slepbeuw"; 
+    new dummy_faction_name[] = "Los Santos Medical Department (LSMD)";
+    
+    OnPlayerAcceptedToFaction(dummy_ucp, target_name, dummy_faction_name);
+    SendClientMessage(playerid, -1, "Pemberitahuan telah terkirim ke Web UCP player tersebut.");
+    
+    return 1;
+}

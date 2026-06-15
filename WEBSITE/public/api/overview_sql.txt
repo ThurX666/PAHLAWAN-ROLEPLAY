@@ -1,0 +1,21 @@
+-- This SQL dump demonstrates tables to track Server Overview & Assets Stats
+
+-- Table for tracking Server Economy Daily History for charts
+CREATE TABLE IF NOT EXISTS `ucp_economy_stats` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `stat_date` date NOT NULL,
+  `total_circulation` bigint(20) NOT NULL DEFAULT 0,
+  `total_assets_value` bigint(20) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `stat_date` (`stat_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Example dummy records for Economy
+INSERT IGNORE INTO `ucp_economy_stats` (`stat_date`, `total_circulation`, `total_assets_value`) VALUES
+('2026-04-12', 1200000, 800000),
+('2026-04-13', 1350000, 820000),
+('2026-04-14', 1250000, 850000),
+('2026-04-15', 1500000, 900000),
+('2026-04-16', 1450000, 950000),
+('2026-04-17', 1800000, 1100000),
+('2026-04-18', 1700000, 1050000);

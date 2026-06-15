@@ -1,0 +1,57 @@
+
+import React from 'react';
+import { ServerStats, UserProfile } from '../types';
+import { DashboardHeader } from './dashboard/DashboardHeader';
+import { AccountInfo } from './dashboard/AccountInfo';
+import { ActivityChart } from './dashboard/ActivityChart';
+import { PlayerTable } from './dashboard/PlayerTable';
+
+interface DashboardProps {
+  stats: ServerStats;
+  userName: string;
+  onNavigate: (tab: string) => void;
+  vipStatus?: { tier: string; expiredAt: string; } | null;
+  userGold?: number;
+  profile: UserProfile;
+  is2FAEnabled: boolean;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({ stats, userName, onNavigate, vipStatus, userGold = 0, profile, is2FAEnabled }) => {
+
+  return (
+    <div className="animate-[fadeIn_0.5s_ease-out]">
+      {/* Desktop Layout: CSS Grid 12 Columns */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 lg:gap-6">
+        
+        {/* Header: Full Width */}
+        <div className="col-span-1 xl:col-span-12">
+            <DashboardHeader userName={userName} stats={stats} />
+        </div>
+
+        {/* Bottom Row: Account Info & Player Table */}
+        {/* Account Info */}
+        <div className="col-span-1 xl:col-span-4 bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm p-4 md:p-5 flex flex-col gap-4">
+            <AccountInfo 
+                username={userName} 
+                vipStatus={vipStatus} 
+                userGold={userGold} 
+                profile={profile} 
+                is2FAEnabled={is2FAEnabled} 
+                onNavigate={onNavigate} 
+            />
+        </div>
+
+        {/* Player Table */}
+        <div className="col-span-1 xl:col-span-8 h-full flex flex-col">
+            <PlayerTable />
+        </div>
+
+        {/* Chart Row: Full Width */}
+        <div className="col-span-1 xl:col-span-12 h-full flex flex-col">
+            <ActivityChart />
+        </div>
+
+      </div>
+    </div>
+  );
+};

@@ -1,0 +1,19 @@
+-- Tabel untuk menampung data pemain yang sedang online secara langsung dari Gamemode
+-- Disarankan gamemode melakukan update tabel ini setiap kali pemain login/logout dan mengupdate score/ping secara berkala (misal tiap menit)
+
+CREATE TABLE IF NOT EXISTS `ucp_online_players` (
+  `player_id` int(11) NOT NULL,
+  `character_name` varchar(32) NOT NULL,
+  `color` varchar(10) NOT NULL DEFAULT '#FFFFFF',
+  `score` int(11) NOT NULL DEFAULT 0,
+  `ping` int(11) NOT NULL DEFAULT 0,
+  `login_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`player_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- MOCK DATA JIKA INGIN DITEST LANGSUNG DI XAMPP
+INSERT IGNORE INTO `ucp_online_players` (`player_id`, `character_name`, `color`, `score`, `ping`) VALUES
+(0, 'Admin_Test', '#FF0000', 500, 32),
+(1, 'Player_One', '#00FF00', 120, 45),
+(2, 'Roleplay_Guy', '#0000FF', 20, 80),
+(3, 'Newbie_Player', '#FFFFFF', 5, 120);

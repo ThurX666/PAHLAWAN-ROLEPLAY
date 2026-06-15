@@ -1,0 +1,13 @@
+-- Database untuk Requests
+CREATE TABLE IF NOT EXISTS ucp_user_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    request_type ENUM('Feature', 'Unban', 'Namechange', 'Refund') NOT NULL,
+    content TEXT NOT NULL,
+    metadata JSON DEFAULT NULL,
+    status ENUM('Pending', 'In Review', 'Approved', 'Rejected') DEFAULT 'Pending',
+    admin_feedback TEXT DEFAULT NULL,
+    reviewed_by VARCHAR(255) DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

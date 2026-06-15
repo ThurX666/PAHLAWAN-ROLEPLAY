@@ -1,0 +1,146 @@
+CREATE TABLE IF NOT EXISTS ucp_inbox_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    type ENUM('System', 'Admin', 'Voucher') DEFAULT 'System',
+    is_read BOOLEAN DEFAULT FALSE,
+    voucher_code VARCHAR(255) DEFAULT NULL,
+    item_name VARCHAR(255) DEFAULT NULL,
+    item_description TEXT DEFAULT NULL,
+    item_price INT DEFAULT NULL,
+    template VARCHAR(50) DEFAULT NULL,
+    metadata JSON DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Contoh query untuk mengirim pesan Welcome saat player baru mendaftar UCP
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template)
+VALUES (
+    'PlayerBaru', 
+    'Welcome to Pahlawan Roleplay! 🎉', 
+    'Pesan selamat datang untuk player baru.', 
+    'System',
+    FALSE,
+    'Welcome'
+);
+
+-- Contoh query untuk pemberitahuan pembuatan karakter
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+VALUES (
+    'PlayerBaru', 
+    'Karakter Dibuat: Ucok_Slepbeuw', 
+    'Karakter baru berhasil dibuat.', 
+    'System',
+    FALSE,
+    'CharacterCreated',
+    '{"characterName": "Ucok_Slepbeuw", "gender": "Laki-laki", "storyStatus": "Belum Ada"}'
+);
+
+-- Contoh query untuk pemberian hadiah voucher event
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, voucher_code, item_name, item_description, item_price)
+VALUES (
+    'PlayerBaru', 
+    'Hadiah Spesial: Voucher Event Lebaran', 
+    'Selamat! Kamu mendapatkan hadiah spesial dari kami atas partisipasi dalam event Lebaran Mabar 2026. Jangan lupa diklaim ya bro!', 
+    'Voucher',
+    FALSE,
+    'LEBARAN2026',
+    'Mobil Infernus Eksklusif',
+    'Kendaraan mewah 2 pintu tercepat di kota. Lengkap dengan full modif.',
+    500000
+);
+
+-- Contoh query untuk pesan manual dari Admin ke Player
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read)
+VALUES (
+    'PlayerBaru', 
+    'Pemberitahuan Penting: Jadwal Maintenance', 
+    'Halo bro! Nanti malam jam 12 kita akan ada maintenance server sekitar 2 jam. Mohon persiapkan diri kalian ya, terima kasih!', 
+    'Admin',
+    FALSE
+);
+
+-- Contoh query untuk peringatan server
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+VALUES (
+    'PlayerBaru', 
+    'Peringatan Server: Pelanggaran Rules (Deathmatching)', 
+    '', 
+    'System',
+    FALSE,
+    'ServerWarning',
+    '{"characterName": "Ucok_Slepbeuw", "adminName": "Admin_Brave", "reason": "Deathmatching (Pasal 4)", "currentWarn": 1}'
+);
+
+-- Contoh query untuk pemberitahuan VIP Expired
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+VALUES (
+    'PlayerBaru', 
+    'Pemberitahuan: Status VIP Bronze Berakhir', 
+    '', 
+    'System',
+    FALSE,
+    'VipExpired',
+    '{"vipTier": "Bronze"}'
+);
+
+-- Contoh query untuk persetujuan unban
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+VALUES (
+    'PlayerBaru', 
+    'Pemberitahuan: Permohonan Unban Disetujui', 
+    '', 
+    'System',
+    FALSE,
+    'UnbanApproved',
+    '{"adminName": "High_Staff"}'
+);
+
+-- Contoh query untuk Peringatan Inaktivitas Properti
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+VALUES (
+    'PlayerBaru', 
+    'Peringatan Sistem: Inaktivitas Properti (Rumah)', 
+    '', 
+    'System',
+    FALSE,
+    'PropertyInactivityWarning',
+    '{"propertyType": "Rumah", "propertyId": 105, "propertyZone": "Vinewood", "inactiveDays": 10, "daysRemaining": 4}'
+);
+
+-- Contoh query untuk Informasi Nama Baru Karakter Sukses
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+VALUES (
+    'PlayerBaru', 
+    'Informasi Nama Baru Karakter Sukses', 
+    '', 
+    'System',
+    FALSE,
+    'NamechangeSuccess',
+    '{"oldName": "Ucok_Slepbeuw", "newName": "Albert_Wesker"}'
+);
+
+-- Contoh query untuk Laporan Pemain Ditanggapi
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+VALUES (
+    'PlayerBaru', 
+    'Laporan Pemain Ditanggapi', 
+    '', 
+    'System',
+    FALSE,
+    'PlayerReportResponded',
+    '{"reportedPlayer": "John_Doe", "violation": "Car Ramming", "adminAction": "Jail 60 menit & Warn 1"}'
+);
+
+-- Contoh query untuk Informasi: Request Refund Disetujui
+INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+VALUES (
+    'PlayerBaru', 
+    'Informasi: Request Refund Disetujui', 
+    '', 
+    'System',
+    FALSE,
+    'RefundApproved',
+    '{"assetName": "Kendaraan Bug Meledak (Sultan)", "command": "/autorefund", "locationToClaim": "Insurance"}'
+);

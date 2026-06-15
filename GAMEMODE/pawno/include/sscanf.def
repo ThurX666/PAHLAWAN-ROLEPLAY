@@ -1,0 +1,16 @@
+LIBRARY	"SSCANF"
+EXPORTS
+	Supports
+	Load
+	Unload
+	AmxLoad
+	AmxUnload
+	amx_sscanfInit
+	amx_sscanf2Init
+	amx_amxsscanfInit
+	amx_amxsscanf2Init
+	amx_sscanfCleanup
+	amx_sscanf2Cleanup
+	amx_amxsscanfCleanup
+	amx_amxsscanf2Cleanup
+

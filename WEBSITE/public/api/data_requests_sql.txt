@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS `ucp_data_change_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` char(22) NOT NULL,
+  `change_type` varchar(100) NOT NULL,
+  `target_information` varchar(255) DEFAULT '',
+  `old_value` varchar(255) DEFAULT '',
+  `new_value` varchar(255) NOT NULL,
+  `reason` text NOT NULL,
+  `status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
+  `admin_feedback` text,
+  `reviewed_by` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `ucp_data_change_requests` (`id`, `username`, `change_type`, `target_information`, `old_value`, `new_value`, `reason`, `status`) VALUES
+(1, 'ucp_johndoe', 'Ganti Nama Asli (OOC)', 'Nama Asli', 'John Doe OOC', 'John Smith OOC', 'Salah ketik nama OOC saya saat mendaftar awal', 'Pending'),
+(2, 'ucp_johndoe', 'Ganti Tanggal Lahir (OOC)', 'Tanggal Lahir', '1990-01-01', '1985-05-20', 'Tanggal lahir saya terbalik bulannya', 'Rejected');

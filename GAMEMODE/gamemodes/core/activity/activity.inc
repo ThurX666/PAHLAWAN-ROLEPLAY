@@ -1,0 +1,7 @@
+#include "core/activity/fishing/fishing"
+#include "core/activity/hunting/hunting"
+#include "core/activity/mowing/mowing"
+#include "core/activity/pizzadelivery/pizzadelivery"
+#include "core/activity/sweeper/sweeper"
+#include "core/activity/forklift/forklift"
+#include "core/activity/trashcollector/trashcollector"
