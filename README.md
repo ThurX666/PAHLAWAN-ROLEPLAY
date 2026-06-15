@@ -42,3 +42,8 @@ Compile `GAMEMODE/gamemodes/main.pwn` dengan compiler Pawn/Pawno yang sesuai, la
 ## Catatan Repo
 
 File credential dan runtime tidak dimasukkan ke Git. Jangan commit `config.json`, `.env`, token bot, API key, database password, log, binary server, atau hasil compile `.amx`.
+
+## Dokumentasi
+
+- `docs/PROJECT_OVERVIEW.md` - ringkasan isi project.
+- `docs/DEVELOPMENT.md` - workflow lokal, MCP, dan checklist sebelum commit.

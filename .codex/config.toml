@@ -1,0 +1,9 @@
+# Project-scoped Codex configuration for PAHLAWAN ROLEPLAY.
+# Do not put API keys, tokens, passwords, or webhook URLs in this file.
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 60
