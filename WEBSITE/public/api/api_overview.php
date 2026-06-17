@@ -128,23 +128,40 @@ if ($action === 'server_info') {
         ]
     ]);
 } elseif ($action === 'chart') {
-    // Economy inflation chart data
-    $chartData = [
-        ["day" => "Mon", "circulation" => 1200000, "assets" => 800000],
-        ["day" => "Tue", "circulation" => 1350000, "assets" => 820000],
-        ["day" => "Wed", "circulation" => 1250000, "assets" => 850000],
-        ["day" => "Thu", "circulation" => 1500000, "assets" => 900000],
-        ["day" => "Fri", "circulation" => 1450000, "assets" => 950000],
-        ["day" => "Sat", "circulation" => 1800000, "assets" => 1100000],
-        ["day" => "Sun", "circulation" => 1700000, "assets" => 1050000],
-    ];
-    echo json_encode([
-        "status" => "success",
-        "data" => [
-            "totalCash" => "$2.6M",
-            "chartData" => $chartData
-        ]
-    ]);
+    try {
+        $stmt = $pdo->query(
+            "SELECT stat_date, total_circulation, total_assets_value
+             FROM ucp_economy_stats
+             ORDER BY stat_date DESC
+             LIMIT 7"
+        );
+        $rows = array_reverse($stmt->fetchAll(PDO::FETCH_ASSOC));
+        $chartData = [];
+
+        foreach ($rows as $row) {
+            $timestamp = strtotime($row['stat_date']);
+            $chartData[] = [
+                "day" => $timestamp !== false ? date('d M', $timestamp) : $row['stat_date'],
+                "circulation" => (int) $row['total_circulation'],
+                "assets" => (int) $row['total_assets_value']
+            ];
+        }
+
+        $latest = !empty($rows) ? $rows[count($rows) - 1] : null;
+        echo json_encode([
+            "status" => "success",
+            "data" => [
+                "totalCash" => $latest ? (int) $latest['total_circulation'] : 0,
+                "chartData" => $chartData
+            ]
+        ]);
+    } catch (PDOException $e) {
+        http_response_code(503);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Data ekonomi belum tersedia."
+        ]);
+    }
 } elseif ($action === 'assets') {
     $type = $_GET['type'] ?? '';
     // Normally fetch from DB: SELECT * FROM houses, etc.

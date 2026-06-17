@@ -2,29 +2,59 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import { TrendingUp } from 'lucide-react';
-import { ECONOMY_DATA } from '../../../data/mockData';
-import { isPreviewEnv, API_URL } from '../../../config';
+import { API_URL } from '../../../config';
+
+interface EconomyDataPoint {
+  day: string;
+  circulation: number;
+  assets: number;
+}
+
+const formatCompactCurrency = (value: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
+    maximumFractionDigits: 1
+  }).format(value);
+};
 
 export const EconomyChart: React.FC = () => {
-  const [chartData, setChartData] = useState<any[]>(ECONOMY_DATA);
-  const [totalCash, setTotalCash] = useState<string>("$2.6M");
+  const [chartData, setChartData] = useState<EconomyDataPoint[]>([]);
+  const [totalCash, setTotalCash] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchData = async () => {
-      if (!isPreviewEnv()) {
-        try {
-          const res = await fetch(`${API_URL}/api_overview.php?action=chart`);
-          const data = await res.json();
-          if (data && data.status === 'success') {
-            setChartData(data.data.chartData);
-            setTotalCash(data.data.totalCash);
-          }
-        } catch (error) {
-          console.error("Error fetching economy data:", error);
+      try {
+        const res = await fetch(`${API_URL}/api_overview.php?action=chart`, {
+          credentials: 'include',
+          signal: controller.signal
+        });
+        const data = await res.json();
+
+        if (!res.ok || data?.status !== 'success') {
+          throw new Error(data?.message || 'Gagal mengambil data ekonomi.');
         }
+
+        setChartData(Array.isArray(data.data?.chartData) ? data.data.chartData : []);
+        setTotalCash(Number(data.data?.totalCash) || 0);
+        setError(null);
+      } catch (fetchError) {
+        if (fetchError instanceof DOMException && fetchError.name === 'AbortError') return;
+        setChartData([]);
+        setTotalCash(0);
+        setError(fetchError instanceof Error ? fetchError.message : 'Gagal mengambil data ekonomi.');
+      } finally {
+        if (!controller.signal.aborted) setIsLoading(false);
       }
     };
+
     fetchData();
+    return () => controller.abort();
   }, []);
 
   return (
@@ -38,10 +68,17 @@ export const EconomyChart: React.FC = () => {
             </div>
             <div className="text-right">
                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Total Cash</span>
-                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500 block leading-none tracking-tight">{totalCash}</span>
+                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500 block leading-none tracking-tight">
+                  {isLoading ? '...' : formatCompactCurrency(totalCash)}
+                </span>
             </div>
         </div>
-        <div className="w-full h-[250px] md:h-[300px] min-h-[250px]">
+        <div className="w-full h-[250px] md:h-[300px] min-h-[250px] relative">
+            {!isLoading && (error || chartData.length === 0) && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center text-center text-xs font-semibold text-gray-400 px-6">
+                    {error || 'Belum ada snapshot data ekonomi.'}
+                </div>
+            )}
             <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <defs>
