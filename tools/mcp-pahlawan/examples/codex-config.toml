@@ -1,0 +1,13 @@
+[mcp_servers.pahlawan_roleplay]
+command = "node"
+args = ["tools/mcp-pahlawan/dist/index.js"]
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 120
+
+[mcp_servers.pahlawan_roleplay.env]
+PROJECT_ROOT = "C:\\Users\\guyub\\Documents\\PAHLAWAN ROLEPLAY"
+MCP_ALLOW_WRITE_FILES = "false"
+MCP_ALLOW_WRITE_DB = "false"
+MCP_REDACT_SECRETS = "true"
+MCP_MAX_FILE_SIZE_KB = "512"

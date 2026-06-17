@@ -1,10 +1,11 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-$report = phrp_integrate_database($conn, true);
+$force = isset($_GET['force']) && $_GET['force'] === '1';
+$report = phrp_integrate_database($conn, $force);
 
 echo json_encode([
     'status' => $report['status'] ?? 'success',
-    'message' => 'Migration complete',
     'integration' => $report,
+    'health' => phrp_database_status($conn),
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

@@ -610,6 +610,7 @@ main()
 public OnGameModeInit()
 {
 	Database_Connect();
+	UCP_InitOnlineSync();
 
 	SetWorldTime(WorldTime);
 	SetWeather(WorldWeather);
@@ -1687,6 +1688,7 @@ SetPlayerSpawn(playerid)
 		AddJobIterator(playerid);
 		
 		AccountData[playerid][pSpawned] = true;
+		UCP_SyncPlayerOnline(playerid);
 
 		PlayerPlaySound(playerid, 1188, 0.0, 0.0, 0.0);
 		PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);

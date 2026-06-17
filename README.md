@@ -12,10 +12,11 @@ Monorepo kerja untuk tiga bagian utama Pahlawan Roleplay:
 1. Import database lokal dari `DATABASE/phrp.sql` ke MySQL/MariaDB jika file dump tersedia di mesin ini.
 2. Isi `BOT/config.json` untuk token, channel, payment, server, dan database bot.
 3. Isi `BOT/PHRP-AI/config/app.json` untuk provider dan API key AI.
-4. Isi `WEBSITE/.env` untuk `VITE_API_BASE_URL`.
-5. Isi `WEBSITE/public/api/config.php` untuk database, SMTP, sosial media, dan query SA-MP.
+4. Salin `WEBSITE/env.example` ke `WEBSITE/.env` dan sesuaikan `DB_*` agar sama dengan gamemode (`utils_defines.inc`).
+5. Salin `WEBSITE/public/api/config.php.example` ke `WEBSITE/public/api/config.php` untuk SMTP, sosial media, dan query SA-MP.
 6. Isi `GAMEMODE/server.cfg` untuk RCON/runtime server.
 7. Sesuaikan konfigurasi database gamemode di `GAMEMODE/gamemodes/utils/utils_defines.inc`.
+8. Jalankan `WEBSITE/public/api/setup_database.php` atau `test_db_integration.php` untuk verifikasi integrasi database.
 
 ## Menjalankan
 

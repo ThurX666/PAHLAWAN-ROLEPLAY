@@ -54,6 +54,12 @@ Alur utama:
 
 Kontrak database utama dengan website dan bot:
 
+- Website dan gamemode **harus memakai database MySQL yang sama** (default: `arivena`).
+- Gamemode: `GAMEMODE/gamemodes/utils/utils_defines.inc` (`DATABASE_*`).
+- Website: `WEBSITE/.env` (`DB_*`) dibaca oleh `WEBSITE/public/api/config.php`.
+- Verifikasi integrasi: `WEBSITE/public/api/test_db_integration.php`.
+- Setup tabel UCP website: `WEBSITE/public/api/setup_database.php`.
+
 - `player_ucp` untuk akun UCP, password, OTP, verification, Discord link, admin level, VIP, dan gold.
 - `player_characters` untuk karakter in-game.
 - `player_bans` untuk status ban.

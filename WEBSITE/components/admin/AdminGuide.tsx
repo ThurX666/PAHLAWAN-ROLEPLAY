@@ -89,11 +89,14 @@ export const AdminGuide: React.FC = () => {
                             <strong>Konfigurasi API:</strong> Buka file <code className="bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded">/public/api/config.php</code>.
                             Ubah bagian koneksi PDO dengan username, password, dan nama database server Anda.
 <pre className="bg-gray-900 text-gray-300 p-3 rounded-lg mt-2 overflow-x-auto text-xs font-mono">
-$db_host = 'localhost';
-$db_name = 'ucp_samp';
-$db_user = 'root';
-$db_pass = '';
+DB_HOST=localhost
+DB_NAME=arivena
+DB_USER=root
+DB_PASS=
 </pre>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                Nama database harus sama dengan <code className="bg-gray-100 dark:bg-white/10 px-1 rounded">DATABASE_NAME</code> di gamemode (<code className="bg-gray-100 dark:bg-white/10 px-1 rounded">utils_defines.inc</code>).
+                            </p>
                         </li>
                         <li>
                             <strong>Konfigurasi Frontend (Development):</strong> Buka file <code className="bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded">.env</code> di root aplikasi.
@@ -123,8 +126,8 @@ VITE_API_BASE_URL=http://localhost/ucp-backend/api
                     <p>Mendaftarkan akun menjadi Administrator agar bisa mengakses panel ini.</p>
                     <ol className="list-decimal pl-5 space-y-2">
                         <li>Pilih Menu <strong>Register</strong> di Halaman Login UCP, isi data pengguna dengan normal.</li>
-                        <li>Buka Database (phpMyAdmin), buka tabel <code className="text-red-500 font-bold">accounts</code> (atau <code className="text-red-500 font-bold">players</code> tergantung skema SQL utama sistem Anda).</li>
-                        <li>Ubah kolom <strong>isAdmin</strong> menjadi <code className="text-green-500 font-bold">1</code> dan <strong>adminLevel</strong> menjadi <code className="text-blue-500 font-bold">10</code> pada akun yang Anda buat.</li>
+                        <li>Buka Database (phpMyAdmin), buka tabel <code className="text-red-500 font-bold">player_ucp</code>.</li>
+                        <li>Ubah kolom <strong>admin_level</strong> menjadi <code className="text-blue-500 font-bold">10</code> pada akun yang Anda buat.</li>
                         <li>Login ulang di UCP. Menu <strong>Admin Panel</strong> akan otomatis muncul di sudut kanan atas.</li>
                     </ol>
                     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-xl mt-4">

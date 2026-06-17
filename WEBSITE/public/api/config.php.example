@@ -1,0 +1,58 @@
+<?php
+require_once __DIR__ . '/security.php';
+require_once __DIR__ . '/db_env.php';
+require_once __DIR__ . '/database_integrate.php';
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit(0);
+}
+
+date_default_timezone_set('Asia/Jakarta');
+
+$dbConfig = get_db_config();
+$db_host = $dbConfig['host'];
+$db_port = $dbConfig['port'];
+$db_user = $dbConfig['user'];
+$db_pass = $dbConfig['pass'];
+$db_name = $dbConfig['name'];
+
+// Harus sama dengan GAMEMODE/gamemodes/utils/utils_defines.inc:
+// DATABASE_ADDRESS, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME
+
+$smtp_user = "your-email@gmail.com";
+$smtp_pass = "your-app-password";
+
+$social_discord = "https://bit.ly/pahlawan-rp";
+$social_tiktok = "https://www.tiktok.com/@pahlawanroleplay";
+
+$samp_server_ip = "127.0.0.1";
+$samp_server_port = 7777;
+
+try {
+    $conn = new PDO(
+        "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4",
+        $db_user,
+        $db_pass
+    );
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn->exec("SET time_zone = '+07:00'");
+
+    $pdo = $conn;
+
+    phrp_integrate_database($conn);
+} catch (PDOException $e) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Database connection failed.',
+        'error_detail' => $e->getMessage(),
+        'hint' => 'Pastikan DB_NAME di WEBSITE/.env sama dengan DATABASE_NAME di utils_defines.inc (default: ariena).',
+    ]);
+    exit;
+}
+?>

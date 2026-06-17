@@ -51,6 +51,7 @@
 #include "core/timers/timers"
 
 #include "core/account/account"
+#include "core/ucp/ucp_sync"
 
 #include "core/admin/admin"
 
