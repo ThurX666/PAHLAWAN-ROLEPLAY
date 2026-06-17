@@ -32,12 +32,16 @@ function envFor(projectRoot: string, mode: ClientMode, allowDbWrite = false): Re
     MCP_ALLOW_WRITE_DB: allowDbWrite ? "true" : "false",
     MCP_REDACT_SECRETS: "true",
     MCP_MAX_FILE_SIZE_KB: "512",
-    MCP_MAX_SEARCH_RESULTS: "30",
-    MCP_MAX_FILE_READ_LINES: "300",
-    MCP_MAX_LOG_LINES: "200",
-    MCP_MAX_DB_ROWS: "50",
+    MCP_MAX_SEARCH_RESULTS: "10",
+    MCP_MAX_FILE_READ_LINES: "120",
+    MCP_MAX_LOG_LINES: "80",
+    MCP_MAX_DB_ROWS: "20",
     MCP_MAX_SNIPPET_LINES: "5",
-    MCP_MAX_OUTPUT_CHARS: "20000",
+    MCP_MAX_OUTPUT_CHARS: "8000",
+    MCP_MAX_SCHEMA_TABLES: "20",
+    MCP_MAX_FEATURE_FILES: "25",
+    MCP_DEFAULT_INCLUDE_SNIPPETS: "false",
+    MCP_COMPACT_MODE: "true",
     MCP_DEFAULT_MODE: mode,
   };
 }
@@ -206,6 +210,7 @@ export const clientTools: ToolDefinition[] = [
     handler(_input, { config }) {
       return {
         limits: config.limits,
+        compactModeDefault: config.defaults.compactMode,
         recommendations: [
           "Use project_overview before broad searches.",
           "Use generate_task_context for compact task packs.",

@@ -18,3 +18,11 @@ Domain rules:
 - Discord bot: respect `deferReply`, `reply`, `editReply`, interaction timeout, permissions, and role sync constraints.
 
 For broad sync requests, produce a mapping and migration plan first, then ask confirmation.
+
+When using MCP:
+
+- Never scan the entire project or dump full files, schema, or logs by default.
+- Use compact mode and pagination.
+- Prefer summaries, paths, symbols, line numbers, and small snippets.
+- Ask before reading large files or applying patches.
+- Keep output under `MCP_MAX_OUTPUT_CHARS`.

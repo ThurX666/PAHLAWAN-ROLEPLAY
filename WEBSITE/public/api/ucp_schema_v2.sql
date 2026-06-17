@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS `ucp_user_profiles` (
   `address` varchar(255) DEFAULT NULL,
   `gender` varchar(20) DEFAULT NULL,
   `discord_id` varchar(50) DEFAULT NULL,
+  `discord_avatar_hash` varchar(255) DEFAULT NULL,
   `is_locked` tinyint(1) NOT NULL DEFAULT 0,
   `is_2fa_enabled` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -107,11 +108,15 @@ CREATE TABLE IF NOT EXISTS `ucp_item_claims` (
   `claim_code` varchar(24) NOT NULL,
   `username` varchar(22) NOT NULL,
   `character_id` int NOT NULL,
+  `claim_type` enum('Item','Vehicle','Property','Service','Skin') NOT NULL DEFAULT 'Item',
   `promo_item_id` int DEFAULT NULL,
   `item_name` varchar(255) NOT NULL,
+  `item_model` int NOT NULL DEFAULT 0,
+  `quantity` int NOT NULL DEFAULT 1,
+  `metadata` longtext DEFAULT NULL,
   `item_description` text DEFAULT NULL,
   `gold_cost` int NOT NULL,
-  `status` enum('Pending','Claimed','Cancelled') NOT NULL DEFAULT 'Pending',
+  `status` enum('Pending','Manual','Claimed','Cancelled') NOT NULL DEFAULT 'Pending',
   `claimed_at` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
@@ -206,4 +211,15 @@ CREATE TABLE IF NOT EXISTS `ucp_user_requests` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `idx_ucp_user_request_username` (`username`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `ucp_job_activity` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `character_id` int NOT NULL,
+  `job_type` varchar(32) NOT NULL,
+  `earned_money` bigint NOT NULL DEFAULT 0,
+  `worked_seconds` int NOT NULL DEFAULT 0,
+  `logged_at` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_ucp_job_activity_type_date` (`job_type`, `logged_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

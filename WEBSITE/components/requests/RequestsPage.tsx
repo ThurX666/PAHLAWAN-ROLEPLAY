@@ -138,20 +138,6 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
     { id: 'Feature', label: 'Feature Request', icon: Lightbulb },
   ];
 
-  if (!isPreviewEnv()) {
-    return (
-      <div className="flex-1 overflow-auto custom-scrollbar bg-gray-50 dark:bg-[#050505] flex items-center justify-center h-full min-h-[500px]">
-        <div className="text-center p-8 bg-white/50 dark:bg-[#121212]/50 border border-gray-200 dark:border-white/5 rounded-2xl backdrop-blur-sm">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-yellow-500/10 text-yellow-500 rounded-3xl mb-6 shadow-sm">
-            <AlertTriangle size={40} />
-          </div>
-          <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tight">Under Construction</h1>
-          <p className="text-gray-600 dark:text-gray-400 font-medium text-sm">Under Construction by <span className="font-bold text-red-500">ThurX</span></p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex-1 overflow-auto custom-scrollbar bg-gray-50 dark:bg-[#050505]">
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">

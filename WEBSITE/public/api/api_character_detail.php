@@ -6,9 +6,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $charId = $_GET['char_id'] ?? 0;
     
     if ($charId > 0) {
-        $stmtOwner = $pdo->prepare("SELECT pID FROM player_characters WHERE pID = ? AND Char_UCP = ?");
+        $stmtOwner = $pdo->prepare(
+            "SELECT pID,
+                    Char_Health AS health,
+                    Char_Armor AS armor,
+                    Char_Hunger AS hunger,
+                    Char_Thirst AS thirst,
+                    Char_Stress AS stress,
+                    Char_SlipSalary AS paycheck,
+                    Char_Faction AS faction_id,
+                    Char_FactionRank AS faction_rank,
+                    Char_Job AS job_id
+             FROM player_characters
+             WHERE pID = ? AND Char_UCP = ?"
+        );
         $stmtOwner->execute([$charId, $sessionUser['username']]);
-        if (!$stmtOwner->fetchColumn()) {
+        $character = $stmtOwner->fetch(PDO::FETCH_ASSOC);
+        if (!$character) {
             ucp_json_error('Karakter tidak ditemukan atau bukan milik Anda.', 404);
         }
         $stmtVeh = $pdo->prepare("SELECT id, PVeh_ModelID as name, PVeh_Plate as plate, PVeh_Parked as location FROM player_vehicles WHERE PVeh_Owner = ?");
@@ -22,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $properties = $stmtProp->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode([
+            "character" => $character,
             "vehicles" => $vehicles,
             "properties" => $properties
         ]);

@@ -634,22 +634,26 @@ const App: React.FC = () => {
                     level: parseInt(char.level),
                     money: parseInt(char.money),
                     bank: parseInt(char.bank),
-                    faction: char.faction,
-                    jobName: char.job_name,
-                    skinId: parseInt(char.skin_id),
+                    faction: char.faction || (parseInt(char.factionId) > 0 ? `Faction #${char.factionId}` : 'Warga Sipil'),
+                    factionId: parseInt(char.factionId) || 0,
+                    factionRank: parseInt(char.factionRank) || 0,
+                    jobName: parseInt(char.jobName) > 0 ? `Job #${char.jobName}` : 'Unemployed',
+                    skinId: parseInt(char.skinId),
                     status: char.status,
-                    lastLogin: char.last_login,
-                    storyStatus: char.story_status,
+                    lastLogin: char.lastLogin,
+                    storyStatus: char.storyStatus,
                     phoneNumber: char.phone_number,
-                    playingHours: parseInt(char.playing_hours) || 0,
+                    playingHours: parseInt(char.playingHours) || 0,
                     warns: parseInt(char.warns) || 0,
-                    needsHunger: parseInt(char.needs_hunger) || 100,
-                    needsThirsty: parseInt(char.needs_thirsty) || 100,
-                    needsMood: parseInt(char.needs_mood) || 100,
-                    licenseDriveExp: char.license_drive_exp,
-                    licenseFlyExp: char.license_fly_exp,
-                    licenseBoatExp: char.license_boat_exp,
-                    licenseGunExp: char.license_gun_exp,
+                    needsHunger: Number(char.needsHunger ?? 100),
+                    needsThirsty: Number(char.needsThirsty ?? 100),
+                    needsMood: Number(char.needsMood ?? 0),
+                    health: Number(char.health ?? 100),
+                    armor: Number(char.armor ?? 0),
+                    licenseDriveExp: char.licenseDriveExp,
+                    licenseFlyExp: char.licenseFlyExp,
+                    licenseBoatExp: char.licenseBoatExp,
+                    licenseGunExp: char.licenseGunExp,
                     photoUrl: char.photoUrl,
                     logs: []
                 }));
@@ -991,14 +995,7 @@ const App: React.FC = () => {
       const character = characters.find(c => c.id === characterId);
       if (!character) return false;
 
-      // Generate Voucher Code (16 random alphanumeric characters)
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let randomCode = '';
-      for (let i = 0; i < 16; i++) {
-          randomCode += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      // Format as XXXX-XXXX-XXXX-XXXX
-      const voucherCode = randomCode.match(/.{1,4}/g)?.join('-') || randomCode;
+      let voucherCode = '';
 
       // Create Inbox Message payload
       const newMessage: InboxMessage = {
@@ -1022,9 +1019,12 @@ const App: React.FC = () => {
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
                       action: 'deduct_gold',
-                      username: currentUser,
-                      amount: item.price,
-                      itemId: (item as any).id || null
+                       username: currentUser,
+                       amount: item.price,
+                       itemId: (item as any).id || null,
+                       characterId,
+                       itemName: item.name,
+                       description: item.description || ''
                   })
               });
               const deductData = await deductRes.json();
@@ -1036,28 +1036,11 @@ const App: React.FC = () => {
                       type: "warning"
                   });
                   return false;
-              }
-              setUserGold(deductData.new_gold);
-
-              const res = await fetch(`${API_URL}/api_inbox.php`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({
-                      action: 'send_message',
-                      username: currentUser,
-                      title: newMessage.title,
-                      message: newMessage.message,
-                      type: newMessage.type,
-                      code: newMessage.code,
-                      itemName: newMessage.itemName,
-                      itemDescription: newMessage.itemDescription,
-                      itemPrice: newMessage.itemPrice
-                  })
-              });
-              const data = await res.json();
-              if (data.status === 'success') {
-                  newMessage.id = data.id.toString();
-              }
+               }
+               setUserGold(deductData.new_gold);
+               voucherCode = deductData.claim_code;
+               newMessage.code = voucherCode;
+               newMessage.message = `Klaim ${item.name} terdaftar untuk karakter ${character.name} dan akan diproses saat login.`;
           } catch(e) {
               console.error(e);
               return false;
@@ -1069,8 +1052,8 @@ const App: React.FC = () => {
       setInboxMessages(prev => [newMessage, ...prev]);
       
       setAlertConfig({
-          title: "Berhasil",
-          message: `Berhasil menukarkan ${item.name}! Cek inbox Anda untuk kode voucher.`,
+           title: "Berhasil",
+           message: `Berhasil menukarkan ${item.name}. Klaim: ${voucherCode || 'Preview'}.`,
           type: "success"
       });
       return true;

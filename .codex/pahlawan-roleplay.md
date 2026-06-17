@@ -35,3 +35,12 @@ For requests like "Synchronize the website database with the gamemode for all fe
 6. mapping and mismatch report
 7. migration/adapter plan
 8. ask confirmation before writes
+
+MCP anti-overflow rules:
+
+- Never scan the entire project by default.
+- Never dump full files, full database schema, or full logs by default.
+- Work feature-by-feature with compact mode enabled.
+- Prefer summaries, paths, symbols, line numbers, and small snippets.
+- Ask before reading large files or applying patches.
+- Use pagination and keep output under `MCP_MAX_OUTPUT_CHARS`.

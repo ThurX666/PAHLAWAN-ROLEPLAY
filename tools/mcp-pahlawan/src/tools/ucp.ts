@@ -27,14 +27,16 @@ export const ucpTools: ToolDefinition[] = [
         express: Boolean(deps.express),
         tailwind: Boolean(deps.tailwindcss) || fs.existsSync(path.join(config.dirs.website, "tailwind.config.js")),
       };
-      const apiFiles = await listProjectFiles(config, { module: "website", extensions: [".php"], limit: 200 });
+      const apiFiles = await listProjectFiles(config, { module: "website", extensions: [".php"], limit: 60 });
       return {
         framework,
         package: pkg ? { scripts: pkg.scripts, dependencies: Object.keys(deps).sort() } : null,
-        entryFiles: await findFiles(config, "index", { module: "website", extensions: [".tsx", ".ts", ".js", ".html"], limit: 40 }),
-        apiFiles: apiFiles.map((file) => relativePath(config, file)).slice(0, 120),
-        authHits: await searchCode(config, "auth", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: 40 }),
-        dbConfigCandidates: await findFiles(config, "config", { module: "website", extensions: [".php", ".ts", ".js", ".json"], limit: 60 }),
+        entryFiles: await findFiles(config, "index", { module: "website", extensions: [".tsx", ".ts", ".js", ".html"], limit: config.limits.maxSearchResults }),
+        apiFileCountSample: apiFiles.length,
+        apiFileSamples: apiFiles.map((file) => relativePath(config, file)).slice(0, config.limits.maxSearchResults),
+        authHits: (await searchCode(config, "auth", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: config.limits.maxSearchResults, contextLines: 0 }))
+          .map(({ context: _context, ...hit }) => hit),
+        dbConfigCandidates: await findFiles(config, "config", { module: "website", extensions: [".php", ".ts", ".js", ".json"], limit: config.limits.maxSearchResults }),
       };
     },
   },
@@ -44,8 +46,8 @@ export const ucpTools: ToolDefinition[] = [
     schema: z.object({}),
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     async handler(_input, { config }) {
-      const phpFiles = await listProjectFiles(config, { module: "website", extensions: [".php"], limit: 300 });
-      const frontendFiles = await listProjectFiles(config, { module: "website", extensions: [".tsx", ".ts", ".jsx", ".js"], limit: 300 });
+      const phpFiles = await listProjectFiles(config, { module: "website", extensions: [".php"], limit: config.limits.maxFeatureFiles });
+      const frontendFiles = await listProjectFiles(config, { module: "website", extensions: [".tsx", ".ts", ".jsx", ".js"], limit: config.limits.maxFeatureFiles });
       return {
         apiRoutes: phpFiles.map((file) => {
           const rel = relativePath(config, file);
@@ -65,10 +67,11 @@ export const ucpTools: ToolDefinition[] = [
     schema: z.object({}),
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     async handler(_input, { config }) {
-      const authHits = await searchCode(config, "auth", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: 80, contextLines: 2 });
-      const sessionHits = await searchCode(config, "session", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: 80, contextLines: 2 });
-      const passwordHits = await searchCode(config, "password", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: 80, contextLines: 2 });
-      const validationHits = await searchCode(config, "validate", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: 40, contextLines: 2 });
+      const compactLimit = Math.min(5, config.limits.maxSearchResults);
+      const authHits = await searchCode(config, "auth", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: compactLimit, contextLines: 0 });
+      const sessionHits = await searchCode(config, "session", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: compactLimit, contextLines: 0 });
+      const passwordHits = await searchCode(config, "password", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: compactLimit, contextLines: 0 });
+      const validationHits = await searchCode(config, "validate", { module: "website", extensions: [".php", ".ts", ".tsx", ".js"], limit: compactLimit, contextLines: 0 });
       return {
         authHits,
         sessionHits,
@@ -97,7 +100,7 @@ export const ucpTools: ToolDefinition[] = [
       additionalProperties: false,
     },
     async handler(input, { config }) {
-      const related = await searchCode(config, input.feature, { module: "website", extensions: [".php", ".ts", ".tsx", ".js", ".sql", ".txt"], limit: 50, contextLines: 1 });
+      const related = await searchCode(config, input.feature, { module: "website", extensions: [".php", ".ts", ".tsx", ".js", ".sql", ".txt"], limit: config.limits.maxSearchResults, contextLines: 0 });
       return {
         feature: input.feature,
         related,

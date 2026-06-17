@@ -1689,6 +1689,7 @@ SetPlayerSpawn(playerid)
 		
 		AccountData[playerid][pSpawned] = true;
 		UCP_SyncPlayerOnline(playerid);
+		UCP_CheckPendingClaims(playerid);
 
 		PlayerPlaySound(playerid, 1188, 0.0, 0.0, 0.0);
 		PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);

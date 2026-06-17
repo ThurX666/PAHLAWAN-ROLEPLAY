@@ -10,19 +10,42 @@ export const logTools: ToolDefinition[] = [
     schema: z.object({
       filter: z.enum(["gamemode", "crashdetect", "mysql", "ucp", "bot", "all"]).default("all"),
       maxBytes: z.number().int().min(512).max(65536).default(12000),
+      limit: z.number().int().min(1).max(1000).optional(),
       maxLines: z.number().int().min(1).max(1000).optional(),
+      level: z.enum(["error", "warn", "all"]).default("warn"),
+      keyword: z.string().optional(),
+      since: z.string().optional(),
+      includeInfo: z.boolean().default(false),
+      cursor: z.number().int().min(0).default(0),
+      offset: z.number().int().min(0).optional(),
     }),
     inputSchema: {
       type: "object",
       properties: {
         filter: { type: "string", enum: ["gamemode", "crashdetect", "mysql", "ucp", "bot", "all"], default: "all" },
         maxBytes: { type: "number", default: 12000 },
-        maxLines: { type: "number", default: 200 },
+        limit: { type: "number", default: 80 },
+        maxLines: { type: "number", description: "Deprecated alias for limit." },
+        level: { type: "string", enum: ["error", "warn", "all"], default: "warn" },
+        keyword: { type: "string" },
+        since: { type: "string", description: "ISO date/time; files older than this are skipped." },
+        includeInfo: { type: "boolean", default: false },
+        cursor: { type: "number", default: 0 },
+        offset: { type: "number" },
       },
       additionalProperties: false,
     },
     handler(input, { config }) {
-      return readRecentLogs(config, input.filter, input.maxBytes, input.maxLines ?? config.limits.maxLogLines);
+      return readRecentLogs(config, input.filter, {
+        maxBytes: input.maxBytes,
+        maxLines: input.limit ?? input.maxLines,
+        level: input.level,
+        keyword: input.keyword,
+        since: input.since,
+        includeInfo: input.includeInfo,
+        cursor: input.cursor,
+        offset: input.offset,
+      });
     },
   },
   {
@@ -60,7 +83,11 @@ export const logTools: ToolDefinition[] = [
       return {
         issue: input.issue,
         code,
-        logs: await readRecentLogs(config, input.module === "website" ? "ucp" : input.module === "all" ? "all" : input.module, 12000, config.limits.maxLogLines).catch((error) => ({
+        logs: await readRecentLogs(config, input.module === "website" ? "ucp" : input.module === "all" ? "all" : input.module, {
+          maxBytes: 12_000,
+          maxLines: config.limits.maxLogLines,
+          level: "warn",
+        }).catch((error) => ({
           unavailable: String(error instanceof Error ? error.message : error),
         })),
         logCandidates: await listLogCandidates(config),

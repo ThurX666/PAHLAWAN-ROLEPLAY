@@ -16,7 +16,7 @@ interface ShopItem {
 interface GoldShopProps {
     userGold: number;
     characters: Character[];
-    onRedeem: (characterId: number, item: ShopItem) => void;
+    onRedeem: (characterId: number, item: ShopItem) => Promise<boolean>;
 }
 
 const PERMANENT_ITEMS: ShopItem[] = [
@@ -55,31 +55,34 @@ export const GoldShop: React.FC<GoldShopProps> = ({ userGold, characters, onRede
       }
   };
 
-  const handleConfirmRedeem = (characterId: number) => {
+  const handleConfirmRedeem = async (characterId: number) => {
       if (!selectedItem) return;
       
       setIsProcessing(true);
-      // Simulate API delay
-      setTimeout(() => {
-          onRedeem(characterId, selectedItem);
+      try {
+          const success = await onRedeem(characterId, selectedItem);
+          if (!success) return;
+      } finally {
           setIsProcessing(false);
           setSelectedItem(null);
-      }, 1000);
+      }
   };
 
-  const handleConfirmCustomMapping = (characterId: number, targetName: string, tierName: string, price: number, scope: string, theme: string, notes: string) => {
+  const handleConfirmCustomMapping = async (characterId: number, targetName: string, tierName: string, price: number, scope: string, theme: string, notes: string) => {
       setIsProcessing(true);
-      setTimeout(() => {
-          onRedeem(characterId, {
+      try {
+          const success = await onRedeem(characterId, {
               id: 12,
               name: `Custom Mapping - ${tierName}`,
               price: price,
               category: 'mapping',
               description: `Target: ${targetName} | Area: ${scope} | Tema: ${theme}${notes ? ` | Catatan: ${notes}` : ''}`
           });
+          if (!success) return;
+      } finally {
           setIsProcessing(false);
           setIsCustomMappingOpen(false);
-      }, 1000);
+      }
   };
 
   return (

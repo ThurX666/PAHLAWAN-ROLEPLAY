@@ -33,3 +33,13 @@ Recommended broad-task flow:
 8. Generate a migration/adapter plan.
 9. Ask for confirmation before writing files.
 10. Apply changes feature-by-feature.
+
+MCP context rules:
+
+- Never scan the entire project by default.
+- Never dump full files, the full database schema, or full logs by default.
+- Work feature-by-feature with compact mode enabled.
+- Prefer summaries, paths, symbols, line numbers, and small snippets.
+- Ask before reading large files or applying patches.
+- Use pagination for large results.
+- Keep every tool response under `MCP_MAX_OUTPUT_CHARS`.

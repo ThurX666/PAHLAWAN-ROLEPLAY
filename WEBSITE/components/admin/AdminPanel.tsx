@@ -9,6 +9,7 @@ import { AdminStories } from './AdminStories';
 import { AdminSetup } from './AdminSetup';
 import { AdminLogs } from './AdminLogs';
 import { AdminRequests } from './AdminRequests';
+import { AdminUserRequests } from './AdminUserRequests';
 import { AdminGuide } from './AdminGuide';
 import { AdminBroadcast } from './AdminBroadcast';
 import { ADMIN_RANKS } from '../../data/mockData';
@@ -151,7 +152,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ promoConfig, onUpdatePro
             </div>
         )}
         {activeTab === 'players' && <AdminPlayers />}
-        {activeTab === 'requests' && <AdminRequests onOocReviewed={onOocReviewed} />}
+        {activeTab === 'requests' && (
+          <div>
+            <AdminRequests onOocReviewed={onOocReviewed} />
+            <AdminUserRequests />
+          </div>
+        )}
         {activeTab === 'broadcast' && <AdminBroadcast onSendNotification={onSendNotification} />}
         {activeTab === 'donations' && (
             <AdminDonations 

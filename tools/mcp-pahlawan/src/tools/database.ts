@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { ToolDefinition } from "../types.js";
 import { dbFindTables, dbSafeQuery, dbSchemaOverview } from "../utils/database.js";
 import { searchCode } from "../utils/fileSearch.js";
+import { boundedLimit, resolveOffset } from "../utils/pagination.js";
 
 export const databaseTools: ToolDefinition[] = [
   {
@@ -9,18 +10,42 @@ export const databaseTools: ToolDefinition[] = [
     description: "Connect to MySQL/MariaDB in read-only mode and list tables, columns, keys, and indexes.",
     schema: z.object({
       keyword: z.string().optional(),
-      maxTables: z.number().int().min(1).max(200).default(30),
+      tableKeyword: z.string().optional(),
+      tables: z.array(z.string()).optional(),
+      includeColumns: z.boolean().default(false),
+      includeIndexes: z.boolean().default(false),
+      includeSensitive: z.boolean().default(false),
+      limit: z.number().int().min(1).max(200).optional(),
+      maxTables: z.number().int().min(1).max(200).optional(),
+      cursor: z.number().int().min(0).default(0),
+      offset: z.number().int().min(0).optional(),
     }),
     inputSchema: {
       type: "object",
       properties: {
         keyword: { type: "string" },
-        maxTables: { type: "number", default: 30 },
+        tableKeyword: { type: "string" },
+        tables: { type: "array", items: { type: "string" } },
+        includeColumns: { type: "boolean", default: false },
+        includeIndexes: { type: "boolean", default: false },
+        includeSensitive: { type: "boolean", default: false },
+        limit: { type: "number", default: 20 },
+        maxTables: { type: "number", description: "Deprecated alias for limit." },
+        cursor: { type: "number", default: 0 },
+        offset: { type: "number" },
       },
       additionalProperties: false,
     },
     handler(input, { config }) {
-      return dbSchemaOverview(config, { keyword: input.keyword, maxTables: input.maxTables });
+      return dbSchemaOverview(config, {
+        tableKeyword: input.tableKeyword ?? input.keyword,
+        tables: input.tables,
+        includeColumns: input.includeColumns,
+        includeIndexes: input.includeIndexes,
+        includeSensitive: input.includeSensitive,
+        limit: boundedLimit(input.limit ?? input.maxTables, config.limits.maxSchemaTables, config.limits.maxSchemaTables),
+        offset: resolveOffset(input.cursor, input.offset),
+      });
     },
   },
   {
@@ -41,7 +66,12 @@ export const databaseTools: ToolDefinition[] = [
       } catch (error) {
         return {
           dbUnavailable: String(error instanceof Error ? error.message : error),
-          sqlFileHits: await searchCode(config, input.keyword, { module: "database", extensions: [".sql", ".txt"], limit: 60, contextLines: 1 }),
+          sqlFileHits: await searchCode(config, input.keyword, {
+            module: "database",
+            extensions: [".sql", ".txt"],
+            limit: config.limits.maxSearchResults,
+            contextLines: 0,
+          }),
         };
       }
     },
@@ -51,19 +81,30 @@ export const databaseTools: ToolDefinition[] = [
     description: "Execute read-only SELECT queries only. Destructive SQL and multi-statements are blocked.",
     schema: z.object({
       query: z.string().min(1),
+      limit: z.number().int().min(1).max(500).optional(),
       maxRows: z.number().int().min(1).max(500).optional(),
+      cursor: z.number().int().min(0).default(0),
+      offset: z.number().int().min(0).optional(),
     }),
     inputSchema: {
       type: "object",
       required: ["query"],
       properties: {
         query: { type: "string" },
-        maxRows: { type: "number", default: 50 },
+        limit: { type: "number", default: 20 },
+        maxRows: { type: "number", description: "Deprecated alias for limit." },
+        cursor: { type: "number", default: 0 },
+        offset: { type: "number" },
       },
       additionalProperties: false,
     },
     handler(input, { config }) {
-      return dbSafeQuery(config, input.query, input.maxRows ?? config.limits.maxDbRows);
+      return dbSafeQuery(
+        config,
+        input.query,
+        boundedLimit(input.limit ?? input.maxRows, config.limits.maxDbRows, config.limits.maxDbRows),
+        resolveOffset(input.cursor, input.offset),
+      );
     },
   },
   {
@@ -82,8 +123,8 @@ export const databaseTools: ToolDefinition[] = [
       const related = await searchCode(config, input.changeRequest, {
         module: "all",
         extensions: [".sql", ".txt", ".php", ".pwn", ".inc", ".js", ".ts", ".tsx"],
-        limit: 80,
-        contextLines: 1,
+        limit: config.limits.maxSearchResults,
+        contextLines: 0,
       });
       return {
         changeRequest: input.changeRequest,

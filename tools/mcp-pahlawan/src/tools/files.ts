@@ -20,9 +20,14 @@ export const fileTools: ToolDefinition[] = [
     schema: z.object({
       filePath: z.string().min(1),
       startLine: z.number().int().min(1).default(1),
+      cursor: z.number().int().min(0).optional(),
+      offset: z.number().int().min(0).optional(),
+      limit: z.number().int().min(1).max(2000).optional(),
       maxLines: z.number().int().min(1).max(2000).optional(),
       maxBytes: z.number().int().min(512).optional(),
-      includeContent: z.boolean().default(true),
+      includeContent: z.boolean().default(false),
+      includeSnippets: z.boolean().optional(),
+      symbolName: z.string().min(1).optional(),
     }),
     inputSchema: {
       type: "object",
@@ -30,22 +35,50 @@ export const fileTools: ToolDefinition[] = [
       properties: {
         filePath: { type: "string" },
         startLine: { type: "number", default: 1 },
-        maxLines: { type: "number", default: 300 },
+        cursor: { type: "number", description: "Zero-based line offset alias." },
+        offset: { type: "number", description: "Zero-based line offset alias." },
+        limit: { type: "number", default: 120 },
+        maxLines: { type: "number", description: "Deprecated alias for limit." },
         maxBytes: { type: "number" },
-        includeContent: { type: "boolean", default: true },
+        includeContent: { type: "boolean", default: false },
+        includeSnippets: { type: "boolean", default: false },
+        symbolName: { type: "string" },
       },
       additionalProperties: false,
     },
     async handler(input, { config }) {
       const fullPath = safeResolve(config, input.filePath);
+      let startLine = input.offset !== undefined
+        ? input.offset + 1
+        : input.cursor !== undefined
+          ? input.cursor + 1
+          : input.startLine;
+      let symbolFound = false;
+      if (input.symbolName) {
+        const text = await fsp.readFile(fullPath, "utf8");
+        const lines = text.split(/\r?\n/);
+        const found = lines.findIndex((line) => line.toLowerCase().includes(input.symbolName.toLowerCase()));
+        if (found >= 0) {
+          startLine = found + 1;
+          symbolFound = true;
+        }
+      }
       const slice = await readTextFileSlice(config, fullPath, {
-        startLine: input.startLine,
-        maxLines: input.maxLines,
+        startLine,
+        maxLines: input.limit ?? input.maxLines,
         maxBytes: input.maxBytes,
         includeContent: input.includeContent,
       });
+      const stat = await fsp.stat(fullPath);
       return {
         file: relativePath(config, fullPath),
+        metadata: {
+          sizeBytes: stat.size,
+          modifiedAt: stat.mtime.toISOString(),
+          extension: path.extname(fullPath).toLowerCase(),
+        },
+        mode: input.includeContent ? "bounded-content" : "outline",
+        ...(input.symbolName ? { symbolName: input.symbolName, symbolFound } : {}),
         ...slice,
       };
     },

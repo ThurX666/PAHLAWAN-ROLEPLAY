@@ -62,6 +62,12 @@ export interface AppConfig {
     maxDbRows: number;
     maxSnippetLines: number;
     maxOutputChars: number;
+    maxSchemaTables: number;
+    maxFeatureFiles: number;
+  };
+  defaults: {
+    includeSnippets: boolean;
+    compactMode: boolean;
   };
 }
 
@@ -98,12 +104,18 @@ export function loadConfig(): AppConfig {
       defaultMode: process.env.MCP_DEFAULT_MODE === "write-enabled" ? "write-enabled" : "readonly",
     },
     limits: {
-      maxSearchResults: numberEnv("MCP_MAX_SEARCH_RESULTS", 30),
-      maxFileReadLines: numberEnv("MCP_MAX_FILE_READ_LINES", 300),
-      maxLogLines: numberEnv("MCP_MAX_LOG_LINES", 200),
-      maxDbRows: numberEnv("MCP_MAX_DB_ROWS", 50),
+      maxSearchResults: numberEnv("MCP_MAX_SEARCH_RESULTS", 10),
+      maxFileReadLines: numberEnv("MCP_MAX_FILE_READ_LINES", 120),
+      maxLogLines: numberEnv("MCP_MAX_LOG_LINES", 80),
+      maxDbRows: numberEnv("MCP_MAX_DB_ROWS", 20),
       maxSnippetLines: numberEnv("MCP_MAX_SNIPPET_LINES", 5),
-      maxOutputChars: numberEnv("MCP_MAX_OUTPUT_CHARS", 20_000),
+      maxOutputChars: numberEnv("MCP_MAX_OUTPUT_CHARS", 8_000),
+      maxSchemaTables: numberEnv("MCP_MAX_SCHEMA_TABLES", 20),
+      maxFeatureFiles: numberEnv("MCP_MAX_FEATURE_FILES", 25),
+    },
+    defaults: {
+      includeSnippets: boolEnv("MCP_DEFAULT_INCLUDE_SNIPPETS", false),
+      compactMode: boolEnv("MCP_COMPACT_MODE", true),
     },
   };
 }

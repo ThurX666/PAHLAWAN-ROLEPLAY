@@ -28,3 +28,12 @@ For broad sync requests:
 3. Trace each feature.
 4. Produce mapping and mismatch tables.
 5. Ask for confirmation before writing files.
+
+MCP context limits:
+
+- Never scan the entire project by default.
+- Never dump full files, database schema, or logs by default.
+- Work feature-by-feature in compact mode.
+- Prefer summaries, paths, symbols, line numbers, and small snippets.
+- Ask before large reads or patches.
+- Paginate large results and stay under `MCP_MAX_OUTPUT_CHARS`.

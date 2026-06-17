@@ -39,6 +39,22 @@ export interface SearchHit {
   context?: string[];
 }
 
+export interface FileOutline {
+  includes: string[];
+  imports: string[];
+  exports: string[];
+  defines: string[];
+  enums: string[];
+  callbacks: string[];
+  functions: string[];
+  classes: string[];
+  commands: string[];
+  routes: string[];
+  handlers: string[];
+  dialogIds: string[];
+  sections: string[];
+}
+
 export interface ListFilesOptions {
   module?: ProjectModule;
   extensions?: string[];
@@ -95,6 +111,54 @@ export async function readTextFile(config: AppConfig, filePath: string): Promise
   return config.safety.redactSecrets ? redactText(text) : text;
 }
 
+function outlineEntry(line: string, number: number): string {
+  return `${number}: ${line.trim().slice(0, 240)}`;
+}
+
+export function extractFileOutline(lines: string[], maxItems = 60): FileOutline {
+  const outline: FileOutline = {
+    includes: [],
+    imports: [],
+    exports: [],
+    defines: [],
+    enums: [],
+    callbacks: [],
+    functions: [],
+    classes: [],
+    commands: [],
+    routes: [],
+    handlers: [],
+    dialogIds: [],
+    sections: [],
+  };
+  const push = (key: keyof FileOutline, line: string, number: number) => {
+    if (outline[key].length < maxItems) outline[key].push(outlineEntry(line, number));
+  };
+  lines.forEach((line, index) => {
+    const number = index + 1;
+    if (/^\s*#include\b/i.test(line)) push("includes", line, number);
+    if (/^\s*import\b/i.test(line)) push("imports", line, number);
+    if (/^\s*export\b/i.test(line)) push("exports", line, number);
+    if (/^\s*#define\b/i.test(line)) {
+      push("defines", line, number);
+      if (/dialog/i.test(line)) push("dialogIds", line, number);
+    }
+    if (/^\s*enum\b/i.test(line)) push("enums", line, number);
+    if (/^\s*public\s+On[A-Z]\w*\s*\(/i.test(line)) push("callbacks", line, number);
+    if (/^\s*(public|stock|forward)\s+\w+\s*\(/i.test(line) || /^\s*(export\s+)?(async\s+)?function\s+/i.test(line)) {
+      push("functions", line, number);
+    }
+    if (/^\s*(export\s+)?class\s+/i.test(line)) push("classes", line, number);
+    if (/^\s*(CMD|YCMD|COMMAND):/i.test(line) || /SlashCommandBuilder|\.setName\s*\(/i.test(line)) push("commands", line, number);
+    if (/\.(get|post|put|patch|delete)\s*\(/i.test(line) || /Route::|router\./i.test(line)) push("routes", line, number);
+    if (/interactionCreate|client\.on|addEventListener|module\.exports|exports\./i.test(line)) push("handlers", line, number);
+    if (/^\s*(\/\/|\/\*+|#pragma\s+region|#region)\s*[=-]{2,}|^\s*(\/\/|\/\*+)\s*[A-Z][A-Z0-9 _/-]{5,}/.test(line)) {
+      push("sections", line, number);
+    }
+  });
+  return outline;
+}
+
 export async function readTextFileSlice(
   config: AppConfig,
   filePath: string,
@@ -105,7 +169,7 @@ export async function readTextFileSlice(
   endLine: number;
   totalLines: number;
   nextCursor: number | null;
-  outline?: string[];
+  outline: FileOutline;
 }> {
   const text = await readTextFile(config, filePath);
   const lines = text.split(/\r?\n/);
@@ -119,19 +183,7 @@ export async function readTextFileSlice(
   if (Buffer.byteLength(content, "utf8") > maxBytes) {
     content = content.slice(0, maxBytes) + "\n[TRUNCATED_BY_MAX_BYTES]";
   }
-  const outline = lines
-    .map((line, index) => ({ line, number: index + 1 }))
-    .filter(({ line }) =>
-      /^\s*(export\s+)?(async\s+)?function\s+/.test(line) ||
-      /^\s*(export\s+)?class\s+/.test(line) ||
-      /^\s*(public|stock|forward|native)\s+/i.test(line) ||
-      /^\s*(CMD|YCMD|COMMAND):/i.test(line) ||
-      /^\s*#define\s+/i.test(line) ||
-      /^\s*enum\b/i.test(line) ||
-      /On[A-Z][A-Za-z0-9_]+\s*\(/.test(line),
-    )
-    .slice(0, 80)
-    .map(({ line, number }) => `${number}: ${line.trim()}`);
+  const outline = extractFileOutline(lines);
 
   return {
     ...(options.includeContent === false ? {} : { content }),
@@ -139,7 +191,7 @@ export async function readTextFileSlice(
     endLine: endIndex,
     totalLines: lines.length,
     nextCursor: endIndex < lines.length ? endIndex + 1 : null,
-    ...(lines.length > maxLines ? { outline } : {}),
+    outline,
   };
 }
 
@@ -169,10 +221,13 @@ export async function searchCode(
   options: ListFilesOptions & { caseSensitive?: boolean; contextLines?: number } = {},
 ): Promise<SearchHit[]> {
   const limit = options.limit ?? config.limits.maxSearchResults;
-  const candidateLimit = Math.max(limit * 5, limit);
+  const offset = Math.max(options.offset ?? 0, 0);
+  const needed = offset + limit;
+  const candidateLimit = Math.max(needed * 5, needed);
   const files = await listProjectFiles(config, {
     ...options,
-    limit: Math.max(limit * 20, 100),
+    offset: 0,
+    limit: Math.max(needed * 20, 100),
   });
   const needle = options.caseSensitive ? keyword : keyword.toLowerCase();
   const contextLines = Math.min(options.contextLines ?? 1, Math.max(0, Math.floor((config.limits.maxSnippetLines - 1) / 2)));
@@ -199,11 +254,11 @@ export async function searchCode(
         context: lines.slice(from, to).map((ctx, offset) => `${from + offset + 1}: ${ctx}`),
       });
       if (hits.length >= candidateLimit) {
-        return rankSearchHits(hits, keyword).slice(0, limit);
+        return rankSearchHits(hits, keyword).slice(offset, offset + limit);
       }
     }
   }
-  return rankSearchHits(hits, keyword).slice(0, limit);
+  return rankSearchHits(hits, keyword).slice(offset, offset + limit);
 }
 
 function rankSearchHits(hits: SearchHit[], keyword: string): SearchHit[] {
@@ -223,12 +278,12 @@ function rankSearchHits(hits: SearchHit[], keyword: string): SearchHit[] {
 }
 
 export async function summarizeImportantFiles(config: AppConfig, moduleName: ProjectModule): Promise<string[]> {
-  const files = await listProjectFiles(config, { module: moduleName, limit: 500 });
+  const files = await listProjectFiles(config, { module: moduleName, limit: 300 });
   const important = files
     .map((file) => relativePath(config, file))
     .filter((file) =>
       /(^|\/)(package\.json|index\.(js|ts|tsx)|app\.(js|ts|tsx)|main\.pwn|server\.cfg|config\.(php|ts|js|json)|\.env|README\.md)$/i.test(file) ||
       /\/(commands|events|routes|api|gamemodes|filterscripts|include|includes|plugins)\//i.test(file),
     );
-  return important.slice(0, 80);
+  return important.slice(0, config.limits.maxFeatureFiles);
 }

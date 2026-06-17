@@ -5,7 +5,8 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprot
 import { loadConfig } from "./config.js";
 import { jsonText } from "./types.js";
 import { tools } from "./tools/index.js";
-import { redactText } from "./utils/redact.js";
+import { applyOutputBudget } from "./utils/outputBudget.js";
+import { redactObject, redactText } from "./utils/redact.js";
 
 const config = loadConfig();
 const toolMap = new Map(tools.map((tool) => [tool.name, tool]));
@@ -21,16 +22,6 @@ const server = new Server(
     },
   },
 );
-
-function withOutputBudget(text: string): string {
-  if (text.length <= config.limits.maxOutputChars) return text;
-  return jsonText({
-    truncated: true,
-    maxOutputChars: config.limits.maxOutputChars,
-    note: "Output exceeded MCP_MAX_OUTPUT_CHARS. Re-run with narrower filters, lower maxResults, or pagination cursor.",
-    preview: text.slice(0, config.limits.maxOutputChars),
-  });
-}
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: tools.map((tool) => ({
@@ -53,7 +44,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       content: [
         {
           type: "text",
-          text: withOutputBudget(jsonText(result)),
+          text: applyOutputBudget(
+            tool.name,
+            config.safety.redactSecrets ? redactObject(result) : result,
+            config,
+          ),
         },
       ],
     };

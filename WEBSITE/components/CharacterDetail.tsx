@@ -43,6 +43,16 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
               .then(data => {
                   if (data && !data.error) {
                       setVehicles(data.vehicles || []);
+                      if (data.character) {
+                          setLiveStats({
+                              health: Number(data.character.health ?? 100),
+                              armor: Number(data.character.armor ?? 0),
+                              hunger: Number(data.character.hunger ?? 100),
+                              thirst: Number(data.character.thirst ?? 100),
+                              stress: Number(data.character.stress ?? 0),
+                              paycheck: Number(data.character.paycheck ?? 0),
+                          });
+                      }
                       
                       const residential: any[] = [];
                       const commercial: any[] = [];
@@ -64,14 +74,22 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
       }
   }, [character.id]);
 
-  // Mock Data for Health / Armor since these aren't usually in normal UCP unless synced
-  const health = 100;
-  const armor = 0;
+  const [liveStats, setLiveStats] = useState({
+      health: character.health ?? 100,
+      armor: character.armor ?? 0,
+      hunger: character.needsHunger ?? 100,
+      thirst: character.needsThirsty ?? 100,
+      stress: character.needsMood ?? 0,
+      paycheck: character.paycheck ?? 0,
+  });
+
+  const health = liveStats.health;
+  const armor = liveStats.armor;
   
   // Real Data for HTM (Hunger, Thirsty, Mood)
-  const hunger = character.needsHunger ?? 100;
-  const thirsty = character.needsThirsty ?? 100;
-  const mood = character.needsMood ?? 100;
+  const hunger = liveStats.hunger;
+  const thirsty = liveStats.thirst;
+  const mood = Math.max(0, 100 - liveStats.stress);
   
   // Job Data
   const jobName = character.jobName || "Unemployed";
@@ -381,7 +399,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
                         <div className="grid grid-cols-1 gap-4">
                             <StatCard label="Cash" value={`$${character.money.toLocaleString()}`} icon={Wallet} color="text-green-500" bg="bg-green-500/10" />
                             <StatCard label="Bank" value={`$${character.bank.toLocaleString()}`} icon={Landmark} color="text-blue-500" bg="bg-blue-500/10" />
-                            <StatCard label="Paycheck" value="$1,250" icon={DollarSign} color="text-amber-500" bg="bg-amber-500/10" />
+                            <StatCard label="Paycheck" value={`$${liveStats.paycheck.toLocaleString()}`} icon={DollarSign} color="text-amber-500" bg="bg-amber-500/10" />
                         </div>
                     </div>
                 </div>

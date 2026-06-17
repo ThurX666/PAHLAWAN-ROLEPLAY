@@ -15,23 +15,23 @@ export const gamemodeTools: ToolDefinition[] = [
     schema: z.object({}),
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     async handler(_input, { config }) {
-      const pawnFiles = await listProjectFiles(config, { module: "gamemode", extensions: [".pwn"], limit: 200 });
-      const includeFiles = await listProjectFiles(config, { module: "gamemode", extensions: [".inc"], limit: 300 });
+      const pawnFiles = await listProjectFiles(config, { module: "gamemode", extensions: [".pwn"], limit: 40 });
+      const includeFiles = await listProjectFiles(config, { module: "gamemode", extensions: [".inc"], limit: 60 });
       const plugins = fs.existsSync(path.join(config.dirs.gamemode, "plugins"))
-        ? fs.readdirSync(path.join(config.dirs.gamemode, "plugins")).slice(0, 80)
+        ? fs.readdirSync(path.join(config.dirs.gamemode, "plugins")).slice(0, config.limits.maxSearchResults)
         : [];
       const systems = ["login", "register", "spawn", "business", "auction", "bid", "faction", "job", "inventory", "vehicle", "TextDraw", "mysql", "discord"];
       const detectedSystems = [];
       for (const system of systems) {
-        const hits = await searchCode(config, system, { module: "gamemode", extensions: pawnExt, limit: 8 });
-        if (hits.length > 0) detectedSystems.push({ system, hits: hits.slice(0, 5) });
+        const hits = await searchCode(config, system, { module: "gamemode", extensions: pawnExt, limit: 2, contextLines: 0 });
+        if (hits.length > 0) detectedSystems.push({ system, hitCountSample: hits.length, topHit: hits[0] });
       }
       return {
         mainCandidates: pawnFiles.filter((file) => /gamemodes[\\/](main|.*gamemode).*\.pwn$/i.test(file)).map((file) => relativePath(config, file)),
-        pawnFiles: pawnFiles.map((file) => relativePath(config, file)).slice(0, 80),
+        pawnFileSamples: pawnFiles.map((file) => relativePath(config, file)).slice(0, config.limits.maxSearchResults),
         includeCount: includeFiles.length,
-        includeSamples: includeFiles.map((file) => relativePath(config, file)).slice(0, 80),
-        filterscripts: await findFiles(config, "filterscripts", { module: "gamemode", extensions: [".pwn", ".amx"], limit: 80 }),
+        includeSamples: includeFiles.map((file) => relativePath(config, file)).slice(0, config.limits.maxSearchResults),
+        filterscripts: await findFiles(config, "filterscripts", { module: "gamemode", extensions: [".pwn"], limit: config.limits.maxSearchResults }),
         plugins,
         configFiles: await findFiles(config, "server.cfg", { module: "gamemode", limit: 10 }),
         detectedSystems,
@@ -71,14 +71,14 @@ export const gamemodeTools: ToolDefinition[] = [
     description: "Find related Pawn callbacks and summarize flow for login, spawn, business menu, auction, TextDraw, etc.",
     schema: z.object({
       topic: z.string().min(1),
-      limit: z.number().int().min(1).max(100).default(60),
+      limit: z.number().int().min(1).max(100).default(10),
     }),
     inputSchema: {
       type: "object",
       required: ["topic"],
       properties: {
         topic: { type: "string" },
-        limit: { type: "number", default: 60 },
+        limit: { type: "number", default: 10 },
       },
       additionalProperties: false,
     },
@@ -92,12 +92,13 @@ export const gamemodeTools: ToolDefinition[] = [
         "OnGameModeInit",
         "OnPlayerCommandText",
       ];
-      const topicHits = await searchCode(config, input.topic, { module: "gamemode", extensions: pawnExt, limit: input.limit, contextLines: 2 });
+      const limit = Math.min(input.limit, config.limits.maxSearchResults);
+      const topicHits = await searchCode(config, input.topic, { module: "gamemode", extensions: pawnExt, limit, contextLines: 1 });
       const callbackHits = [];
       for (const callback of callbacks) {
         callbackHits.push({
           callback,
-          hits: await searchCode(config, callback, { module: "gamemode", extensions: pawnExt, limit: 20, contextLines: 2 }),
+          hits: await searchCode(config, callback, { module: "gamemode", extensions: pawnExt, limit: 2, contextLines: 0 }),
         });
       }
       return {
@@ -117,23 +118,24 @@ export const gamemodeTools: ToolDefinition[] = [
     description: "Search dialog IDs, dialog names, ShowPlayerDialog calls, and OnDialogResponse branches.",
     schema: z.object({
       keyword: z.string().optional(),
-      limit: z.number().int().min(1).max(200).default(100),
+      limit: z.number().int().min(1).max(200).default(10),
     }),
     inputSchema: {
       type: "object",
       properties: {
         keyword: { type: "string" },
-        limit: { type: "number", default: 100 },
+        limit: { type: "number", default: 10 },
       },
       additionalProperties: false,
     },
     async handler(input, { config }) {
       const terms = input.keyword ? [input.keyword] : ["DIALOG_", "ShowPlayerDialog", "OnDialogResponse", "dialogid"];
+      const limit = Math.min(input.limit, config.limits.maxSearchResults);
       const results = [];
       for (const term of terms) {
         results.push({
           term,
-          hits: await searchCode(config, term, { module: "gamemode", extensions: pawnExt, limit: input.limit, contextLines: 2 }),
+          hits: await searchCode(config, term, { module: "gamemode", extensions: pawnExt, limit, contextLines: 1 }),
         });
       }
       return results;
@@ -144,23 +146,24 @@ export const gamemodeTools: ToolDefinition[] = [
     description: "Search TextDraw creation/show/hide/update logic to avoid duplicated UI updates and flicker.",
     schema: z.object({
       keyword: z.string().default("TextDraw"),
-      limit: z.number().int().min(1).max(200).default(100),
+      limit: z.number().int().min(1).max(200).default(10),
     }),
     inputSchema: {
       type: "object",
       properties: {
         keyword: { type: "string", default: "TextDraw" },
-        limit: { type: "number", default: 100 },
+        limit: { type: "number", default: 10 },
       },
       additionalProperties: false,
     },
     async handler(input, { config }) {
       const terms = Array.from(new Set([input.keyword, "TextDrawCreate", "TextDrawShowForPlayer", "TextDrawHideForPlayer", "PlayerTextDraw"]));
+      const limit = Math.min(input.limit, config.limits.maxSearchResults);
       const results = [];
       for (const term of terms) {
         results.push({
           term,
-          hits: await searchCode(config, term, { module: "gamemode", extensions: pawnExt, limit: input.limit, contextLines: 1 }),
+          hits: await searchCode(config, term, { module: "gamemode", extensions: pawnExt, limit, contextLines: 0 }),
         });
       }
       return results;

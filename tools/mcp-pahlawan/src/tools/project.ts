@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { ToolDefinition } from "../types.js";
 import { moduleSchema } from "../types.js";
 import { findFiles, listProjectFiles, summarizeImportantFiles } from "../utils/fileSearch.js";
+import { boundedLimit, pageItems, resolveOffset } from "../utils/pagination.js";
 import { relativePath } from "../utils/pathSafety.js";
 
 function exists(target: string): boolean {
@@ -33,11 +34,12 @@ export const projectTools: ToolDefinition[] = [
         database: exists(config.dirs.database),
         docs: exists(path.join(config.projectRoot, "docs")),
       };
-      const files = await listProjectFiles(config, { module: "all", limit: 3000 });
+      const files = await listProjectFiles(config, { module: "all", limit: 500 });
       return {
         projectRoot: config.projectRoot,
         modules,
         fileCountSampled: files.length,
+        samplingNote: "Extension counts are based on a bounded 500-file sample.",
         extensionSummary: await countByExtension(files),
         importantFiles: {
           gamemode: await summarizeImportantFiles(config, "gamemode"),
@@ -87,8 +89,10 @@ export const projectTools: ToolDefinition[] = [
       query: z.string().min(1),
       module: moduleSchema,
       extension: z.string().optional(),
+      limit: z.number().int().min(1).max(200).optional(),
       maxResults: z.number().int().min(1).max(200).optional(),
       cursor: z.number().int().min(0).default(0),
+      offset: z.number().int().min(0).optional(),
     }),
     inputSchema: {
       type: "object",
@@ -97,19 +101,24 @@ export const projectTools: ToolDefinition[] = [
         query: { type: "string" },
         module: { type: "string", enum: ["gamemode", "website", "bot", "database", "docs", "logs", "all"] },
         extension: { type: "string" },
-        maxResults: { type: "number", default: 30 },
+        limit: { type: "number", default: 10 },
+        maxResults: { type: "number", description: "Deprecated alias for limit." },
         cursor: { type: "number", default: 0 },
+        offset: { type: "number" },
       },
       additionalProperties: false,
     },
     async handler(input, { config }) {
       const extensions = input.extension ? [input.extension.startsWith(".") ? input.extension : `.${input.extension}`] : undefined;
-      return findFiles(config, input.query, {
+      const limit = boundedLimit(input.limit ?? input.maxResults, config.limits.maxSearchResults, config.limits.maxSearchResults);
+      const offset = resolveOffset(input.cursor, input.offset);
+      const items = await findFiles(config, input.query, {
         module: input.module,
         extensions,
-        limit: input.maxResults ?? config.limits.maxSearchResults,
-        offset: input.cursor,
+        limit: limit + 1,
+        offset,
       });
+      return pageItems(items, offset, limit, items.length > limit);
     },
   },
 ];

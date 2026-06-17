@@ -4,8 +4,9 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { z } from "zod";
 import type { ToolDefinition } from "../types.js";
-import { searchCode } from "../utils/fileSearch.js";
+import { searchCode, type SearchHit } from "../utils/fileSearch.js";
 import { listLogCandidates } from "../utils/logReader.js";
+import { boundedLimit, pageItems, resolveOffset } from "../utils/pagination.js";
 import { relativePath } from "../utils/pathSafety.js";
 
 const execFileAsync = promisify(execFile);
@@ -15,6 +16,35 @@ async function git(args: string[], cwd: string): Promise<string> {
   return stdout;
 }
 
+const contextStopWords = new Set(["and", "the", "for", "with", "from", "into", "this", "that", "only", "do", "not", "dan", "yang", "untuk"]);
+
+function taskTerms(task: string): string[] {
+  return Array.from(new Set(
+    task
+      .split(/[^\p{L}\p{N}_/-]+/u)
+      .map((term) => term.trim())
+      .filter((term) => term.length > 2 && !contextStopWords.has(term.toLowerCase())),
+  )).slice(0, 6);
+}
+
+function uniqueHits(hits: SearchHit[]): SearchHit[] {
+  const seen = new Set<string>();
+  return hits.filter((hit) => {
+    const key = `${hit.file}:${hit.line}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function classifyHit(hit: SearchHit): string {
+  if (/^(CMD|YCMD|COMMAND):/i.test(hit.text) || /SlashCommandBuilder|\.setName\s*\(/i.test(hit.text)) return "command";
+  if (/\.(get|post|put|patch|delete)\s*\(|\/api\//i.test(hit.text) || hit.file.includes("/api/")) return "route";
+  if (/^\s*(public|stock|forward|export|function|class)/i.test(hit.text)) return "symbol";
+  if (/\b(select|from|join|insert|update)\b/i.test(hit.text) || hit.file.endsWith(".sql")) return "database";
+  return "file";
+}
+
 export const workflowTools: ToolDefinition[] = [
   {
     name: "generate_task_context",
@@ -22,7 +52,11 @@ export const workflowTools: ToolDefinition[] = [
     schema: z.object({
       task: z.string().min(2),
       module: z.enum(["gamemode", "website", "bot", "database", "all"]).default("all"),
+      limit: z.number().int().min(1).max(50).optional(),
       maxResults: z.number().int().min(1).max(50).optional(),
+      cursor: z.number().int().min(0).default(0),
+      offset: z.number().int().min(0).optional(),
+      includeSnippets: z.boolean().optional(),
     }),
     inputSchema: {
       type: "object",
@@ -30,31 +64,46 @@ export const workflowTools: ToolDefinition[] = [
       properties: {
         task: { type: "string" },
         module: { type: "string", enum: ["gamemode", "website", "bot", "database", "all"], default: "all" },
-        maxResults: { type: "number", default: 30 },
+        limit: { type: "number", default: 10 },
+        maxResults: { type: "number", description: "Deprecated alias for limit." },
+        cursor: { type: "number", default: 0 },
+        offset: { type: "number" },
+        includeSnippets: { type: "boolean", default: false },
       },
       additionalProperties: false,
     },
     async handler(input, { config }) {
-      const terms: string[] = Array.from(
-        new Set<string>(input.task.split(/\s+/).filter((term: string) => term.length > 2)),
-      ).slice(0, 8);
-      const perTermLimit = Math.min(input.maxResults ?? config.limits.maxSearchResults, 50);
-      const related = [];
+      const terms = taskTerms(input.task);
+      const limit = boundedLimit(input.limit ?? input.maxResults, config.limits.maxSearchResults, config.limits.maxSearchResults);
+      const offset = resolveOffset(input.cursor, input.offset);
+      const hits: SearchHit[] = [];
       for (const term of terms) {
-        related.push({
-          term,
-          hits: await searchCode(config, term, {
-            module: input.module,
-            extensions: [".pwn", ".inc", ".php", ".js", ".ts", ".tsx", ".sql", ".json", ".txt"],
-            limit: perTermLimit,
-            contextLines: 1,
-          }),
-        });
+        hits.push(...await searchCode(config, term, {
+          module: input.module,
+          extensions: [".pwn", ".inc", ".php", ".js", ".ts", ".tsx", ".sql", ".json", ".txt"],
+          limit: Math.min(limit + 1, config.limits.maxFeatureFiles),
+          contextLines: 0,
+        }));
       }
+      const related = uniqueHits(hits).slice(0, config.limits.maxFeatureFiles);
+      const selected = related.slice(offset, offset + limit + 1);
+      const visible = selected.slice(0, limit).map((hit) => input.includeSnippets ?? config.defaults.includeSnippets
+        ? hit
+        : ({ file: hit.file, line: hit.line, text: hit.text }));
+      const byKind = (kind: string) => visible.filter((hit) => classifyHit(hit as SearchHit) === kind);
+      const dbTables = Array.from(new Set(
+        visible.flatMap((hit) => hit.text.match(/\b(?:from|join|into|update)\s+[`"]?([A-Za-z0-9_]+)/ig)?.map((match) => match.split(/\s+/).pop()?.replace(/[`"]/g, "")) ?? [])
+          .filter((value): value is string => Boolean(value)),
+      )).slice(0, config.limits.maxSchemaTables);
       return {
-        task: input.task,
+        taskSummary: input.task,
         module: input.module,
-        related,
+        relevantModules: Array.from(new Set(visible.map((hit) => hit.file.split("/")[0]))),
+        relatedFiles: Array.from(new Set(visible.map((hit) => hit.file))).slice(0, config.limits.maxFeatureFiles),
+        relatedFunctionsAndSymbols: byKind("symbol"),
+        relatedDatabaseTables: dbTables,
+        relatedRoutesAndCommands: [...byKind("route"), ...byKind("command")],
+        supportingHits: visible,
         knownRisks: [
           "Do not edit generated/runtime files.",
           "Keep secrets and config files out of Git.",
@@ -63,12 +112,22 @@ export const workflowTools: ToolDefinition[] = [
           "For bot, respect Discord interaction response timing.",
           "For DB, plan migration and rollback before applying SQL.",
         ],
-        suggestedPatchPlan: [
-          "Read the most relevant files.",
-          "Make the smallest scoped change.",
-          "Run module-specific verification.",
-          "Inspect git diff for secrets/runtime artifacts.",
+        recommendedNextSteps: [
+          "Inspect outlines for the highest-ranked files.",
+          "Read only the relevant symbol or bounded line range.",
+          "Verify schema/log evidence only if the feature depends on them.",
         ],
+        suggestedFocusedToolCalls: visible.slice(0, 5).map((hit) => ({
+          tool: "read_project_file",
+          arguments: { filePath: hit.file, startLine: hit.line, maxLines: 40, includeContent: false },
+        })),
+        pagination: {
+          offset,
+          limit,
+          returned: visible.length,
+          truncated: selected.length > limit,
+          nextCursor: selected.length > limit ? offset + visible.length : null,
+        },
       };
     },
   },
@@ -102,7 +161,7 @@ export const workflowTools: ToolDefinition[] = [
         tools: changedFiles.filter((file: string) => file.startsWith("tools/")),
       };
       return {
-        changedFiles,
+        changedFiles: changedFiles.slice(0, config.limits.maxFeatureFiles),
         discordChangelog: [
           "**Update PAHLAWAN ROLEPLAY**",
           grouped.gamemode.length ? `- Gamemode: ${grouped.gamemode.length} file diperbarui.` : null,

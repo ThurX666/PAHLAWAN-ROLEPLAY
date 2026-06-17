@@ -28,7 +28,7 @@ interface DonationProps {
     tier: string;
     expiredAt: string;
   } | null;
-  onRedeem: (characterId: number, item: { name: string; price: number; description?: string }) => boolean | void;
+  onRedeem: (characterId: number, item: { id?: number; name: string; price: number; description?: string }) => Promise<boolean>;
   onNavigate?: (tab: string) => void;
   onSendNotification?: (msg: InboxMessage) => void;
 }
@@ -329,8 +329,8 @@ export const Donation: React.FC<DonationProps> = ({
                              <GoldShop 
                                  userGold={userGold}
                                  characters={characters}
-                                 onRedeem={(characterId, item) => {
-                                     const success = onRedeem(characterId, item);
+                                 onRedeem={async (characterId, item) => {
+                                     const success = await onRedeem(characterId, item);
                                      if (success !== false) {
                                          // Create Transaction Record
                                          const now = new Date();

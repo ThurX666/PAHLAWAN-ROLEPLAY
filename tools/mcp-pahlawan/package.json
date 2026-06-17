@@ -9,7 +9,9 @@
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "mcp:health": "npm run build --silent && node dist/scripts/mcpHealth.js",
+    "mcp:test-compact": "npm run build --silent && node dist/scripts/compactTest.js"
   },
   "keywords": [
     "mcp",

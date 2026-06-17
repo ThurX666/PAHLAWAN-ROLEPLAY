@@ -19,18 +19,18 @@ export const botTools: ToolDefinition[] = [
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
     async handler(_input, { config }) {
       const pkg = maybePackage(config.dirs.bot) as { main?: string; scripts?: Record<string, string>; dependencies?: Record<string, string> } | null;
-      const jsFiles = await listProjectFiles(config, { module: "bot", extensions: [".js", ".cjs", ".mjs", ".ts"], limit: 300 });
+      const jsFiles = await listProjectFiles(config, { module: "bot", extensions: [".js", ".cjs", ".mjs", ".ts"], limit: 60 });
       return {
         package: pkg,
         entryCandidates: [
           ...(pkg?.main ? [pkg.main] : []),
           ...jsFiles.filter((file) => /(^|[\\/])(index|bot|main)\.(js|ts|cjs|mjs)$/i.test(file)).map((file) => relativePath(config, file)),
         ],
-        commandFolders: await findFiles(config, "command", { module: "bot", limit: 60 }),
-        eventFolders: await findFiles(config, "event", { module: "bot", limit: 60 }),
-        configCandidates: await findFiles(config, "config", { module: "bot", limit: 80 }),
-        dbHits: await searchCode(config, "mysql", { module: "bot", extensions: [".js", ".ts", ".json"], limit: 50 }),
-        discordHits: await searchCode(config, "discord", { module: "bot", extensions: [".js", ".ts", ".json"], limit: 50 }),
+        commandFolders: await findFiles(config, "command", { module: "bot", limit: config.limits.maxSearchResults }),
+        eventFolders: await findFiles(config, "event", { module: "bot", limit: config.limits.maxSearchResults }),
+        configCandidates: await findFiles(config, "config", { module: "bot", limit: config.limits.maxSearchResults }),
+        dbHits: await searchCode(config, "mysql", { module: "bot", extensions: [".js", ".ts", ".json"], limit: config.limits.maxSearchResults, contextLines: 0 }),
+        discordHits: await searchCode(config, "discord", { module: "bot", extensions: [".js", ".ts", ".json"], limit: config.limits.maxSearchResults, contextLines: 0 }),
       };
     },
   },
@@ -45,7 +45,7 @@ export const botTools: ToolDefinition[] = [
       for (const pattern of patterns) {
         results.push({
           pattern,
-          hits: await searchCode(config, pattern, { module: "bot", extensions: [".js", ".ts", ".json"], limit: 60, contextLines: 1 }),
+          hits: await searchCode(config, pattern, { module: "bot", extensions: [".js", ".ts", ".json"], limit: Math.min(3, config.limits.maxSearchResults), contextLines: 0 }),
         });
       }
       return results;
@@ -68,7 +68,7 @@ export const botTools: ToolDefinition[] = [
       for (const term of terms) {
         results.push({
           term,
-          hits: await searchCode(config, term, { module: "bot", extensions: [".js", ".ts"], limit: 80, contextLines: 2 }),
+          hits: await searchCode(config, term, { module: "bot", extensions: [".js", ".ts"], limit: Math.min(3, config.limits.maxSearchResults), contextLines: 0 }),
         });
       }
       return {
@@ -96,7 +96,7 @@ export const botTools: ToolDefinition[] = [
       additionalProperties: false,
     },
     async handler(input, { config }) {
-      const related = await searchCode(config, input.feature, { module: "bot", extensions: [".js", ".ts", ".json"], limit: 60, contextLines: 1 });
+      const related = await searchCode(config, input.feature, { module: "bot", extensions: [".js", ".ts", ".json"], limit: config.limits.maxSearchResults, contextLines: 0 });
       return {
         feature: input.feature,
         related,

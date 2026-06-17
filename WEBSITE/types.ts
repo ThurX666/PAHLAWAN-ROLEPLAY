@@ -45,6 +45,11 @@ export interface Character {
   needsHunger?: number;
   needsThirsty?: number;
   needsMood?: number;
+  health?: number;
+  armor?: number;
+  paycheck?: number;
+  factionId?: number;
+  factionRank?: number;
   licenseDriveExp?: string;
   licenseFlyExp?: string;
   licenseBoatExp?: string;

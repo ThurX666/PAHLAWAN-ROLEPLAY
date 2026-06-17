@@ -59,6 +59,13 @@ node -e "import { Client } from '@modelcontextprotocol/sdk/client/index.js'; imp
 
 Running `npm start` directly is allowed, but it will wait for an MCP client because this server communicates over stdio.
 
+Compact-mode checks:
+
+```powershell
+npm run mcp:health
+npm run mcp:test-compact
+```
+
 ## Environment
 
 Copy local env only if needed:
@@ -80,12 +87,16 @@ MCP_ALLOW_WRITE_FILES=false
 MCP_ALLOW_WRITE_DB=false
 MCP_REDACT_SECRETS=true
 MCP_MAX_FILE_SIZE_KB=512
-MCP_MAX_SEARCH_RESULTS=30
-MCP_MAX_FILE_READ_LINES=300
-MCP_MAX_LOG_LINES=200
-MCP_MAX_DB_ROWS=50
+MCP_MAX_SEARCH_RESULTS=10
+MCP_MAX_FILE_READ_LINES=120
+MCP_MAX_LOG_LINES=80
+MCP_MAX_DB_ROWS=20
 MCP_MAX_SNIPPET_LINES=5
-MCP_MAX_OUTPUT_CHARS=20000
+MCP_MAX_OUTPUT_CHARS=8000
+MCP_MAX_SCHEMA_TABLES=20
+MCP_MAX_FEATURE_FILES=25
+MCP_DEFAULT_INCLUDE_SNIPPETS=false
+MCP_COMPACT_MODE=true
 MCP_DEFAULT_MODE=readonly
 ```
 
@@ -168,12 +179,16 @@ Secret redaction:
 
 Defaults are intentionally small:
 
-- search results: 30
-- file read lines: 300
-- log lines: 200
-- DB rows: 50
+- search results: 10
+- file read lines: 120
+- log lines: 80
+- DB rows: 20
 - snippet lines: 5
-- output chars: 20000
+- schema tables: 20
+- feature files: 25
+- output chars: 8000
+- snippets disabled by default
+- compact mode enabled by default
 
 Use these parameters when supported:
 
@@ -182,7 +197,11 @@ Use these parameters when supported:
 - `maxBytes`
 - `includeSnippets`
 - `cursor`
+- `offset`
 - `startLine`
+- `limit`
+
+`read_project_file` is outline-first. It returns metadata and detected includes/imports, defines, enums, callbacks, functions, classes, commands, routes, handlers, dialog IDs, and sections. File content is returned only with `includeContent: true`, and remains bounded by line and character limits.
 
 Recommended sequence:
 
@@ -194,6 +213,20 @@ Recommended sequence:
 
 Avoid full-file reads unless explicitly needed.
 
+When using MCP:
+
+- Never scan the entire project by default.
+- Never dump full files by default.
+- Never dump the full database schema by default.
+- Never dump full logs by default.
+- Work feature-by-feature.
+- Use compact mode by default.
+- Prefer summaries, paths, symbols, line numbers, and small snippets.
+- Ask before reading large files.
+- Ask before applying patches.
+- Use pagination for large results.
+- Keep output under `MCP_MAX_OUTPUT_CHARS`.
+
 ## Main Tools
 
 Client:
@@ -202,6 +235,9 @@ Client:
 - `generate_client_config`
 - `validate_mcp_environment`
 - `mcp_token_budget_report`
+- `mcp_context_health_check`
+- `mcp_compact_mode`
+- `mcp_tool_usage_guide`
 
 Discovery:
 
@@ -298,7 +334,28 @@ Use the Pahlawan MCP to trace the business auction system across gamemode, UCP, 
 Diagnose issue:
 
 ```text
-Use the Pahlawan MCP to diagnose why /bizmenu does not detect nearby business. Read related Pawn code, database schema, and logs. Do not edit files yet.
+Use Pahlawan MCP in compact mode.
+
+Task: Diagnose why /bizmenu does not detect nearby business.
+
+Rules:
+- Do not scan the entire project.
+- Do not read full files.
+- Use maxResults 10.
+- Return only related files, functions, line numbers, database tables, and risks.
+- Do not edit files yet.
+```
+
+Trace feature safely:
+
+```text
+Use Pahlawan MCP to trace feature: business auction.
+
+Compact mode only.
+No full file reads.
+No database writes.
+Return a compact context pack first.
+After I approve, suggest a small patch.
 ```
 
 Compile gamemode:
@@ -355,6 +412,19 @@ Output too large:
 - Lower `MCP_MAX_OUTPUT_CHARS`.
 - Use `maxResults`, `maxLines`, `includeSnippets=false`, and pagination.
 - Start with `generate_task_context`.
+- Run `mcp_context_health_check` and keep compact mode enabled.
+
+## Rebuild And Reconnect
+
+```powershell
+cd "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\tools\mcp-pahlawan"
+npm install
+npm run build
+npm run mcp:health
+npm run mcp:test-compact
+```
+
+After rebuilding, keep the client command pointed at `tools/mcp-pahlawan/dist/index.js`, update the environment values from `.env.example` or the client examples, then fully restart Codex, Cursor, Claude, or Antigravity so the stdio MCP process is recreated.
 
 Database connection failed:
 

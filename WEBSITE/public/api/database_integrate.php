@@ -182,6 +182,7 @@ function phrp_integrate_database(PDO $pdo, bool $force = false): array
             '`is_locked` TINYINT(1) NOT NULL DEFAULT 0',
             '`is_2fa_enabled` TINYINT(1) NOT NULL DEFAULT 0',
             '`discord_id` VARCHAR(50) DEFAULT NULL',
+            '`discord_avatar_hash` VARCHAR(255) DEFAULT NULL',
         ],
         'ucp_promo_config' => [
             '`is_active` TINYINT(1) NOT NULL DEFAULT 0',
@@ -245,6 +246,7 @@ function phrp_integrate_database(PDO $pdo, bool $force = false): array
         'ucp_economy_stats',
         'ucp_data_change_requests',
         'ucp_user_requests',
+        'ucp_job_activity',
     ] as $table) {
         $report['ucp_tables'][$table] = phrp_table_exists($pdo, $table) ? 'ok' : 'missing';
     }
@@ -298,6 +300,7 @@ function phrp_database_status(PDO $pdo): array
         'ucp_economy_stats',
         'ucp_data_change_requests',
         'ucp_user_requests',
+        'ucp_job_activity',
     ];
 
     foreach ($ucpTables as $table) {
