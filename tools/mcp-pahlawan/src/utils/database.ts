@@ -46,35 +46,46 @@ export function redactRows(rows: unknown[]): unknown[] {
   });
 }
 
-export async function dbSchemaOverview(config: AppConfig): Promise<unknown> {
+export async function dbSchemaOverview(config: AppConfig, options: { keyword?: string; maxTables?: number } = {}): Promise<unknown> {
   const connection = await getConnection(config);
   try {
+    const maxTables = Math.min(Math.max(options.maxTables ?? 30, 1), 200);
+    const keyword = options.keyword?.trim();
+    const tableWhere = keyword ? "AND table_name LIKE ?" : "";
+    const tableParams = keyword ? [config.mysql.database, `%${keyword}%`, maxTables] : [config.mysql.database, maxTables];
     const [tables] = await connection.query<mysql.RowDataPacket[]>(
       `SELECT table_name AS tableName
        FROM information_schema.tables
        WHERE table_schema = ?
-       ORDER BY table_name`,
-      [config.mysql.database],
+       ${tableWhere}
+       ORDER BY table_name
+       LIMIT ?`,
+      tableParams,
     );
+    const tableNames = tables.map((row) => row.tableName).filter(Boolean);
+    if (tableNames.length === 0) {
+      return { tables: [], columns: [], indexes: [], note: "No matching tables found." };
+    }
+    const placeholders = tableNames.map(() => "?").join(",");
 
     const [columns] = await connection.query<mysql.RowDataPacket[]>(
       `SELECT table_name AS tableName, column_name AS columnName, column_type AS columnType,
               is_nullable AS nullable, column_key AS columnKey, extra
        FROM information_schema.columns
-       WHERE table_schema = ?
+       WHERE table_schema = ? AND table_name IN (${placeholders})
        ORDER BY table_name, ordinal_position`,
-      [config.mysql.database],
+      [config.mysql.database, ...tableNames],
     );
 
     const [indexes] = await connection.query<mysql.RowDataPacket[]>(
       `SELECT table_name AS tableName, index_name AS indexName, column_name AS columnName, non_unique AS nonUnique
        FROM information_schema.statistics
-       WHERE table_schema = ?
+       WHERE table_schema = ? AND table_name IN (${placeholders})
        ORDER BY table_name, index_name, seq_in_index`,
-      [config.mysql.database],
+      [config.mysql.database, ...tableNames],
     );
 
-    return redactObject({ tables, columns, indexes });
+    return redactObject({ tables, columns, indexes, truncatedToTables: maxTables, keyword: keyword || null });
   } finally {
     await connection.end();
   }
@@ -101,7 +112,7 @@ export async function dbFindTables(config: AppConfig, keyword: string): Promise<
 
 export async function dbSafeQuery(config: AppConfig, sql: string, limit: number): Promise<unknown> {
   const safeSql = ensureReadOnlySql(sql);
-  const boundedLimit = Math.min(Math.max(limit, 1), 200);
+  const boundedLimit = Math.min(Math.max(limit, 1), config.limits.maxDbRows);
   const limitedSql = /\blimit\s+\d+/i.test(safeSql) ? safeSql : `${safeSql} LIMIT ${boundedLimit}`;
   const connection = await getConnection(config);
   try {

@@ -12,6 +12,10 @@ function extensionList(input?: string): string[] | undefined {
     .map((item) => (item.startsWith(".") ? item : `.${item}`));
 }
 
+function maybeStripSnippets<T extends { context?: string[] }>(hits: T[], includeSnippets: boolean): T[] {
+  return includeSnippets ? hits : hits.map(({ context: _context, ...rest }) => rest as T);
+}
+
 async function findSymbols(
   config: Parameters<ToolDefinition["handler"]>[1]["config"],
   keyword: string,
@@ -38,7 +42,9 @@ export const codeSearchTools: ToolDefinition[] = [
       keyword: z.string().min(1),
       module: moduleSchema,
       extension: z.string().optional(),
-      limit: z.number().int().min(1).max(200).default(50),
+      maxResults: z.number().int().min(1).max(200).optional(),
+      cursor: z.number().int().min(0).default(0),
+      includeSnippets: z.boolean().default(true),
     }),
     inputSchema: {
       type: "object",
@@ -47,7 +53,9 @@ export const codeSearchTools: ToolDefinition[] = [
         keyword: { type: "string" },
         module: { type: "string", enum: ["gamemode", "website", "bot", "database", "docs", "logs", "all"] },
         extension: { type: "string", description: "Single extension or comma-separated extensions, e.g. .pwn,.inc" },
-        limit: { type: "number", default: 50 },
+        maxResults: { type: "number", default: 30 },
+        cursor: { type: "number", default: 0 },
+        includeSnippets: { type: "boolean", default: true },
       },
       additionalProperties: false,
     },
@@ -55,9 +63,10 @@ export const codeSearchTools: ToolDefinition[] = [
       return searchCode(config, input.keyword, {
         module: input.module,
         extensions: extensionList(input.extension),
-        limit: input.limit,
+        limit: input.maxResults ?? config.limits.maxSearchResults,
+        offset: input.cursor,
         contextLines: 2,
-      });
+      }).then((hits) => maybeStripSnippets(hits, input.includeSnippets));
     },
   },
   {
@@ -65,14 +74,16 @@ export const codeSearchTools: ToolDefinition[] = [
     description: "Find Pawn functions, callbacks, commands, enums, defines, stocks, and publics.",
     schema: z.object({
       symbol: z.string().min(1),
-      limit: z.number().int().min(1).max(200).default(80),
+      maxResults: z.number().int().min(1).max(200).optional(),
+      includeSnippets: z.boolean().default(true),
     }),
     inputSchema: {
       type: "object",
       required: ["symbol"],
       properties: {
         symbol: { type: "string" },
-        limit: { type: "number", default: 80 },
+        maxResults: { type: "number", default: 30 },
+        includeSnippets: { type: "boolean", default: true },
       },
       additionalProperties: false,
     },
@@ -82,8 +93,8 @@ export const codeSearchTools: ToolDefinition[] = [
         input.symbol,
         [".pwn", ".inc"],
         [/^\s*(public|stock|forward|native)\s+/i, /^\s*(CMD|YCMD|COMMAND):/i, /^\s*#define\s+/i, /^\s*enum\b/i, /On[A-Z][A-Za-z0-9_]+\s*\(/],
-        input.limit,
-      );
+        input.maxResults ?? config.limits.maxSearchResults,
+      ).then((hits) => maybeStripSnippets(hits, input.includeSnippets));
     },
   },
   {
@@ -92,7 +103,8 @@ export const codeSearchTools: ToolDefinition[] = [
     schema: z.object({
       symbol: z.string().min(1),
       module: moduleSchema,
-      limit: z.number().int().min(1).max(200).default(80),
+      maxResults: z.number().int().min(1).max(200).optional(),
+      includeSnippets: z.boolean().default(true),
     }),
     inputSchema: {
       type: "object",
@@ -100,7 +112,8 @@ export const codeSearchTools: ToolDefinition[] = [
       properties: {
         symbol: { type: "string" },
         module: { type: "string", enum: ["gamemode", "website", "bot", "database", "docs", "logs", "all"] },
-        limit: { type: "number", default: 80 },
+        maxResults: { type: "number", default: 30 },
+        includeSnippets: { type: "boolean", default: true },
       },
       additionalProperties: false,
     },
@@ -108,10 +121,10 @@ export const codeSearchTools: ToolDefinition[] = [
       const hits = await searchCode(config, input.symbol, {
         module: input.module,
         extensions: [".js", ".cjs", ".mjs", ".ts", ".tsx", ".jsx"],
-        limit: input.limit * 3,
+        limit: (input.maxResults ?? config.limits.maxSearchResults) * 3,
         contextLines: 2,
       });
-      return hits
+      const filtered = hits
         .filter((hit) =>
           /^\s*(export\s+)?(async\s+)?function\s+/i.test(hit.text) ||
           /^\s*(export\s+)?class\s+/i.test(hit.text) ||
@@ -119,7 +132,8 @@ export const codeSearchTools: ToolDefinition[] = [
           /\.(get|post|put|delete|patch)\s*\(/i.test(hit.text) ||
           /SlashCommandBuilder|interactionCreate|client\.on|module\.exports|exports\./i.test(hit.text),
         )
-        .slice(0, input.limit);
+        .slice(0, input.maxResults ?? config.limits.maxSearchResults);
+      return maybeStripSnippets(filtered, input.includeSnippets);
     },
   },
   {
@@ -127,14 +141,16 @@ export const codeSearchTools: ToolDefinition[] = [
     description: "Search related files/functions/tables across gamemode, UCP, bot, and database for a feature name.",
     schema: z.object({
       feature: z.string().min(2),
-      limitPerTerm: z.number().int().min(1).max(50).default(20),
+      maxResults: z.number().int().min(1).max(50).optional(),
+      includeSnippets: z.boolean().default(false),
     }),
     inputSchema: {
       type: "object",
       required: ["feature"],
       properties: {
         feature: { type: "string" },
-        limitPerTerm: { type: "number", default: 20 },
+        maxResults: { type: "number", default: 30 },
+        includeSnippets: { type: "boolean", default: false },
       },
       additionalProperties: false,
     },
@@ -142,16 +158,17 @@ export const codeSearchTools: ToolDefinition[] = [
       const terms: string[] = Array.from(
         new Set<string>(input.feature.split(/\s+/).map((term: string) => term.trim()).filter((term: string) => term.length > 2)),
       );
+      const perTermLimit = Math.max(1, Math.min(input.maxResults ?? config.limits.maxSearchResults, 50));
       const results = [];
       for (const term of terms) {
         results.push({
           term,
-          hits: await searchCode(config, term, {
+          hits: maybeStripSnippets(await searchCode(config, term, {
             module: "all",
             extensions: [".pwn", ".inc", ".js", ".ts", ".tsx", ".php", ".sql", ".txt", ".json"],
-            limit: input.limitPerTerm,
+            limit: perTermLimit,
             contextLines: 1,
-          }),
+          }), input.includeSnippets),
         });
       }
       return {

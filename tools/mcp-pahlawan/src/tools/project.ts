@@ -87,7 +87,8 @@ export const projectTools: ToolDefinition[] = [
       query: z.string().min(1),
       module: moduleSchema,
       extension: z.string().optional(),
-      limit: z.number().int().min(1).max(200).default(50),
+      maxResults: z.number().int().min(1).max(200).optional(),
+      cursor: z.number().int().min(0).default(0),
     }),
     inputSchema: {
       type: "object",
@@ -96,7 +97,8 @@ export const projectTools: ToolDefinition[] = [
         query: { type: "string" },
         module: { type: "string", enum: ["gamemode", "website", "bot", "database", "docs", "logs", "all"] },
         extension: { type: "string" },
-        limit: { type: "number", default: 50 },
+        maxResults: { type: "number", default: 30 },
+        cursor: { type: "number", default: 0 },
       },
       additionalProperties: false,
     },
@@ -105,7 +107,8 @@ export const projectTools: ToolDefinition[] = [
       return findFiles(config, input.query, {
         module: input.module,
         extensions,
-        limit: input.limit,
+        limit: input.maxResults ?? config.limits.maxSearchResults,
+        offset: input.cursor,
       });
     },
   },

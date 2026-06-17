@@ -10,17 +10,19 @@ export const logTools: ToolDefinition[] = [
     schema: z.object({
       filter: z.enum(["gamemode", "crashdetect", "mysql", "ucp", "bot", "all"]).default("all"),
       maxBytes: z.number().int().min(512).max(65536).default(12000),
+      maxLines: z.number().int().min(1).max(1000).optional(),
     }),
     inputSchema: {
       type: "object",
       properties: {
         filter: { type: "string", enum: ["gamemode", "crashdetect", "mysql", "ucp", "bot", "all"], default: "all" },
         maxBytes: { type: "number", default: 12000 },
+        maxLines: { type: "number", default: 200 },
       },
       additionalProperties: false,
     },
     handler(input, { config }) {
-      return readRecentLogs(config, input.filter, input.maxBytes);
+      return readRecentLogs(config, input.filter, input.maxBytes, input.maxLines ?? config.limits.maxLogLines);
     },
   },
   {
@@ -50,7 +52,7 @@ export const logTools: ToolDefinition[] = [
           hits: await searchCode(config, term, {
             module: input.module,
             extensions: [".pwn", ".inc", ".php", ".js", ".ts", ".tsx", ".sql", ".txt"],
-            limit: 25,
+            limit: Math.min(config.limits.maxSearchResults, 25),
             contextLines: 1,
           }),
         });
@@ -58,7 +60,7 @@ export const logTools: ToolDefinition[] = [
       return {
         issue: input.issue,
         code,
-        logs: await readRecentLogs(config, input.module === "website" ? "ucp" : input.module === "all" ? "all" : input.module, 12000).catch((error) => ({
+        logs: await readRecentLogs(config, input.module === "website" ? "ucp" : input.module === "all" ? "all" : input.module, 12000, config.limits.maxLogLines).catch((error) => ({
           unavailable: String(error instanceof Error ? error.message : error),
         })),
         logCandidates: await listLogCandidates(config),

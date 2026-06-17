@@ -3,10 +3,15 @@
     "pahlawan-roleplay": {
       "command": "node",
       "args": [
-        "tools/mcp-pahlawan/dist/index.js"
+        "D:/PAHLAWAN_ROLEPLAY/tools/mcp-pahlawan/dist/index.js"
       ],
       "env": {
-        "PROJECT_ROOT": "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY",
+        "PROJECT_ROOT": "D:/PAHLAWAN_ROLEPLAY",
+        "GAMEMODE_DIR": "GAMEMODE",
+        "WEBSITE_DIR": "WEBSITE",
+        "BOT_DIR": "BOT",
+        "DATABASE_DIR": "DATABASE",
+        "LOGS_DIR": "GAMEMODE/logs",
         "MCP_ALLOW_WRITE_FILES": "false",
         "MCP_ALLOW_WRITE_DB": "false",
         "MCP_REDACT_SECRETS": "true",

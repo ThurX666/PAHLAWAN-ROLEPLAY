@@ -22,6 +22,7 @@ export const workflowTools: ToolDefinition[] = [
     schema: z.object({
       task: z.string().min(2),
       module: z.enum(["gamemode", "website", "bot", "database", "all"]).default("all"),
+      maxResults: z.number().int().min(1).max(50).optional(),
     }),
     inputSchema: {
       type: "object",
@@ -29,6 +30,7 @@ export const workflowTools: ToolDefinition[] = [
       properties: {
         task: { type: "string" },
         module: { type: "string", enum: ["gamemode", "website", "bot", "database", "all"], default: "all" },
+        maxResults: { type: "number", default: 30 },
       },
       additionalProperties: false,
     },
@@ -36,6 +38,7 @@ export const workflowTools: ToolDefinition[] = [
       const terms: string[] = Array.from(
         new Set<string>(input.task.split(/\s+/).filter((term: string) => term.length > 2)),
       ).slice(0, 8);
+      const perTermLimit = Math.min(input.maxResults ?? config.limits.maxSearchResults, 50);
       const related = [];
       for (const term of terms) {
         related.push({
@@ -43,7 +46,7 @@ export const workflowTools: ToolDefinition[] = [
           hits: await searchCode(config, term, {
             module: input.module,
             extensions: [".pwn", ".inc", ".php", ".js", ".ts", ".tsx", ".sql", ".json", ".txt"],
-            limit: 20,
+            limit: perTermLimit,
             contextLines: 1,
           }),
         });
@@ -137,6 +140,7 @@ export const workflowTools: ToolDefinition[] = [
         mysqlConfigured: Boolean(config.mysql.host && config.mysql.user && config.mysql.database),
         pawnCompilerConfigured: Boolean(config.pawn.compilerPath),
         safety: config.safety,
+        limits: config.limits,
         logs: await listLogCandidates(config),
         suggestions: [
           !config.safety.allowWriteFiles ? "File write tools are disabled by default. Keep this for normal analysis." : "File write tools are enabled. Use carefully.",

@@ -22,6 +22,16 @@ const server = new Server(
   },
 );
 
+function withOutputBudget(text: string): string {
+  if (text.length <= config.limits.maxOutputChars) return text;
+  return jsonText({
+    truncated: true,
+    maxOutputChars: config.limits.maxOutputChars,
+    note: "Output exceeded MCP_MAX_OUTPUT_CHARS. Re-run with narrower filters, lower maxResults, or pagination cursor.",
+    preview: text.slice(0, config.limits.maxOutputChars),
+  });
+}
+
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: tools.map((tool) => ({
     name: tool.name,
@@ -43,7 +53,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       content: [
         {
           type: "text",
-          text: jsonText(result),
+          text: withOutputBudget(jsonText(result)),
         },
       ],
     };

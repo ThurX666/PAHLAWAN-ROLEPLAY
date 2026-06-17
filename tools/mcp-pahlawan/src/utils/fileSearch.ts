@@ -44,6 +44,7 @@ export interface ListFilesOptions {
   extensions?: string[];
   limit?: number;
   includeLogs?: boolean;
+  offset?: number;
 }
 
 export function extensionMatches(filePath: string, extensions?: string[]): boolean {
@@ -73,9 +74,15 @@ export async function listProjectFiles(config: AppConfig, options: ListFilesOpti
   });
 
   const filtered: string[] = [];
+  const offset = options.offset ?? 0;
+  let skipped = 0;
   for (const file of files) {
     if (isBlockedForSearch(config, file) && !options.includeLogs) continue;
     if (!extensionMatches(file, options.extensions)) continue;
+    if (skipped < offset) {
+      skipped += 1;
+      continue;
+    }
     filtered.push(file);
     if (options.limit && filtered.length >= options.limit) break;
   }
@@ -88,20 +95,69 @@ export async function readTextFile(config: AppConfig, filePath: string): Promise
   return config.safety.redactSecrets ? redactText(text) : text;
 }
 
+export async function readTextFileSlice(
+  config: AppConfig,
+  filePath: string,
+  options: { startLine?: number; maxLines?: number; maxBytes?: number; includeContent?: boolean } = {},
+): Promise<{
+  content?: string;
+  startLine: number;
+  endLine: number;
+  totalLines: number;
+  nextCursor: number | null;
+  outline?: string[];
+}> {
+  const text = await readTextFile(config, filePath);
+  const lines = text.split(/\r?\n/);
+  const startLine = Math.max(options.startLine ?? 1, 1);
+  const maxLines = Math.min(options.maxLines ?? config.limits.maxFileReadLines, config.limits.maxFileReadLines);
+  const startIndex = startLine - 1;
+  const endIndex = Math.min(startIndex + maxLines, lines.length);
+  const selected = lines.slice(startIndex, endIndex);
+  let content = selected.map((line, offset) => `${startLine + offset}: ${line}`).join("\n");
+  const maxBytes = options.maxBytes ?? config.safety.maxFileSizeBytes;
+  if (Buffer.byteLength(content, "utf8") > maxBytes) {
+    content = content.slice(0, maxBytes) + "\n[TRUNCATED_BY_MAX_BYTES]";
+  }
+  const outline = lines
+    .map((line, index) => ({ line, number: index + 1 }))
+    .filter(({ line }) =>
+      /^\s*(export\s+)?(async\s+)?function\s+/.test(line) ||
+      /^\s*(export\s+)?class\s+/.test(line) ||
+      /^\s*(public|stock|forward|native)\s+/i.test(line) ||
+      /^\s*(CMD|YCMD|COMMAND):/i.test(line) ||
+      /^\s*#define\s+/i.test(line) ||
+      /^\s*enum\b/i.test(line) ||
+      /On[A-Z][A-Za-z0-9_]+\s*\(/.test(line),
+    )
+    .slice(0, 80)
+    .map(({ line, number }) => `${number}: ${line.trim()}`);
+
+  return {
+    ...(options.includeContent === false ? {} : { content }),
+    startLine,
+    endLine: endIndex,
+    totalLines: lines.length,
+    nextCursor: endIndex < lines.length ? endIndex + 1 : null,
+    ...(lines.length > maxLines ? { outline } : {}),
+  };
+}
+
 export async function findFiles(
   config: AppConfig,
   query: string,
   options: ListFilesOptions = {},
 ): Promise<Array<{ file: string; size: number }>> {
   const lower = query.toLowerCase();
-  const files = await listProjectFiles(config, { ...options, limit: options.limit ? options.limit * 4 : 400 });
+  const limit = options.limit ?? config.limits.maxSearchResults;
+  const files = await listProjectFiles(config, { ...options, limit: limit * 4 });
   const matches: Array<{ file: string; size: number }> = [];
   for (const file of files) {
     const rel = relativePath(config, file);
     if (rel.toLowerCase().includes(lower)) {
       const stat = await fs.stat(file);
       matches.push({ file: rel, size: stat.size });
-      if (options.limit && matches.length >= options.limit) break;
+      if (matches.length >= limit) break;
     }
   }
   return matches;
@@ -112,12 +168,14 @@ export async function searchCode(
   keyword: string,
   options: ListFilesOptions & { caseSensitive?: boolean; contextLines?: number } = {},
 ): Promise<SearchHit[]> {
+  const limit = options.limit ?? config.limits.maxSearchResults;
+  const candidateLimit = Math.max(limit * 5, limit);
   const files = await listProjectFiles(config, {
     ...options,
-    limit: options.limit ? Math.max(options.limit * 10, 100) : 1000,
+    limit: Math.max(limit * 20, 100),
   });
   const needle = options.caseSensitive ? keyword : keyword.toLowerCase();
-  const contextLines = options.contextLines ?? 1;
+  const contextLines = Math.min(options.contextLines ?? 1, Math.max(0, Math.floor((config.limits.maxSnippetLines - 1) / 2)));
   const hits: SearchHit[] = [];
 
   for (const file of files) {
@@ -140,10 +198,28 @@ export async function searchCode(
         text: line.trim(),
         context: lines.slice(from, to).map((ctx, offset) => `${from + offset + 1}: ${ctx}`),
       });
-      if (options.limit && hits.length >= options.limit) return hits;
+      if (hits.length >= candidateLimit) {
+        return rankSearchHits(hits, keyword).slice(0, limit);
+      }
     }
   }
-  return hits;
+  return rankSearchHits(hits, keyword).slice(0, limit);
+}
+
+function rankSearchHits(hits: SearchHit[], keyword: string): SearchHit[] {
+  const lowerKeyword = keyword.toLowerCase();
+  const score = (hit: SearchHit): number => {
+    const file = hit.file.toLowerCase();
+    const text = hit.text.toLowerCase();
+    let value = 0;
+    if (text === lowerKeyword) value += 10;
+    if (text.includes(`${lowerKeyword}(`)) value += 8;
+    if (file.includes(lowerKeyword)) value += 6;
+    if (/^\s*(public|stock|function|export|class|const|let|var|#define|enum|CMD|YCMD|COMMAND)/i.test(hit.text)) value += 4;
+    if (file.includes("/node_modules/") || file.includes("/dist/")) value -= 20;
+    return value;
+  };
+  return [...hits].sort((a, b) => score(b) - score(a) || a.file.localeCompare(b.file) || a.line - b.line);
 }
 
 export async function summarizeImportantFiles(config: AppConfig, moduleName: ProjectModule): Promise<string[]> {

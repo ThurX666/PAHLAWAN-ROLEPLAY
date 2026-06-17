@@ -4,7 +4,7 @@ import path from "node:path";
 import { z } from "zod";
 import { applyPatch } from "diff";
 import type { ToolDefinition } from "../types.js";
-import { readTextFile } from "../utils/fileSearch.js";
+import { readTextFileSlice } from "../utils/fileSearch.js";
 import { relativePath, safeResolve } from "../utils/pathSafety.js";
 import { redactText } from "../utils/redact.js";
 
@@ -19,21 +19,34 @@ export const fileTools: ToolDefinition[] = [
     description: "Read a file inside the project directory with path validation and secret redaction.",
     schema: z.object({
       filePath: z.string().min(1),
+      startLine: z.number().int().min(1).default(1),
+      maxLines: z.number().int().min(1).max(2000).optional(),
+      maxBytes: z.number().int().min(512).optional(),
+      includeContent: z.boolean().default(true),
     }),
     inputSchema: {
       type: "object",
       required: ["filePath"],
       properties: {
         filePath: { type: "string" },
+        startLine: { type: "number", default: 1 },
+        maxLines: { type: "number", default: 300 },
+        maxBytes: { type: "number" },
+        includeContent: { type: "boolean", default: true },
       },
       additionalProperties: false,
     },
     async handler(input, { config }) {
       const fullPath = safeResolve(config, input.filePath);
-      const content = await readTextFile(config, fullPath);
+      const slice = await readTextFileSlice(config, fullPath, {
+        startLine: input.startLine,
+        maxLines: input.maxLines,
+        maxBytes: input.maxBytes,
+        includeContent: input.includeContent,
+      });
       return {
         file: relativePath(config, fullPath),
-        content,
+        ...slice,
       };
     },
   },

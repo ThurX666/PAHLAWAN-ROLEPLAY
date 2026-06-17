@@ -7,10 +7,20 @@ export const databaseTools: ToolDefinition[] = [
   {
     name: "db_schema_overview",
     description: "Connect to MySQL/MariaDB in read-only mode and list tables, columns, keys, and indexes.",
-    schema: z.object({}),
-    inputSchema: { type: "object", properties: {}, additionalProperties: false },
-    handler(_input, { config }) {
-      return dbSchemaOverview(config);
+    schema: z.object({
+      keyword: z.string().optional(),
+      maxTables: z.number().int().min(1).max(200).default(30),
+    }),
+    inputSchema: {
+      type: "object",
+      properties: {
+        keyword: { type: "string" },
+        maxTables: { type: "number", default: 30 },
+      },
+      additionalProperties: false,
+    },
+    handler(input, { config }) {
+      return dbSchemaOverview(config, { keyword: input.keyword, maxTables: input.maxTables });
     },
   },
   {
@@ -41,19 +51,19 @@ export const databaseTools: ToolDefinition[] = [
     description: "Execute read-only SELECT queries only. Destructive SQL and multi-statements are blocked.",
     schema: z.object({
       query: z.string().min(1),
-      limit: z.number().int().min(1).max(200).default(50),
+      maxRows: z.number().int().min(1).max(500).optional(),
     }),
     inputSchema: {
       type: "object",
       required: ["query"],
       properties: {
         query: { type: "string" },
-        limit: { type: "number", default: 50 },
+        maxRows: { type: "number", default: 50 },
       },
       additionalProperties: false,
     },
     handler(input, { config }) {
-      return dbSafeQuery(config, input.query, input.limit);
+      return dbSafeQuery(config, input.query, input.maxRows ?? config.limits.maxDbRows);
     },
   },
   {

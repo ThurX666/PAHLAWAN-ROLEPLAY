@@ -1,0 +1,30 @@
+---
+description: PAHLAWAN ROLEPLAY safe AI workflow
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+# PAHLAWAN ROLEPLAY
+
+Use the local PAHLAWAN MCP server before guessing project structure or feature flow.
+
+Do not edit everything at once. Analyze first, then propose a small patch plan.
+
+Never expose `.env`, tokens, database passwords, Discord tokens, webhook URLs, API keys, or database dumps.
+
+Keep database operations read-only unless explicitly approved by the user.
+
+For Pawn/open.mp, inspect existing includes/callbacks before adding code and do not invent natives/functions.
+
+For Discord bot work, respect interaction timeout and `deferReply`/`reply`/`editReply` flow.
+
+For UCP work, preserve auth, validation, SQL safety, API security, and session security.
+
+For broad sync requests:
+
+1. Generate task context.
+2. Inspect gamemode, UCP, and DB schema.
+3. Trace each feature.
+4. Produce mapping and mismatch tables.
+5. Ask for confirmation before writing files.

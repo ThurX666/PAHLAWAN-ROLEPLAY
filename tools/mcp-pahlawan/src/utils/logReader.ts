@@ -18,6 +18,7 @@ export async function readRecentLogs(
   config: AppConfig,
   filter: keyof typeof logPatterns,
   maxBytes: number,
+  maxLines = config.limits.maxLogLines,
 ): Promise<unknown> {
   const patterns = logPatterns[filter] ?? logPatterns.all;
   const files = await fg(patterns, {
@@ -37,13 +38,16 @@ export async function readRecentLogs(
       const bytes = Math.min(stat.size, maxBytes);
       const buffer = Buffer.alloc(bytes);
       await handle.read(buffer, 0, bytes, Math.max(0, stat.size - bytes));
-      const text = config.safety.redactSecrets ? redactText(buffer.toString("utf8")) : buffer.toString("utf8");
+      const rawText = config.safety.redactSecrets ? redactText(buffer.toString("utf8")) : buffer.toString("utf8");
+      const lines = rawText.split(/\r?\n/);
+      const warningLines = lines.filter((line) => /warn|error|fatal|exception|crash|failed/i.test(line)).slice(-maxLines);
+      const text = warningLines.length > 0 ? warningLines.join("\n") : lines.slice(-Math.min(maxLines, lines.length)).join("\n");
       entries.push({
         file: relativePath(config, fullPath),
         size: stat.size,
         modifiedAt: stat.mtime.toISOString(),
         tail: text,
-        warnings: text.split(/\r?\n/).filter((line) => /warn|error|fatal|exception|crash|failed/i.test(line)).slice(-30),
+        warnings: warningLines.slice(-Math.min(maxLines, 50)),
       });
     } finally {
       await handle.close();
