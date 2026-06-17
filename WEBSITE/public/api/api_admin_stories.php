@@ -8,6 +8,7 @@ if (!$action) {
         $action = $data['action'];
     }
 }
+$adminUser = ucp_require_admin(5);
 
 if ($action === 'get_stories') {
     $stmt = $pdo->query("
@@ -25,8 +26,7 @@ if ($action === 'get_stories') {
     
     if($storyId && $status) {
         $stmt = $pdo->prepare("UPDATE ucp_character_stories SET status = ?, admin_feedback = ?, reviewed_by = ?, reviewed_at = CURRENT_TIMESTAMP WHERE id = ?");
-        // Using "Admin UCP" as a hardcoded reviewer for testing.
-        $stmt->execute([$status, $feedback, "Admin UCP", $storyId]);
+        $stmt->execute([$status, $feedback, $adminUser['username'], $storyId]);
         
         // Dapatkan character_id dari cerita ini
         $stmtChar = $pdo->prepare("SELECT cs.character_id, cs.username, c.Char_Name FROM ucp_character_stories cs JOIN player_characters c ON cs.character_id = c.pID WHERE cs.id = ?");
@@ -71,7 +71,7 @@ if ($action === 'get_stories') {
         
         try {
             $logStmt = $pdo->prepare("INSERT INTO ucp_admin_logs (admin_name, action, target_player, details) VALUES (?, ?, ?, ?)");
-            $logStmt->execute(['Admin UCP', 'STORY_EVALUATION', $storyId, "Story status updated to $status"]);
+            $logStmt->execute([$adminUser['username'], 'STORY_EVALUATION', $storyId, "Story status updated to $status"]);
         } catch(Exception $e) {}
         
         echo json_encode(["status" => "success"]);

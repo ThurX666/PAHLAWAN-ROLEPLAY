@@ -147,6 +147,7 @@ if ($action === 'login') {
         ]);
 
         if (empty($user['discord_id'])) {
+            ucp_create_pending_session($user);
             echo json_encode([
                 'status' => 'discord_required',
                 'message' => 'Anda harus menghubungkan akun Discord sebelum dapat mengakses dashboard.',
@@ -156,6 +157,7 @@ if ($action === 'login') {
         }
 
         // Kirim response sukses ke React
+        ucp_create_session($user);
         echo json_encode([
             'status' => 'success',
             'message' => 'Login berhasil',

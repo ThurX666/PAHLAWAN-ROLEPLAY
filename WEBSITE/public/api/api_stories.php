@@ -2,7 +2,7 @@
 require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $username = $_GET['username'] ?? '';
+    $username = ucp_require_username($_GET['username'] ?? null);
     
     if ($username) {
         // Ambil ID account
@@ -26,9 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $stories = $stmtStories->fetchAll(PDO::FETCH_ASSOC);
 
         echo json_encode(['status' => 'success', 'data' => $stories]);
-        exit;
-    } else {
-        echo json_encode(["error" => "Username required"]);
         exit;
     }
 }

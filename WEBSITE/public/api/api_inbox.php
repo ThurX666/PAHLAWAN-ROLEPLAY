@@ -2,11 +2,7 @@
 require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $username = $_GET['username'] ?? '';
-    if (!$username) {
-        echo json_encode(['status' => 'error', 'message' => 'Username required']);
-        exit;
-    }
+    $username = ucp_require_username($_GET['username'] ?? null);
 
     $stmt = $pdo->prepare("SELECT * FROM ucp_inbox_messages WHERE username = ? ORDER BY created_at DESC, id DESC");
     $stmt->execute([$username]);
@@ -35,12 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    $sessionUser = ucp_require_user();
     $data = get_sanitized_json();
     $messageId = $data['message_id'] ?? '';
     
     if ($messageId) {
-        $stmt = $pdo->prepare("UPDATE ucp_inbox_messages SET is_read = 1 WHERE id = ?");
-        $stmt->execute([$messageId]);
+        $stmt = $pdo->prepare("UPDATE ucp_inbox_messages SET is_read = 1 WHERE id = ? AND username = ?");
+        $stmt->execute([$messageId, $sessionUser['username']]);
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Message ID required']);
@@ -49,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $sessionUser = ucp_require_user();
     $data = get_sanitized_json();
     $action = $data['action'] ?? '';
 
@@ -74,6 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  echo json_encode(['status' => 'error', 'message' => 'Username is required']);
                  exit;
              }
+             if (!ucp_is_admin($sessionUser, 1) && strcasecmp($username, $sessionUser['username']) !== 0) {
+                 ucp_json_error('Anda tidak dapat mengirim pesan ke akun lain.', 403);
+             }
              $stmt = $pdo->prepare("INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, voucher_code, item_name, item_description, item_price, template, metadata) VALUES (?, ?, ?, ?, 0, ?, ?, ?, ?, ?, ?)");
              $stmt->execute([$username, $title, $message, $type, $voucherCode, $itemName, $itemDescription, $itemPrice, $template, $metadata]);
              
@@ -81,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              echo json_encode(['status' => 'success', 'id' => $newId]);
              exit;
         } else {
+             ucp_require_admin(10);
              // Broadcast: insert for all distinct users in player_ucp table
              $stmtUsers = $pdo->query("SELECT UCP as username FROM player_ucp");
              $users = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);

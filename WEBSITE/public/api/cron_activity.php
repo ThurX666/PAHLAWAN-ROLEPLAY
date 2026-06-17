@@ -10,6 +10,13 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/SampQuery.php';
 
+$isCli = PHP_SAPI === 'cli';
+$cronSecret = app_env('UCP_CRON_SECRET');
+$providedSecret = $_SERVER['HTTP_X_CRON_SECRET'] ?? ($_GET['secret'] ?? '');
+if (!$isCli && ($cronSecret === '' || !hash_equals($cronSecret, $providedSecret))) {
+    ucp_json_error('Akses cron ditolak.', 403);
+}
+
 try {
     // Ambil info dari server menggunakan UDP Query
     $query = new SampQuery($samp_server_ip, $samp_server_port);

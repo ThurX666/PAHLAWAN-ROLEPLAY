@@ -504,6 +504,30 @@ const App: React.FC = () => {
   const [ticketSystemTab, setTicketSystemTab] = useState<'inbox' | 'tickets'>('inbox');
   const [alertConfig, setAlertConfig] = useState<{title: string, message: string, type: 'warning' | 'success'} | null>(null);
 
+  useEffect(() => {
+    if (isPreviewEnv() || !initSession) return;
+
+    fetch(`${API_URL}/session.php`, { credentials: 'include' })
+      .then(async response => {
+        if (!response.ok) throw new Error('invalid_session');
+        return response.json();
+      })
+      .then(result => {
+        if (result.status !== 'success') throw new Error('invalid_session');
+        const sessionLevel = Number(result.data.admin_level || 0);
+        setCurrentUser(result.data.username);
+        setAdminLevel(sessionLevel);
+        setIsAdmin(sessionLevel > 0);
+      })
+      .catch(() => {
+        localStorage.removeItem('prp_session');
+        setIsAuthenticated(false);
+        setCurrentUser('');
+        setIsAdmin(false);
+        setAdminLevel(undefined);
+      });
+  }, []);
+
   // Periodic Server Stats Polling
   useEffect(() => {
     if (!isPreviewEnv()) {
@@ -827,6 +851,15 @@ const App: React.FC = () => {
   };
 
   const handleLogout = () => {
+    if (!isPreviewEnv()) {
+      fetch(`${API_URL}/session.php`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' })
+      }).catch(() => undefined);
+    }
+
     // Hapus sesi
     localStorage.removeItem('prp_session');
     

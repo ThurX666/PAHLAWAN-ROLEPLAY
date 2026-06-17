@@ -1,12 +1,10 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-$username = $_GET['username'] ?? '';
-
-if (empty($username)) {
-    echo json_encode(['status' => 'error', 'message' => 'Username required']);
-    exit;
-}
+$currentUser = ucp_current_user();
+$username = $currentUser
+    ? ucp_require_username($_GET['username'] ?? null)
+    : ucp_require_pending_username($_GET['username'] ?? null);
 
 $stmt = $conn->prepare("SELECT discord_id, admin_level, gold FROM player_ucp WHERE UCP = :username LIMIT 1");
 $stmt->execute(['username' => $username]);

@@ -2,11 +2,7 @@
 require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $username = $_GET['username'] ?? '';
-    if (!$username) {
-        echo json_encode(['status' => 'error', 'message' => 'Username required']);
-        exit;
-    }
+    $username = ucp_require_username($_GET['username'] ?? null);
 
     try {
         // Logika untuk XAMPP/Hosting:

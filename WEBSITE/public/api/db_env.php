@@ -73,3 +73,20 @@ function get_db_config(): array
 
     return $config;
 }
+
+function get_app_env(): array
+{
+    static $env = null;
+    if ($env !== null) {
+        return $env;
+    }
+
+    $envPath = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . '.env';
+    $env = load_env_file($envPath);
+    return $env;
+}
+
+function app_env(string $key, string $default = ''): string
+{
+    return env_value(get_app_env(), $key, $default);
+}

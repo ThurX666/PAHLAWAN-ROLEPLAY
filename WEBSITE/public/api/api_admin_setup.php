@@ -7,15 +7,16 @@ if (!$action) {
     if (isset($data['action'])) $action = $data['action'];
 }
 
-// Role-Based Access Control
-$admin_level = isset($_GET['adminLevel']) ? (int)$_GET['adminLevel'] : (isset($_POST['adminLevel']) ? (int)$_POST['adminLevel'] : 0);
-if ($admin_level === 0 && isset($data['adminLevel'])) {
-    $admin_level = (int)$data['adminLevel'];
-}
+$adminUser = ucp_require_admin(10);
 
 if ($action === 'get_settings') {
     $stmt = $pdo->query("SELECT setting_key, setting_value FROM ucp_system_settings");
     $results = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    foreach (['discord_client_secret', 'discord_bot_token'] as $sensitiveKey) {
+        if (!empty($results[$sensitiveKey])) {
+            $results[$sensitiveKey] = '__CONFIGURED__';
+        }
+    }
     echo json_encode(["status" => "success", "settings" => $results ?: []]);
     exit;
 }
@@ -29,13 +30,16 @@ if ($action === 'save_settings') {
     if (is_array($settings)) {
         $stmt = $pdo->prepare("INSERT INTO ucp_system_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
         foreach ($settings as $key => $value) {
+            if (in_array($key, ['discord_client_secret', 'discord_bot_token'], true) && ($value === '' || $value === '__CONFIGURED__')) {
+                continue;
+            }
             $stmt->execute([$key, $value, $value]);
         }
         
         // Log action
         try {
             $logStmt = $pdo->prepare("INSERT INTO ucp_admin_logs (admin_name, action, target_player, details) VALUES (?, ?, ?, ?)");
-            $logStmt->execute(['Admin UCP', 'SYSTEM_UPDATE', 'System', 'UCP Settings Updated']);
+            $logStmt->execute([$adminUser['username'], 'SYSTEM_UPDATE', 'System', 'UCP Settings Updated']);
         } catch(Exception $e) { }
 
         echo json_encode(["status" => "success"]);

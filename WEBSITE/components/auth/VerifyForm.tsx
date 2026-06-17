@@ -135,6 +135,7 @@ export const VerifyForm: React.FC<VerifyFormProps> = ({ username: email, initial
 
         const response = await fetch(`${API_URL}/verify.php`, {
             method: 'POST',
+            credentials: 'include',
             body: formData
         });
 

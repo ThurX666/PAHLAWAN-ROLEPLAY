@@ -1,9 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
-
- 
- 
- 
+ucp_require_admin(5);
 
 $action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : null);
 if (!$action) {

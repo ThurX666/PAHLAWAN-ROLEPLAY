@@ -2,24 +2,12 @@
 require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $username = $_GET['username'] ?? '';
-    if (!$username) {
-        echo json_encode(['status' => 'error', 'message' => 'Username required']);
-        exit;
-    }
-
-    // Cek apakah user ini admin
-    $stmtCheck = $pdo->prepare("SELECT admin_level FROM player_ucp WHERE UCP = ?");
-    $stmtCheck->execute([$username]);
-    $userRow = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-    
-    $isAdmin = false;
-    if ($userRow && (int)$userRow['admin_level'] > 0) {
-        $isAdmin = true;
-    }
+    $sessionUser = ucp_require_user();
+    $username = ucp_require_username($_GET['username'] ?? null);
+    $isAdmin = ucp_is_admin($sessionUser);
 
     // Ambil data untuk Admin atau User biasa
-    if ($isAdmin || strtolower($username) === 'admin') {
+    if ($isAdmin) {
         $stmt = $pdo->prepare("SELECT * FROM ucp_support_tickets ORDER BY last_update DESC");
         $stmt->execute();
     } else {
@@ -59,11 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $sessionUser = ucp_require_user();
     $data = get_sanitized_json();
     $action = $data['action'] ?? '';
 
     if ($action === 'create_ticket') {
-        $username = $data['username'];
+        $username = ucp_require_username($data['username'] ?? null);
         $subject = $data['subject'];
         $category = $data['category'];
         $initial_message = $data['initial_message'];
@@ -81,9 +70,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'reply_ticket') {
         $ticket_id = $data['ticket_id'];
-        $sender = $data['sender'];
+        $stmtOwner = $pdo->prepare("SELECT username FROM ucp_support_tickets WHERE id = ?");
+        $stmtOwner->execute([$ticket_id]);
+        $ticketOwner = $stmtOwner->fetchColumn();
+        if (!$ticketOwner) {
+            ucp_json_error('Tiket tidak ditemukan.', 404);
+        }
+        if (!ucp_is_admin($sessionUser) && strcasecmp((string)$ticketOwner, $sessionUser['username']) !== 0) {
+            ucp_json_error('Anda tidak dapat membalas tiket ini.', 403);
+        }
+        $sender = ucp_is_admin($sessionUser) ? $sessionUser['username'] : (string)$ticketOwner;
         $text = $data['text'];
-        $status = $data['status'];
+        $status = ucp_is_admin($sessionUser) ? ($data['status'] ?? 'Dijawab') : 'Open';
 
         $stmtMsg = $pdo->prepare("INSERT INTO ucp_support_messages (ticket_id, sender_name, message_text) VALUES (?, ?, ?)");
         $stmtMsg->execute([$ticket_id, $sender, $text]);
@@ -99,6 +97,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'update_status') {
         $ticket_id = $data['ticket_id'];
         $status = $data['status'];
+        $stmtOwner = $pdo->prepare("SELECT username FROM ucp_support_tickets WHERE id = ?");
+        $stmtOwner->execute([$ticket_id]);
+        $ticketOwner = $stmtOwner->fetchColumn();
+        if (!$ticketOwner) {
+            ucp_json_error('Tiket tidak ditemukan.', 404);
+        }
+        if (!ucp_is_admin($sessionUser) && (
+            strcasecmp((string)$ticketOwner, $sessionUser['username']) !== 0 ||
+            $status !== 'Ditutup'
+        )) {
+            ucp_json_error('Anda tidak dapat mengubah status tiket ini.', 403);
+        }
 
         $stmtTick = $pdo->prepare("UPDATE ucp_support_tickets SET status = ?, last_update = CURRENT_TIMESTAMP WHERE id = ?");
         $stmtTick->execute([$status, $ticket_id]);

@@ -100,6 +100,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
 
                 const res = await fetch(apiUrl, {
                     method: 'POST',
+                    credentials: 'include',
                     body: formDataToSend
                 });
 

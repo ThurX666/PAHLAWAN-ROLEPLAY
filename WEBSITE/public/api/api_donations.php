@@ -12,7 +12,7 @@ if (!$action) {
 }
 
 if ($action === 'get_transactions') {
-    $username = $_GET['username'] ?? '';
+    $username = ucp_require_username($_GET['username'] ?? null);
     
     if($username) {
         $stmt = $pdo->prepare("SELECT * FROM ucp_transactions WHERE account = ? ORDER BY created_at DESC");
@@ -23,9 +23,10 @@ if ($action === 'get_transactions') {
     }
     
 } else if ($action === 'add_transaction') {
+    $sessionUser = ucp_require_user();
     $data = get_sanitized_json();
     
-    $account = $data['account'] ?? '';
+    $account = ucp_require_username($data['account'] ?? null);
     $senderName = $data['senderName'] ?? '';
     $item = $data['item'] ?? '';
     $type = $data['type'] ?? 'donation';
@@ -44,8 +45,9 @@ if ($action === 'get_transactions') {
         echo json_encode(["status" => "error", "message" => "Invalid parameters"]);
     }
 } else if ($action === 'deduct_gold') {
+    $sessionUser = ucp_require_user();
     $data = get_sanitized_json();
-    $username = $data['username'] ?? '';
+    $username = ucp_require_username($data['username'] ?? null);
     $amount = intval($data['amount'] ?? 0);
     $itemId = $data['itemId'] ?? null;
     

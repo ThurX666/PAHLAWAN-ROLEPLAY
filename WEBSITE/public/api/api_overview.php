@@ -5,6 +5,10 @@ require_once __DIR__ . '/config.php';
 
 $action = $_GET['action'] ?? '';
 
+if (in_array($action, ['stats', 'chart', 'assets', 'detail'], true)) {
+    ucp_require_admin(5);
+}
+
 if ($action === 'server_info') {
     require_once __DIR__ . '/SampQuery.php';
     

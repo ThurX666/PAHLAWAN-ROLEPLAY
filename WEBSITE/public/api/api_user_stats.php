@@ -2,12 +2,7 @@
 require_once __DIR__ . '/config.php';
 
 
-$username = isset($_GET['username']) ? $_GET['username'] : '';
-
-if (empty($username)) {
-    echo json_encode(['status' => 'error', 'message' => 'Username diperlukan.']);
-    exit;
-}
+$username = ucp_require_username($_GET['username'] ?? null);
 
 try {
     // Ambil data akun UCP beserta data profil untuk keamanan

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+ucp_require_admin(10);
 
 $health = phrp_database_status($conn);
 

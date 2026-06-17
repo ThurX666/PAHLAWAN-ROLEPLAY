@@ -1,9 +1,11 @@
 <?php
 // Script testing SA-MP Query
+require_once __DIR__ . '/config.php';
+ucp_require_admin(10);
 header('Content-Type: text/html');
 
-$ip = isset($_GET['ip']) ? $_GET['ip'] : "127.0.0.1";
-$port = isset($_GET['port']) ? (int)$_GET['port'] : 7777;
+$ip = $samp_server_ip;
+$port = $samp_server_port;
 
 echo "<h3>Testing SA-MP UDP Query</h3>";
 echo "Mencoba query ke ping <b>$ip:$port</b>...<br><br>";

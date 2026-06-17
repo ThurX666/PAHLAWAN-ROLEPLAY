@@ -2,6 +2,7 @@
 require_once __DIR__ . '/config.php';
 
 $action = $_POST['action'] ?? null;
+$sessionUser = ucp_require_user();
 
 if ($action === 'upload_photo') {
     $charName = preg_replace('/[^a-zA-Z0-9_]/', '', $_POST['characterName'] ?? 'unknown');
@@ -28,8 +29,13 @@ if ($action === 'upload_photo') {
                 // Note: It's safer to pass char_id, but we'll use name here based on the payload pattern
                 $savedPath = "uploads/characters/" . $newName;
                 try {
-                    $stmtUpdate = $pdo->prepare("UPDATE characters SET photo_url = ? WHERE name = ?");
-                    $stmtUpdate->execute([$savedPath, $charName]);
+                    $stmtUpdate = $pdo->prepare("
+                        UPDATE ucp_character_stories cs
+                        JOIN player_characters c ON c.pID = cs.character_id
+                        SET cs.photo_url = ?
+                        WHERE c.Char_Name = ? AND c.Char_UCP = ?
+                    ");
+                    $stmtUpdate->execute([$savedPath, $charName, $sessionUser['username']]);
                 } catch(PDOException $e) {
                     // Ignore error, it will just return the path
                 }

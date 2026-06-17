@@ -9,15 +9,10 @@ if (!$action) {
     }
 }
 
-// Role-Based Access Control
-$admin_level = isset($_GET['adminLevel']) ? (int)$_GET['adminLevel'] : (isset($_POST['adminLevel']) ? (int)$_POST['adminLevel'] : 0);
-if ($admin_level === 0 && isset($data['adminLevel'])) {
-    $admin_level = (int)$data['adminLevel'];
-}
-// For read-only promo configs we might allow lower levels or public, but for modifications we strictly check level >= 10
 $restricted_actions = ['update_status', 'update_promo', 'add_item', 'toggle_item'];
-if (in_array($action, $restricted_actions) && $admin_level < 10 && $admin_level !== 0) { // adminLevel 0 usually means mock/preview bypassing here, but ideally we check token
-    // Not enforcing strictly unless username provided because of the simplified existing auth
+$adminUser = null;
+if ($action === 'get_donations' || in_array($action, $restricted_actions, true)) {
+    $adminUser = ucp_require_admin(10);
 }
 
 if ($action === 'get_donations') {
@@ -35,7 +30,7 @@ if ($action === 'get_donations') {
         // Log action (assuming admin_logs table exists from previous)
         try {
             $logStmt = $pdo->prepare("INSERT INTO ucp_admin_logs (admin_name, action, target_player, details) VALUES (?, ?, ?, ?)");
-            $logStmt->execute(['Admin UCP', 'UPDATE_TX_STATUS', $id, "Updated to $status"]);
+            $logStmt->execute([$adminUser['username'], 'UPDATE_TX_STATUS', $id, "Updated to $status"]);
             
             // Get transaction info for Inbox
             $txStmt = $pdo->prepare("SELECT account, item_name, amount FROM ucp_transactions WHERE id = ?");

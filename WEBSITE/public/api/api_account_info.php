@@ -2,12 +2,7 @@
 require_once __DIR__ . '/config.php';
 
 
-$username = isset($_GET['username']) ? $_GET['username'] : '';
-
-if (empty($username)) {
-    echo json_encode(['status' => 'error', 'message' => 'Username diperlukan.']);
-    exit;
-}
+$username = ucp_require_username($_GET['username'] ?? null);
 
 try {
     $stmt = $conn->prepare("SELECT ID as id, Register_Date as created_at, Last_Login as last_login, Verify_Status as is_verified, last_device, last_ip, last_location FROM player_ucp WHERE UCP = :username LIMIT 1");

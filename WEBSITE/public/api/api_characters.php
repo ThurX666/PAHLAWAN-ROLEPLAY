@@ -2,11 +2,7 @@
 require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $username = $_GET['username'] ?? '';
-    if (!$username) {
-        echo json_encode(['status' => 'error', 'message' => 'Username required']);
-        exit;
-    }
+    $username = ucp_require_username($_GET['username'] ?? null);
 
     $stmt = $pdo->prepare("SELECT c.pID as id, c.Char_Name as name, c.Char_Level as level, c.Char_Money as money, c.Char_BankMoney as bank, 'Warga Sipil' as faction, 'Offline' as status FROM player_characters c JOIN player_ucp a ON c.Char_UCP = a.UCP WHERE a.UCP = ? ORDER BY c.pID ASC");
     $stmt->execute([$username]);
@@ -17,11 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $sessionUser = ucp_require_user();
     $data = get_sanitized_json();
     $action = $data['action'] ?? '';
 
     if ($action === 'create') {
-        $username = $data['username'] ?? '';
+        $username = ucp_require_username($data['username'] ?? null);
         $name = $data['name'] ?? '';
 
         if (!$username || !$name) {
@@ -104,8 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'delete') {
         $charId = $data['id'] ?? null;
         if ($charId) {
-            $stmtDel = $pdo->prepare("DELETE FROM player_characters WHERE pID = ?");
-            $stmtDel->execute([$charId]);
+            $stmtDel = $pdo->prepare("DELETE FROM player_characters WHERE pID = ? AND Char_UCP = ?");
+            $stmtDel->execute([$charId, $sessionUser['username']]);
+            if ($stmtDel->rowCount() === 0) {
+                ucp_json_error('Karakter tidak ditemukan atau bukan milik Anda.', 404);
+            }
             echo json_encode(['status' => 'success']);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Character ID required']);

@@ -192,6 +192,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
 
             const response = await fetch(`${API_URL}/auth.php`, {
                 method: 'POST',
+                credentials: 'include',
                 body: formData
             });
 

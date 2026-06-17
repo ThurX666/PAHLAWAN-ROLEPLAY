@@ -126,6 +126,7 @@ if ($action === 'verify_otp') {
 
         // Kirim response sukses yang meniru payload auth.php supaya React bisa langsung auto-login
         // Jika discord_id kosong (pasti karena baru verify) maka kita kirim discord_required
+        ucp_create_pending_session($user);
         echo json_encode([
             'status' => 'discord_required', 
             'message' => 'Verifikasi Email Berhasil! Lanjut hubungkan Discord...',

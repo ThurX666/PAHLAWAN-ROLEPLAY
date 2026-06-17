@@ -1,14 +1,17 @@
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/discord_helper.php';
-session_start();
+ucp_session_start();
 
 $code = $_GET['code'] ?? '';
+$state = $_GET['state'] ?? '';
 $username = $_SESSION['discord_link_username'] ?? '';
+$expectedState = $_SESSION['discord_oauth_state'] ?? '';
 
-if (empty($code) || empty($username)) {
+if (empty($code) || empty($username) || empty($state) || empty($expectedState) || !hash_equals($expectedState, $state)) {
     die("Error: Invalid Session or Missing Code.");
 }
+unset($_SESSION['discord_oauth_state']);
 
 $stmt = $conn->prepare("SELECT setting_key, setting_value FROM ucp_system_settings WHERE setting_key LIKE 'discord_%'");
 $stmt->execute();
@@ -63,6 +66,13 @@ if (isset($token_data['access_token'])) {
         // Simpan ke database
         $update = $conn->prepare("UPDATE player_ucp SET discord_id = :discord WHERE UCP = :username");
         $update->execute(['discord' => $discord_id, 'username' => $username]);
+
+        $stmtSession = $conn->prepare("SELECT ID as id, UCP as username, admin_level FROM player_ucp WHERE UCP = :username LIMIT 1");
+        $stmtSession->execute(['username' => $username]);
+        $sessionUser = $stmtSession->fetch(PDO::FETCH_ASSOC);
+        if ($sessionUser) {
+            ucp_create_session($sessionUser);
+        }
         
         // --- INBOX NOTIFICATION: DISCORD LINK SUCCESS ---
         $inboxTitle = "Discord Berhasil Ditautkan 🎉";

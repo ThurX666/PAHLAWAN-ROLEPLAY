@@ -4,8 +4,14 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+function smtpCredentialsAvailable(): bool {
+    global $smtp_user, $smtp_pass;
+    return !empty($smtp_user) && !empty($smtp_pass);
+}
+
 function sendVerificationEmail($toEmail, $username, $otpCode, $context = 'register', $device = '', $location = '') {
     global $smtp_user, $smtp_pass;
+    if (!smtpCredentialsAvailable()) return false;
     
     // BYPASS UNTUK AI STUDIO PREVIEW & LOCALHOST REACT DEV
     // Supaya testing lancar tanpa mengirim jutaan email dari server cloud node.js
@@ -120,6 +126,7 @@ function sendVerificationEmail($toEmail, $username, $otpCode, $context = 'regist
 
 function sendWelcomeEmail($toEmail, $username) {
     global $smtp_user, $smtp_pass;
+    if (!smtpCredentialsAvailable()) return false;
     
     // BYPASS UNTUK AI STUDIO PREVIEW & LOCALHOST REACT DEV
     $host = $_SERVER['HTTP_HOST'] ?? '';
@@ -202,6 +209,7 @@ function sendWelcomeEmail($toEmail, $username) {
 
 function sendForgotPasswordEmail($toEmail, $username, $otpCode) {
     global $smtp_user, $smtp_pass;
+    if (!smtpCredentialsAvailable()) return false;
     
     $host = $_SERVER['HTTP_HOST'] ?? '';
     if (strpos($host, 'run.app') !== false || strpos($host, 'localhost:5173') !== false) {
@@ -283,6 +291,7 @@ function sendForgotPasswordEmail($toEmail, $username, $otpCode) {
 
 function sendPasswordResetSuccessEmail($toEmail, $username) {
     global $smtp_user, $smtp_pass;
+    if (!smtpCredentialsAvailable()) return false;
     
     $host = $_SERVER['HTTP_HOST'] ?? '';
     if (strpos($host, 'run.app') !== false || strpos($host, 'localhost:5173') !== false) {

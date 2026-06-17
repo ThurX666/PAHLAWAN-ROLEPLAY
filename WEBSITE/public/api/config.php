@@ -1,0 +1,72 @@
+<?php
+require_once __DIR__ . '/security.php';
+require_once __DIR__ . '/db_env.php';
+require_once __DIR__ . '/auth_session.php';
+require_once __DIR__ . '/database_integrate.php';
+
+$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = array_filter(array_map('trim', explode(',', app_env(
+    'UCP_ALLOWED_ORIGINS',
+    'http://127.0.0.1:5173,http://localhost:5173'
+))));
+
+if ($requestOrigin !== '' && in_array($requestOrigin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: {$requestOrigin}");
+    header('Vary: Origin');
+}
+
+header('Access-Control-Allow-Credentials: true');
+header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
+header("Content-Type: application/json");
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit(0);
+}
+
+date_default_timezone_set('Asia/Jakarta');
+
+$dbConfig = get_db_config();
+$db_host = $dbConfig['host'];
+$db_port = $dbConfig['port'];
+$db_user = $dbConfig['user'];
+$db_pass = $dbConfig['pass'];
+$db_name = $dbConfig['name'];
+
+$smtp_user = app_env('SMTP_USER');
+$smtp_pass = app_env('SMTP_PASS');
+
+$social_discord = "https://bit.ly/pahlawan-rp";
+$social_tiktok = "https://www.tiktok.com/@pahlawanroleplay?_r=1&_t=ZS-95tA12p3lPl";
+
+$samp_server_ip = app_env('SAMP_SERVER_IP', '127.0.0.1');
+$samp_server_port = (int)app_env('SAMP_SERVER_PORT', '7777');
+
+try {
+    $conn = new PDO(
+        "mysql:host={$db_host};port={$db_port};dbname={$db_name};charset=utf8mb4",
+        $db_user,
+        $db_pass
+    );
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn->exec("SET time_zone = '+07:00'");
+
+    $pdo = $conn;
+
+    if (filter_var(app_env('UCP_AUTO_MIGRATE', 'false'), FILTER_VALIDATE_BOOLEAN)) {
+        phrp_integrate_database($conn);
+    }
+} catch (PDOException $e) {
+    $response = [
+        'status' => 'error',
+        'message' => 'Database connection failed.',
+        'hint' => 'Pastikan DB_NAME di WEBSITE/.env sama dengan DATABASE_NAME di utils_defines.inc (default: ariena).',
+    ];
+    if (filter_var(app_env('UCP_DEBUG', 'false'), FILTER_VALIDATE_BOOLEAN)) {
+        $response['error_detail'] = $e->getMessage();
+    }
+    echo json_encode($response);
+    exit;
+}
+?>

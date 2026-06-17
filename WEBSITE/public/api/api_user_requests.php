@@ -10,8 +10,9 @@ if (!$action) {
 }
 
 if ($action === 'submit_request') {
+    $sessionUser = ucp_require_user();
     $data = get_sanitized_json();
-    $username = $data['username'] ?? '';
+    $username = ucp_require_username($data['username'] ?? null);
     $type = $data['type'] ?? '';
     $content = $data['content'] ?? '';
     $metadata = isset($data['metadata']) ? json_encode($data['metadata']) : '{}';
@@ -30,13 +31,16 @@ if ($action === 'submit_request') {
         echo json_encode(["status" => "error", "message" => "Gagal menyimpan permohonan: " . $e->getMessage()]);
     }
 } elseif ($action === 'get_requests') {
+    $sessionUser = ucp_require_user();
     $username = isset($_GET['username']) ? $_GET['username'] : '';
     
     try {
         if ($username) {
+            $username = ucp_require_username($username);
             $stmt = $pdo->prepare("SELECT * FROM ucp_user_requests WHERE username = ? ORDER BY created_at DESC");
             $stmt->execute([$username]);
         } else {
+            ucp_require_admin(5);
             $stmt = $pdo->query("SELECT * FROM ucp_user_requests ORDER BY created_at DESC");
         }
         echo json_encode(["status" => "success", "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)]);

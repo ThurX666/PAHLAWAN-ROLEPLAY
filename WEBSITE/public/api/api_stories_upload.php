@@ -2,9 +2,10 @@
 require_once __DIR__ . '/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $sessionUser = ucp_require_user();
     $char_id = $_POST['char_id'] ?? 0;
     $content = $_POST['story_text'] ?? '';
-    $username = $_POST['username'] ?? '';
+    $username = ucp_require_username($_POST['username'] ?? null);
     // $photo = $_FILES['photo'] ?? null; // Not implemented for mock purposes right now. Assuming just text or base64.
 
     if ($char_id > 0 && !empty($content) && !empty($username)) {
@@ -17,18 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Cek apakah karakter milik user ini
-        $stmtAccount = $pdo->prepare("SELECT ID as id FROM player_ucp WHERE UCP = ?");
-        $stmtAccount->execute([$username]);
-        $account = $stmtAccount->fetch(PDO::FETCH_ASSOC);
-
-        if (!$account) {
-            echo json_encode(['status' => 'error', 'message' => 'Account not found']);
-            exit;
-        }
-
-        $stmtChar = $pdo->prepare("SELECT id FROM characters WHERE id = ? AND ucp_id = ?");
-        $stmtChar->execute([$char_id, $account['id']]);
+        $stmtChar = $pdo->prepare("SELECT pID, Char_Name FROM player_characters WHERE pID = ? AND Char_UCP = ?");
+        $stmtChar->execute([$char_id, $sessionUser['username']]);
         $char = $stmtChar->fetch(PDO::FETCH_ASSOC);
 
         if (!$char) {
@@ -47,12 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtUpdate->execute([$content, $char_id]);
         } else {
             // Insert baru
-            $stmtInsert = $pdo->prepare("INSERT INTO ucp_character_stories (character_id, content, status) VALUES (?, ?, 'Pending')");
-            $stmtInsert->execute([$char_id, $content]);
+            $stmtInsert = $pdo->prepare("INSERT INTO ucp_character_stories (character_id, username, character_name, content, status) VALUES (?, ?, ?, ?, 'Pending')");
+            $stmtInsert->execute([$char_id, $username, $char['Char_Name'], $content]);
         }
 
-        // Update status di tabel characters juga
-        $stmtCharUpdate = $pdo->prepare("UPDATE characters SET story_status = 'Pending' WHERE id = ?");
+        $stmtCharUpdate = $pdo->prepare("UPDATE player_characters SET story_status = 'Pending' WHERE pID = ?");
         $stmtCharUpdate->execute([$char_id]);
 
         echo json_encode(['status' => 'success', 'message' => 'Story submitted successfully']);

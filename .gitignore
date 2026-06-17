@@ -45,7 +45,6 @@ WEBSITE/dist/
 WEBSITE/dist-ssr/
 WEBSITE/.runtime-logs/
 WEBSITE/public/uploads/
-WEBSITE/public/api/config.php
 WEBSITE/public/api/.migrated_*
 
 # Database dumps are local and may contain private player/server data
