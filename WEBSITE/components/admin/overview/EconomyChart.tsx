@@ -69,7 +69,13 @@ export const EconomyChart: React.FC = () => {
             <div className="text-right">
                 <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Total Cash</span>
                 <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500 block leading-none tracking-tight">
-                  {isLoading ? '...' : formatCompactCurrency(totalCash)}
+                  {isLoading
+                    ? 'Loading...'
+                    : error
+                      ? 'Unavailable'
+                      : chartData.length === 0
+                        ? 'No data'
+                        : formatCompactCurrency(totalCash)}
                 </span>
             </div>
         </div>
