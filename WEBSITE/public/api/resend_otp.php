@@ -58,6 +58,14 @@ if ($action === 'resend_otp') {
         // Triger pengiriman Email dengan teks Resend
         $email_sent = sendVerificationEmail($user['Email'], $user['UCP'], $new_otp_code, 'resend');
 
+        if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
+            echo json_encode([
+                'status' => 'error',
+                'message' => localMailTroubleshootingMessage(),
+            ]);
+            exit;
+        }
+
         if ($email_sent) {
             echo json_encode([
                 'status' => 'success', 

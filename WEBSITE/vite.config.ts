@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
+    const apiProxyTarget = env.VITE_DEV_API_PROXY_TARGET || 'http://127.0.0.1:8000';
     return {
       base: './', // <-- Fix blank screen di XAMPP subfolder
       server: {
@@ -11,7 +12,7 @@ export default defineConfig(({ mode }) => {
         host: '0.0.0.0',
         proxy: {
           '/api': {
-            target: 'http://127.0.0.1:8000',
+            target: apiProxyTarget,
             changeOrigin: true,
           },
         },

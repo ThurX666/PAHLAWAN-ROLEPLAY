@@ -78,7 +78,15 @@ if ($action === 'login') {
                 $stmt_update->execute(['new_token' => $new_otp_code, 'id' => $user['id']]);
 
                 require_once __DIR__ . '/mailer_helper.php';
-                sendVerificationEmail($user['email'], $user['username'], $new_otp_code, $reason_title, $device, $location);
+                $email_sent = sendVerificationEmail($user['email'], $user['username'], $new_otp_code, $reason_title, $device, $location);
+
+                if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => localMailTroubleshootingMessage(),
+                    ]);
+                    exit;
+                }
 
                 echo json_encode([
                     'status' => 'unverified', 
@@ -120,7 +128,15 @@ if ($action === 'login') {
                         $stmt_update->execute(['new_token' => $new_otp_code, 'id' => $user['id']]);
 
                         // Nembak Email Langsung
-                        sendVerificationEmail($user['email'], $user['username'], $new_otp_code, 'resend');
+                        $email_sent = sendVerificationEmail($user['email'], $user['username'], $new_otp_code, 'resend');
+
+                        if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
+                            echo json_encode([
+                                'status' => 'error',
+                                'message' => localMailTroubleshootingMessage(),
+                            ]);
+                            exit;
+                        }
                         
                         $msg_to_client = 'Akun belum terverifikasi! Sistem baru saja MENGIRIM KODE OTP BARU secara otomatis ke Email Anda.';
                         $cooldown_remaining = 1800;

@@ -9,21 +9,63 @@ function smtpCredentialsAvailable(): bool {
     return !empty($smtp_user) && !empty($smtp_pass);
 }
 
+function isLocalDevEnvironment(): bool {
+    $appEnv = strtolower((string) app_env('APP_ENV', 'production'));
+    return in_array($appEnv, ['local', 'development', 'dev'], true);
+}
+
+function localMailMode(): string {
+    return strtolower((string) app_env('UCP_LOCAL_MAIL_MODE', 'smtp'));
+}
+
+function shouldBypassLocalPreviewMail(): bool {
+    $host = $_SERVER['HTTP_HOST'] ?? '';
+    if (strpos($host, 'run.app') !== false) {
+        return true;
+    }
+
+    return isLocalDevEnvironment() && localMailMode() === 'preview_bypass';
+}
+
+function phpMailerLibraryAvailable(): bool {
+    $base = __DIR__ . '/PHPMailer/src/';
+    return file_exists($base . 'Exception.php')
+        && file_exists($base . 'PHPMailer.php')
+        && file_exists($base . 'SMTP.php');
+}
+
+function localMailTroubleshootingMessage(): string {
+    $issues = [];
+
+    if (!smtpCredentialsAvailable()) {
+        $issues[] = 'SMTP_USER/SMTP_PASS are not configured';
+    }
+
+    if (!phpMailerLibraryAvailable()) {
+        $issues[] = 'PHPMailer is not installed under WEBSITE/public/api/PHPMailer';
+    }
+
+    if (empty($issues)) {
+        $issues[] = 'mail delivery failed; check SMTP connectivity and PHP error logs';
+    }
+
+    return 'Local dev OTP email is not configured: ' . implode('; ', $issues) . '.';
+}
+
 function sendVerificationEmail($toEmail, $username, $otpCode, $context = 'register', $device = '', $location = '') {
     global $smtp_user, $smtp_pass;
     if (!smtpCredentialsAvailable()) return false;
     
-    // BYPASS UNTUK AI STUDIO PREVIEW & LOCALHOST REACT DEV
-    // Supaya testing lancar tanpa mengirim jutaan email dari server cloud node.js
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (strpos($host, 'run.app') !== false || strpos($host, 'localhost:5173') !== false) {
-        // Otomatis dianggap sukses
+    // BYPASS hanya untuk preview yang diizinkan secara eksplisit.
+    if (shouldBypassLocalPreviewMail()) {
         return true; 
     }
 
-    // WAJIB DOWNLOAD LIBRARY INI DI HOSTING / XAMPP Asli Anda 
-    // Link Download: https://github.com/PHPMailer/PHPMailer
-    // Taruh foldernya di /public/api/PHPMailer/
+    if (!phpMailerLibraryAvailable()) {
+        error_log('Mailer Error: PHPMailer library is missing from WEBSITE/public/api/PHPMailer.');
+        return false;
+    }
+
     require 'PHPMailer/src/Exception.php';
     require 'PHPMailer/src/PHPMailer.php';
     require 'PHPMailer/src/SMTP.php';
@@ -128,11 +170,11 @@ function sendWelcomeEmail($toEmail, $username) {
     global $smtp_user, $smtp_pass;
     if (!smtpCredentialsAvailable()) return false;
     
-    // BYPASS UNTUK AI STUDIO PREVIEW & LOCALHOST REACT DEV
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (strpos($host, 'run.app') !== false || strpos($host, 'localhost:5173') !== false) {
+    if (shouldBypassLocalPreviewMail()) {
         return true; 
     }
+
+    if (!phpMailerLibraryAvailable()) return false;
 
     $mail = new PHPMailer(true);
 
@@ -211,10 +253,11 @@ function sendForgotPasswordEmail($toEmail, $username, $otpCode) {
     global $smtp_user, $smtp_pass;
     if (!smtpCredentialsAvailable()) return false;
     
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (strpos($host, 'run.app') !== false || strpos($host, 'localhost:5173') !== false) {
+    if (shouldBypassLocalPreviewMail()) {
         return true; 
     }
+
+    if (!phpMailerLibraryAvailable()) return false;
 
     $mail = new PHPMailer(true);
 
