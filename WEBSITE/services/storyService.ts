@@ -1,5 +1,3 @@
-import { Type } from "@google/genai";
-
 // Mock Database of existing stories to compare against
 const EXISTING_STORIES_DB = [
     "Lahir di Los Santos, saya besar di lingkungan Ganton. Ayah saya seorang mekanik...",

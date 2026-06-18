@@ -1,15 +1,32 @@
-import { GoogleGenAI, Type } from "@google/genai";
+type AiMessage = {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+};
 
-const getAiClient = () => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    throw new Error("API Key not found");
+type AiRequestOptions = {
+  responseFormat?: 'json';
+  task: 'server-news' | 'roleplay-evaluation';
+};
+
+export type AiProvider = {
+  sendMessage: (messages: AiMessage[], options: AiRequestOptions) => Promise<string>;
+};
+
+let activeProvider: AiProvider | null = null;
+
+export const setAiProvider = (provider: AiProvider | null) => {
+  activeProvider = provider;
+};
+
+const sendMessage = async (messages: AiMessage[], options: AiRequestOptions) => {
+  if (!activeProvider) {
+    throw new Error("AI provider is not configured");
   }
-  return new GoogleGenAI({ apiKey });
+
+  return activeProvider.sendMessage(messages, options);
 };
 
 export const generateServerNews = async (): Promise<{ title: string; content: string; tags: string[] }> => {
-  const ai = getAiClient();
   const prompt = `
     Buatkan berita "In-Character" (IC) singkat dan imersif untuk server GTA San Andreas Roleplay berbahasa Indonesia.
     Berita harus mengenai kejadian acak di Los Santos (contoh: balap liar, perampokan bank, pemilihan walikota, perang geng).
@@ -18,23 +35,10 @@ export const generateServerNews = async (): Promise<{ title: string; content: st
   `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING },
-            content: { type: Type.STRING },
-            tags: { type: Type.ARRAY, items: { type: Type.STRING } }
-          }
-        }
-      }
-    });
-
-    const text = response.text;
+    const text = await sendMessage(
+      [{ role: 'user', content: prompt }],
+      { task: 'server-news', responseFormat: 'json' }
+    );
     if (!text) throw new Error("No response from AI");
     return JSON.parse(text);
   } catch (error) {
@@ -48,7 +52,6 @@ export const generateServerNews = async (): Promise<{ title: string; content: st
 };
 
 export const evaluateRoleplayApp = async (app: { characterName: string; story: string; faction: string }) => {
-  const ai = getAiClient();
   const prompt = `
     Kamu adalah Admin Roleplay yang tegas untuk server GTA SA-MP "Pahlawan Roleplay" (Server Indonesia).
     Evaluasi aplikasi karakter/faksi berikut.
@@ -69,23 +72,10 @@ export const evaluateRoleplayApp = async (app: { characterName: string; story: s
   `;
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-pro-preview',
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            score: { type: Type.INTEGER },
-            feedback: { type: Type.STRING },
-            approved: { type: Type.BOOLEAN }
-          }
-        }
-      }
-    });
-
-    const text = response.text;
+    const text = await sendMessage(
+      [{ role: 'user', content: prompt }],
+      { task: 'roleplay-evaluation', responseFormat: 'json' }
+    );
     if (!text) throw new Error("No response from AI");
     return JSON.parse(text);
   } catch (error) {
