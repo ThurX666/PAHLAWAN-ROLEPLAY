@@ -308,7 +308,21 @@ if ($action === 'server_info') {
         }
     }
     
-    echo json_encode(["status" => "success", "data" => $data]);
+    $responseJson = json_encode(
+        ["status" => "success", "data" => $data],
+        JSON_INVALID_UTF8_SUBSTITUTE
+    );
+
+    if ($responseJson === false) {
+        http_response_code(500);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Asset list response could not be encoded safely."
+        ]);
+        exit;
+    }
+
+    echo $responseJson;
 } elseif ($action === 'detail') {
     $type = $_GET['type'] ?? '';
     $id = (int)($_GET['id'] ?? 0);
