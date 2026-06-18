@@ -10,9 +10,31 @@ interface AssetListProps {
 
 export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }) => {
     const [assets, setAssets] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const formatCurrency = (value: number | null | undefined) => {
+        if (typeof value !== 'number') return 'Unknown';
+        return `$${value.toLocaleString()}`;
+    };
+
+    const formatText = (value: string | null | undefined) => {
+        if (!value) return 'Unknown';
+        return value;
+    };
 
     useEffect(() => {
         const fetchAssets = async () => {
+            setAssets([]);
+            setError(null);
+
+            if (!category) {
+                setLoading(false);
+                return;
+            }
+
+            setLoading(true);
+
             if (isPreviewEnv()) {
                 if (category === 'houses') setAssets(MOCK_HOUSES);
                 else if (category === 'businesses') setAssets(MOCK_BUSINESSES);
@@ -21,23 +43,39 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
                 }
                 else if (category === 'factions') setAssets(MOCK_FACTIONS);
                 else if (category === 'families') setAssets(MOCK_FAMILIES);
+                setLoading(false);
                 return;
             }
 
-            if (category) {
-                try {
-                    const res = await fetch(`${API_URL}/api_overview.php?action=assets&type=${category}`);
-                    const data = await res.json();
-                    if (data && data.status === 'success') {
-                        setAssets(data.data);
-                    }
-                } catch (e) {
-                    console.error("Error fetching assets:", e);
+            try {
+                const res = await fetch(`${API_URL}/api_overview.php?action=assets&type=${category}`);
+                const data = await res.json();
+                if (!res.ok || !data || data.status !== 'success') {
+                    throw new Error(data?.message || 'Failed to fetch assets.');
                 }
+
+                setAssets(Array.isArray(data.data) ? data.data : []);
+            } catch (e) {
+                console.error("Error fetching assets:", e);
+                setError(e instanceof Error ? e.message : 'Failed to fetch assets.');
+            } finally {
+                setLoading(false);
             }
         };
         fetchAssets();
     }, [category]);
+
+    if (loading) {
+        return <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">Memuat data aset...</div>;
+    }
+
+    if (error) {
+        return <div className="p-4 text-center text-sm text-red-500">{error}</div>;
+    }
+
+    if (category && assets.length === 0) {
+        return <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada data aset.</div>;
+    }
 
     switch(category) {
         case 'houses':
@@ -51,9 +89,9 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
                             {assets.map((house: any) => (
                                 <tr key={house.id} className="hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer" onClick={() => onSelectDetail(house.id)}>
                                     <td className="px-4 py-3 font-mono">#{house.id}</td>
-                                    <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{house.location}</td>
-                                    <td className="px-4 py-3">{house.owner}</td>
-                                    <td className="px-4 py-3 text-green-500">${house.price.toLocaleString()}</td>
+                                    <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{formatText(house.location)}</td>
+                                    <td className="px-4 py-3">{formatText(house.owner)}</td>
+                                    <td className="px-4 py-3 text-green-500">{formatCurrency(house.price)}</td>
                                     <td className="px-4 py-3 text-right text-blue-500 font-bold hover:underline">Detail</td>
                                 </tr>
                             ))}
@@ -72,10 +110,10 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
                             {assets.map((biz: any) => (
                                 <tr key={biz.id} className="hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer" onClick={() => onSelectDetail(biz.id)}>
                                     <td className="px-4 py-3 font-mono">#{biz.id}</td>
-                                    <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{biz.name}</td>
-                                    <td className="px-4 py-3"><span className="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] uppercase font-bold">{biz.type}</span></td>
-                                    <td className="px-4 py-3">{biz.location}</td>
-                                    <td className="px-4 py-3">{biz.owner}</td>
+                                    <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{formatText(biz.name)}</td>
+                                    <td className="px-4 py-3"><span className="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded text-[10px] uppercase font-bold">{formatText(biz.type)}</span></td>
+                                    <td className="px-4 py-3">{formatText(biz.location)}</td>
+                                    <td className="px-4 py-3">{formatText(biz.owner)}</td>
                                     <td className="px-4 py-3 text-right text-blue-500 font-bold hover:underline">Pantau</td>
                                 </tr>
                             ))}
@@ -138,10 +176,10 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
                             {assets.map((fam: any) => (
                                 <tr key={fam.id} className="hover:bg-gray-50 dark:hover:bg-white/5 cursor-pointer" onClick={() => onSelectDetail(fam.id)}>
                                     <td className="px-4 py-3 font-mono">#{fam.id}</td>
-                                    <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{fam.name}</td>
-                                    <td className="px-4 py-3 text-red-500">{fam.leader}</td>
-                                    <td className="px-4 py-3"><span className="bg-gray-700 text-white px-2 py-0.5 rounded text-[10px]">Lvl {fam.level}</span></td>
-                                    <td className="px-4 py-3 text-green-500">${fam.bank.toLocaleString()}</td>
+                                    <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{formatText(fam.name)}</td>
+                                    <td className="px-4 py-3 text-red-500">{formatText(fam.leader)}</td>
+                                    <td className="px-4 py-3"><span className="bg-gray-700 text-white px-2 py-0.5 rounded text-[10px]">{fam.level == null ? 'Lvl Unknown' : `Lvl ${fam.level}`}</span></td>
+                                    <td className="px-4 py-3 text-green-500">{formatCurrency(fam.bank)}</td>
                                     <td className="px-4 py-3 text-right text-blue-500 font-bold hover:underline">Detail</td>
                                 </tr>
                             ))}

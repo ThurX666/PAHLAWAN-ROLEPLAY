@@ -164,14 +164,89 @@ if ($action === 'server_info') {
     }
 } elseif ($action === 'assets') {
     $type = $_GET['type'] ?? '';
-    // Normally fetch from DB: SELECT * FROM houses, etc.
+
+    $formatLocation = static function (...$coords): string {
+        foreach ($coords as $coord) {
+            if (!is_numeric($coord)) {
+                return "Unknown";
+            }
+        }
+
+        return sprintf("%.2f, %.2f, %.2f", (float) $coords[0], (float) $coords[1], (float) $coords[2]);
+    };
+
+    $safeOwner = static function ($value, string $fallback = "Unknown"): string {
+        $value = trim((string) ($value ?? ''));
+        return $value !== '' ? $value : $fallback;
+    };
+
+    $listTypes = ['houses', 'businesses', 'jobs', 'sidejobs', 'factions', 'families'];
+    if (!in_array($type, $listTypes, true)) {
+        http_response_code(400);
+        echo json_encode([
+            "status" => "error",
+            "message" => "Unsupported asset type."
+        ]);
+        exit;
+    }
+
     $data = [];
     if ($type === 'houses') {
-        $stmt = $pdo->query("SELECT ID as id, 'House' as name, OwnerName as owner, Type as price, Locked as locked FROM houses LIMIT 10");
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $pdo->query(
+                "SELECT ID, OwnerName, X, Y, Z
+                 FROM houses
+                 ORDER BY ID ASC
+                 LIMIT 50"
+            );
+
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $data[] = [
+                    "id" => (int) $row['ID'],
+                    "name" => "House",
+                    "location" => $formatLocation($row['X'] ?? null, $row['Y'] ?? null, $row['Z'] ?? null),
+                    "owner" => $safeOwner($row['OwnerName'] ?? null),
+                    "price" => null,
+                    "locked" => null
+                ];
+            }
+        } catch (PDOException $e) {
+            http_response_code(503);
+            echo json_encode([
+                "status" => "error",
+                "message" => "House asset list is unavailable."
+            ]);
+            exit;
+        }
     } elseif ($type === 'businesses') {
-        $stmt = $pdo->query("SELECT ID as id, Name as name, Type as type, OwnerName as owner, Money as balance FROM biz LIMIT 10");
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $pdo->query(
+                "SELECT ID, Name, OwnerName, Type, Price, Money, SignX, SignY, SignZ
+                 FROM biz
+                 ORDER BY ID ASC
+                 LIMIT 50"
+            );
+
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $data[] = [
+                    "id" => (int) $row['ID'],
+                    "name" => $safeOwner($row['Name'] ?? null, "Unknown Business"),
+                    "type" => isset($row['Type']) ? (string) $row['Type'] : "Unknown",
+                    "owner" => $safeOwner($row['OwnerName'] ?? null),
+                    "price" => isset($row['Price']) ? (int) $row['Price'] : null,
+                    "balance" => isset($row['Money']) ? (int) $row['Money'] : null,
+                    "money" => isset($row['Money']) ? (int) $row['Money'] : null,
+                    "location" => $formatLocation($row['SignX'] ?? null, $row['SignY'] ?? null, $row['SignZ'] ?? null)
+                ];
+            }
+        } catch (PDOException $e) {
+            http_response_code(503);
+            echo json_encode([
+                "status" => "error",
+                "message" => "Business asset list is unavailable."
+            ]);
+            exit;
+        }
     } elseif ($type === 'jobs' || $type === 'sidejobs') {
         $data = [
             ["id" => 1, "name" => "Mechanic", "location" => "Ocean Docks", "avgWorkers" => 45, "avgCirculation" => 125000, "avgHours" => 4.5, "type" => "job"],
@@ -205,8 +280,32 @@ if ($action === 'server_info') {
             ];
         }
     } elseif ($type === 'families') {
-        $stmt = $pdo->query("SELECT ID as id, Name as name, 'Gang' as type, LeaderName as leader, Money as bank FROM families LIMIT 10");
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $pdo->query(
+                "SELECT ID, Name, LeaderName, Money
+                 FROM families
+                 ORDER BY ID ASC
+                 LIMIT 50"
+            );
+
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $data[] = [
+                    "id" => (int) $row['ID'],
+                    "name" => $safeOwner($row['Name'] ?? null, "Unknown Family"),
+                    "type" => "Gang",
+                    "leader" => $safeOwner($row['LeaderName'] ?? null),
+                    "level" => null,
+                    "bank" => isset($row['Money']) ? (int) $row['Money'] : null
+                ];
+            }
+        } catch (PDOException $e) {
+            http_response_code(503);
+            echo json_encode([
+                "status" => "error",
+                "message" => "Family asset list is unavailable."
+            ]);
+            exit;
+        }
     }
     
     echo json_encode(["status" => "success", "data" => $data]);
