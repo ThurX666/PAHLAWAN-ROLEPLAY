@@ -50,6 +50,9 @@ WEBSITE/public/api/.migrated_*
 # Database dumps are local and may contain private player/server data
 DATABASE/*
 !DATABASE/.gitkeep
+!DATABASE/migrations/
+DATABASE/migrations/*
+!DATABASE/migrations/*.sql
 
 # GAMEMODE nested repositories and runtime/build artifacts
 GAMEMODE/.git/

@@ -52,7 +52,7 @@ The backend SHALL compare the selected story against other `ucp_character_storie
 - **AND** they are not sent to NVIDIA NIM
 
 ### Requirement: Review history is immutable and detects stale content
-The system SHALL insert a new review for every completed re-analysis and SHALL retain prior reviews. Each review MUST store a hash of the analyzed story content.
+The system SHALL insert a new `ucp_story_reviews` row for every completed re-analysis and SHALL retain prior reviews. Ranked matches SHALL be stored in `ucp_story_review_matches`. Each review MUST store a hash of the analyzed story content, and UCP-owned Story Review tables MUST use the `ucp_` prefix.
 
 #### Scenario: Story changed after review
 - **WHEN** the current database story hash differs from the review hash

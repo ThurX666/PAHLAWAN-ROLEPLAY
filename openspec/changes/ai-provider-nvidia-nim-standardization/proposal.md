@@ -29,7 +29,7 @@ None.
 ## Impact
 
 - Future implementation will affect the Website/UCP PHP backend gateway, `api_admin_stories.php` integration surface, Admin Stories UI, frontend types/API client integration, server-side environment/config documentation, and shared AI adapter conventions.
-- The database plan adds `story_reviews` and `story_review_matches` without changing `ucp_character_stories` content ownership or the existing manual approve/revision/reject workflow.
+- The database plan adds UCP-owned `ucp_story_reviews` and `ucp_story_review_matches` under the dedicated `DATABASE/migrations/` artifact path without changing `ucp_character_stories` content ownership or the existing manual approve/revision/reject workflow.
 - The Discord bot provider implementation remains behaviorally unchanged in this planning change, but its `sendMessage(messages, options)` contract is the compatibility baseline.
 - Future frontend work must continue without browser AI SDK packages or provider secrets.
 - No gamemode/Pawn or runtime feature behavior is changed by this proposal. SQL is generated but is not executed automatically.

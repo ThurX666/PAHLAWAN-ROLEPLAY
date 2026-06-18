@@ -3,7 +3,7 @@
 - [x] 0.1 Audit `ucp_character_stories`, player story submission, Admin Stories review flow, admin authorization, and existing browser-only mock analysis.
 - [x] 0.2 Select Story Review as the first bounded Website/UCP NVIDIA NIM task and define its server-loaded-input and human-review boundaries.
 - [x] 0.3 Define `analyze_story`, `get_story_review`, and `get_story_matches` contracts and the Analyze/Re-Analyze/View Analysis/View Similar Stories UI states.
-- [x] 0.4 Generate an unexecuted SQL migration for `story_reviews` and `story_review_matches` and align the tracked story schema reference.
+- [x] 0.4 Generate an unexecuted SQL migration under `DATABASE/migrations/` for `ucp_story_reviews` and `ucp_story_review_matches` and align the tracked story schema reference.
 - [x] 0.5 Add Story Review capability requirements and validation scenarios to this change.
 
 ## 1. Configuration and Contract
@@ -43,9 +43,9 @@
 
 ## 6. Story Review Persistence and Comparison
 
-- [x] 6.1 Review and manually apply `20260618_story_review_system.sql` to the exact database returned by the Website runtime's `SELECT DATABASE()`; verify `ucp_character_stories` exists in that schema before import and verify both review tables there afterward. Do not add it to automatic migration execution.
+- [ ] 6.1 Review and manually apply `DATABASE/migrations/20260618_story_review_system.sql` to the exact database returned by the Website runtime's `SELECT DATABASE()`; verify `ucp_character_stories` exists in that schema before import and verify `ucp_story_reviews` and `ucp_story_review_matches` there afterward. Inspect any old non-prefixed tables separately and do not drop them automatically.
 - [x] 6.2 Load the selected story and character ownership relationship from the database; reject browser-provided story content and invalid identifiers.
 - [x] 6.3 Compute word count, character count, content hash, and versioned local similarity against other database stories in bounded batches.
-- [x] 6.4 Persist immutable `story_reviews` rows and ranked `story_review_matches`, including the threshold and provider/model metadata used.
+- [x] 6.4 Persist immutable `ucp_story_reviews` rows and ranked `ucp_story_review_matches`, including the threshold and provider/model metadata used.
 - [x] 6.5 Mark reviews stale when the stored story hash differs, and create a new row for every re-analysis.
 - [ ] 6.6 Validate structured NVIDIA scores are numeric and bounded to `0..100`; never let AI output change story status automatically.

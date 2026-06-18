@@ -121,9 +121,22 @@ Only the selected story is sent to NVIDIA NIM. Existing comparison stories are n
 
 ### 12. Review history is immutable and detects stale analysis
 
-Each successful analysis inserts a new `story_reviews` row. Re-analysis does not overwrite earlier reviews. `story_content_hash` records the SHA-256 hash of the analyzed database content so the API and UI can identify a review that predates a story edit.
+Each successful analysis inserts a new `ucp_story_reviews` row. Re-analysis does not overwrite earlier reviews. `story_content_hash` records the SHA-256 hash of the analyzed database content so the API and UI can identify a review that predates a story edit.
 
-`story_review_matches` stores ranked matches for one review. New tables use indexed logical references to the existing story, character, and UCP account identifiers. The initial migration avoids new foreign keys to legacy tables because the current schema does not consistently declare relational constraints; the review-to-match relation uses an internal foreign key with cascade deletion.
+`ucp_story_review_matches` stores ranked matches for one review. Both UCP-owned tables use the project `ucp_` prefix and are defined by `DATABASE/migrations/20260618_story_review_system.sql`. New tables use indexed logical references to the existing story, character, and UCP account identifiers. The migration avoids new foreign keys to legacy tables because the current schema does not consistently declare relational constraints; the review-to-match relation uses an internal foreign key with restricted deletion.
+
+Older local environments may already contain non-prefixed `story_reviews` and `story_review_matches`. The migration and runtime do not alias, rename, copy, or drop those tables automatically. Operators must inspect row counts and preserve any legacy review data before planning a separate manual transfer or cleanup.
+
+Before applying the prefixed migration, operators must:
+
+1. Confirm the Website-selected schema with `SELECT DATABASE()`.
+2. Confirm `ucp_character_stories` exists in that schema.
+3. Inspect whether the old non-prefixed tables exist and record their row counts.
+4. If either old table contains rows, stop and prepare a separate reviewed data-transfer plan before switching runtime traffic.
+5. Import `DATABASE/migrations/20260618_story_review_system.sql`.
+6. Verify `ucp_story_reviews` and `ucp_story_review_matches` exist before testing the API.
+
+Old non-prefixed tables may be considered for manual cleanup only after their data is confirmed empty or transferred and the prefixed API path is verified. This change provides no destructive cleanup SQL.
 
 ### 13. The public API is task-oriented
 
@@ -165,7 +178,7 @@ Manual Active, Revision, and Rejected actions remain separate. Analysis failure 
 2. Implement a PHP provider interface and NVIDIA NIM adapter behind `sendMessage(messages, options)`.
 3. Implement authenticated, task-oriented UCP gateway routing with validation, authorization, rate limiting, logging, timeouts, and safe error mapping.
 4. Add local mock/disabled behavior and production configuration validation.
-5. Apply the reviewed Story Review SQL migration manually in an approved maintenance window.
+5. Apply the reviewed `DATABASE/migrations/20260618_story_review_system.sql` migration manually in an approved maintenance window.
 6. Implement the Story Review actions, deterministic metrics, local plagiarism comparison, persistence, and admin UI states.
 7. Connect only Story Review to NVIDIA NIM without adding browser AI SDKs.
 8. Verify secret scanning, frontend bundle contents, auth/session behavior, stale-review behavior, abuse controls, and provider-unavailable behavior.

@@ -22,14 +22,14 @@ function story_review_require_schema(PDO $pdo): void
     $requiredColumns = [
         'ucp_character_stories' => ['id', 'character_id', 'character_name', 'content'],
         'player_characters' => ['pID', 'Char_Name'],
-        'story_reviews' => [
+        'ucp_story_reviews' => [
             'id', 'story_id', 'character_id', 'reviewer_id', 'reviewer_username',
             'ai_provider', 'ai_model', 'analysis_version', 'story_content_hash',
             'word_count', 'character_count', 'overall_score', 'grammar_score',
             'readability_score', 'roleplay_score', 'plagiarism_score',
             'plagiarism_threshold', 'review_notes', 'created_at',
         ],
-        'story_review_matches' => [
+        'ucp_story_review_matches' => [
             'id', 'review_id', 'matched_story_id', 'matched_character_id',
             'similarity_percentage', 'match_rank', 'matched_content_hash',
             'created_at',
@@ -265,7 +265,7 @@ function story_review_fetch_review(PDO $pdo, int $storyId, ?int $reviewId = null
 {
     $sql =
         'SELECT r.*, cs.content AS current_content, c.Char_Name AS character_name
-         FROM story_reviews r
+         FROM ucp_story_reviews r
          LEFT JOIN ucp_character_stories cs ON cs.id = r.story_id
          LEFT JOIN player_characters c ON c.pID = r.character_id
          WHERE r.story_id = ?';
@@ -332,7 +332,7 @@ if ($action === 'get_story_matches') {
 
     $reviewStmt = $pdo->prepare(
         'SELECT id, plagiarism_threshold
-         FROM story_reviews
+         FROM ucp_story_reviews
          WHERE id = ?
          LIMIT 1'
     );
@@ -345,7 +345,7 @@ if ($action === 'get_story_matches') {
     $matchStmt = $pdo->prepare(
         'SELECT m.*, cs.content AS current_content,
                 COALESCE(c.Char_Name, cs.character_name) AS character_name
-         FROM story_review_matches m
+         FROM ucp_story_review_matches m
          LEFT JOIN ucp_character_stories cs ON cs.id = m.matched_story_id
          LEFT JOIN player_characters c ON c.pID = m.matched_character_id
          WHERE m.review_id = ?
@@ -433,7 +433,7 @@ if ($action === 'analyze_story') {
         }
 
         $reviewStmt = $pdo->prepare(
-            'INSERT INTO story_reviews (
+            'INSERT INTO ucp_story_reviews (
                 story_id, character_id, reviewer_id, reviewer_username,
                 ai_provider, ai_model, analysis_version, story_content_hash,
                 word_count, character_count, overall_score, grammar_score,
@@ -464,7 +464,7 @@ if ($action === 'analyze_story') {
 
         if ($matches) {
             $matchStmt = $pdo->prepare(
-                'INSERT INTO story_review_matches (
+                'INSERT INTO ucp_story_review_matches (
                     review_id, matched_story_id, matched_character_id,
                     similarity_percentage, match_rank, matched_content_hash
                  ) VALUES (?, ?, ?, ?, ?, ?)'
