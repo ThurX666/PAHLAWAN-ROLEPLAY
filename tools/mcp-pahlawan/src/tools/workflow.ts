@@ -8,6 +8,7 @@ import { searchCode, type SearchHit } from "../utils/fileSearch.js";
 import { listLogCandidates } from "../utils/logReader.js";
 import { boundedLimit, pageItems, resolveOffset } from "../utils/pagination.js";
 import { relativePath } from "../utils/pathSafety.js";
+import { findRelatedOpenSpecChanges } from "../utils/openspec.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -73,6 +74,7 @@ export const workflowTools: ToolDefinition[] = [
       additionalProperties: false,
     },
     async handler(input, { config }) {
+      const relatedOpenSpecChanges = findRelatedOpenSpecChanges(config, input.task);
       const terms = taskTerms(input.task);
       const limit = boundedLimit(input.limit ?? input.maxResults, config.limits.maxSearchResults, config.limits.maxSearchResults);
       const offset = resolveOffset(input.cursor, input.offset);
@@ -97,6 +99,14 @@ export const workflowTools: ToolDefinition[] = [
       )).slice(0, config.limits.maxSchemaTables);
       return {
         taskSummary: input.task,
+        planningSource: relatedOpenSpecChanges.length > 0 ? "openspec" : "none",
+        relatedOpenSpecChanges: relatedOpenSpecChanges.map((change) => ({
+          changeId: change.changeId,
+          matchedTerms: change.matchedTerms,
+          proposalSummary: change.proposalSummary,
+          taskCounts: change.taskCounts,
+          paths: change.paths,
+        })),
         module: input.module,
         relevantModules: Array.from(new Set(visible.map((hit) => hit.file.split("/")[0]))),
         relatedFiles: Array.from(new Set(visible.map((hit) => hit.file))).slice(0, config.limits.maxFeatureFiles),
@@ -113,6 +123,9 @@ export const workflowTools: ToolDefinition[] = [
           "For DB, plan migration and rollback before applying SQL.",
         ],
         recommendedNextSteps: [
+          ...(relatedOpenSpecChanges.length > 0
+            ? ["Read the related OpenSpec change first and implement only within its approved scope."]
+            : ["No related OpenSpec change was detected; propose one first for medium/high-risk work."]),
           "Inspect outlines for the highest-ranked files.",
           "Read only the relevant symbol or bounded line range.",
           "Verify schema/log evidence only if the feature depends on them.",

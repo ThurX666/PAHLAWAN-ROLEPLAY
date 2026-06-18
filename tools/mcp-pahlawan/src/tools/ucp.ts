@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { ToolDefinition } from "../types.js";
 import { findFiles, listProjectFiles, readTextFile, searchCode } from "../utils/fileSearch.js";
 import { relativePath } from "../utils/pathSafety.js";
+import { findRelatedOpenSpecChanges } from "../utils/openspec.js";
 
 function readPackageJson(root: string): unknown {
   const packagePath = path.join(root, "package.json");
@@ -100,9 +101,26 @@ export const ucpTools: ToolDefinition[] = [
       additionalProperties: false,
     },
     async handler(input, { config }) {
+      const relatedOpenSpecChanges = findRelatedOpenSpecChanges(config, input.feature);
       const related = await searchCode(config, input.feature, { module: "website", extensions: [".php", ".ts", ".tsx", ".js", ".sql", ".txt"], limit: config.limits.maxSearchResults, contextLines: 0 });
+      if (relatedOpenSpecChanges.length > 0) {
+        return {
+          feature: input.feature,
+          planningSource: "openspec",
+          message: "A related OpenSpec change exists. Use it as the implementation plan; no competing MCP plan was generated.",
+          relatedOpenSpecChanges: relatedOpenSpecChanges.map((change) => ({
+            changeId: change.changeId,
+            proposalSummary: change.proposalSummary,
+            requirements: change.requirements,
+            taskCounts: change.taskCounts,
+            paths: change.paths,
+          })),
+          related,
+        };
+      }
       return {
         feature: input.feature,
+        planningSource: "mcp-fallback",
         related,
         plan: [
           "Map existing API/data model for this feature.",

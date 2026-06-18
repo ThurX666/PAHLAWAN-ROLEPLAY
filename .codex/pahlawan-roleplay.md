@@ -2,6 +2,10 @@
 
 Use the `pahlawan-roleplay` MCP server when available for project discovery, code search, diagnostics, and safe context generation.
 
+OpenSpec is the source of truth for feature planning and requirements. MCP is the support layer for context, diagnostics, search, database/log/code inspection, and validation.
+
+Before coding, check `openspec/changes/`. If a related active change exists, read it first and implement only its approved scope. Do not create a competing plan. For medium/high-risk work without an OpenSpec change, propose one first.
+
 Default workflow:
 
 - Analyze first.
@@ -9,6 +13,7 @@ Default workflow:
 - Prefer small patches.
 - Keep DB read-only unless explicitly approved.
 - Never expose secrets.
+- Do not delete files, run migrations, or write database data without explicit approval.
 - Do not edit broad project areas in one pass.
 
 Project modules:

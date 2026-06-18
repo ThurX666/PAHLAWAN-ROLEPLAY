@@ -10,6 +10,12 @@ Project structure:
 
 Workflow rules:
 
+- OpenSpec is the source of truth for feature planning and requirements.
+- MCP is the context, diagnostics, search, database/log/code inspection, and validation support layer.
+- Before coding, always check active OpenSpec changes.
+- If an OpenSpec change exists, read it first and implement only within its approved scope.
+- Do not create a competing plan when OpenSpec already exists.
+- If no OpenSpec exists and the task is medium/high risk, propose creating one first.
 - Analyze first; do not edit broad areas immediately.
 - Use MCP tools before guessing project structure or flow.
 - Prefer small, reviewable patches.
@@ -43,3 +49,4 @@ MCP context rules:
 - Ask before reading large files or applying patches.
 - Use pagination for large results.
 - Keep every tool response under `MCP_MAX_OUTPUT_CHARS`.
+- Do not delete files, run migrations, or write database data without explicit approval.

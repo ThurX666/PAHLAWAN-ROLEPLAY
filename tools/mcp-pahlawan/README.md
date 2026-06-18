@@ -2,6 +2,24 @@
 
 Local MCP server untuk membantu AI coding clients bekerja aman dan cepat di project PAHLAWAN ROLEPLAY.
 
+## OpenSpec workflow authority
+
+OpenSpec is the source of truth for feature planning and requirements. MCP remains the support layer for context, diagnostics, search, database/log/code inspection, and validation.
+
+- Check active OpenSpec changes before coding.
+- If a related change exists, read it first and implement only its approved scope.
+- Do not generate a competing feature plan when OpenSpec already exists.
+- For medium/high-risk work without OpenSpec, propose creating a change first.
+- Keep patches small and feature-scoped.
+- Do not scan the entire project or dump full files, schemas, logs, or OpenSpec artifacts by default.
+- Do not delete files, run migrations, or write database data without explicit approval.
+
+OpenSpec-aware tools:
+
+- `openspec_overview`
+- `openspec_read_change`
+- `openspec_task_status`
+
 Server ini memakai **stdio transport** sebagai default agar portable untuk:
 
 - OpenAI Codex

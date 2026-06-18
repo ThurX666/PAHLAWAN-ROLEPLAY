@@ -4,6 +4,7 @@ import { moduleSchema } from "../types.js";
 import { readTextFileSlice, searchCode, type SearchHit } from "../utils/fileSearch.js";
 import { boundedLimit, pageItems, resolveOffset } from "../utils/pagination.js";
 import { safeResolve } from "../utils/pathSafety.js";
+import { findRelatedOpenSpecChanges } from "../utils/openspec.js";
 
 function extensionList(input?: string): string[] | undefined {
   if (!input) return undefined;
@@ -226,6 +227,7 @@ export const codeSearchTools: ToolDefinition[] = [
       additionalProperties: false,
     },
     async handler(input, { config }) {
+      const relatedOpenSpecChanges = findRelatedOpenSpecChanges(config, input.feature);
       const terms = featureTerms(input.feature);
       const limit = boundedLimit(input.limit ?? input.maxResults, config.limits.maxSearchResults, config.limits.maxSearchResults);
       const maxFiles = boundedLimit(input.maxFiles, config.limits.maxFeatureFiles, config.limits.maxFeatureFiles);
@@ -265,6 +267,15 @@ export const codeSearchTools: ToolDefinition[] = [
         : undefined;
       return {
         feature: input.feature,
+        openspec: {
+          exists: relatedOpenSpecChanges.length > 0,
+          relatedChanges: relatedOpenSpecChanges.map((change) => ({
+            changeId: change.changeId,
+            matchedTerms: change.matchedTerms,
+            proposalSummary: change.proposalSummary,
+            paths: change.paths,
+          })),
+        },
         terms,
         depth: input.depth,
         groups: grouped,

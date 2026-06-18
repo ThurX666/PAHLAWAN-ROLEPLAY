@@ -56,6 +56,12 @@ const projectOutput = applyOutputBudget("project_overview", projectResult, confi
 assert.ok(projectOutput.length <= config.limits.maxOutputChars, "project overview must remain within output budget");
 assert.ok(!projectOutput.includes("content\":"), "project overview must not return full file content");
 
+const openspecOverviewTool = byName.get("openspec_overview");
+assert.ok(openspecOverviewTool, "openspec_overview tool must exist");
+const openspecOverview = await openspecOverviewTool.handler(openspecOverviewTool.schema.parse({}), context) as { detected?: boolean; activeChanges?: unknown[] };
+assert.equal(openspecOverview.detected, true, "OpenSpec root must be detected");
+assert.ok((openspecOverview.activeChanges?.length ?? 0) > 0, "active OpenSpec changes must be summarized");
+
 console.log(JSON.stringify({
   ok: true,
   checks: [
@@ -66,5 +72,6 @@ console.log(JSON.stringify({
     "secret redaction",
     "compact mode default",
     "no full project content by default",
+    "compact OpenSpec overview",
   ],
 }, null, 2));

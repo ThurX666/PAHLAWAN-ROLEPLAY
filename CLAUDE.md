@@ -2,6 +2,10 @@
 
 Use the PAHLAWAN ROLEPLAY MCP server when available.
 
+OpenSpec is the source of truth for feature planning and requirements. MCP supports context, diagnostics, search, database/log/code inspection, and validation.
+
+Before coding, check active OpenSpec changes. If a related change exists, read it first, follow only its approved scope, and do not create a competing plan. If none exists for medium/high-risk work, propose creating one.
+
 Do not make broad edits immediately. Analyze the project structure, relevant files, callback flow, database schema, and logs first.
 
 Safety:
@@ -10,6 +14,7 @@ Safety:
 - Keep database work read-only unless explicitly approved.
 - Prefer small patches and explain risk before applying changes.
 - Never delete files unless the user explicitly asks.
+- Do not run migrations or write database data without explicit approval.
 
 Domain rules:
 

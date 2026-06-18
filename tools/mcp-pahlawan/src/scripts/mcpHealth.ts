@@ -14,6 +14,9 @@ const requiredTools = [
   "mcp_context_health_check",
   "mcp_compact_mode",
   "mcp_tool_usage_guide",
+  "openspec_overview",
+  "openspec_read_change",
+  "openspec_task_status",
 ];
 const toolNames = new Set(tools.map((tool) => tool.name));
 const missing = requiredTools.filter((name) => !toolNames.has(name));

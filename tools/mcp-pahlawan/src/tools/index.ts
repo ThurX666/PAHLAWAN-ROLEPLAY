@@ -7,6 +7,7 @@ import { diagnosticTools } from "./diagnostics.js";
 import { fileTools } from "./files.js";
 import { gamemodeTools } from "./gamemode.js";
 import { logTools } from "./logs.js";
+import { openspecTools } from "./openspec.js";
 import { projectTools } from "./project.js";
 import { ucpTools } from "./ucp.js";
 import { workflowTools } from "./workflow.js";
@@ -15,6 +16,7 @@ export const tools: ToolDefinition[] = [
   ...projectTools,
   ...clientTools,
   ...diagnosticTools,
+  ...openspecTools,
   ...codeSearchTools,
   ...fileTools,
   ...gamemodeTools,

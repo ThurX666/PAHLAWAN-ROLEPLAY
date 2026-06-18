@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { ToolDefinition } from "../types.js";
 import { searchCode } from "../utils/fileSearch.js";
 import { listLogCandidates, readRecentLogs } from "../utils/logReader.js";
+import { findRelatedOpenSpecChanges } from "../utils/openspec.js";
 
 export const logTools: ToolDefinition[] = [
   {
@@ -65,6 +66,7 @@ export const logTools: ToolDefinition[] = [
       additionalProperties: false,
     },
     async handler(input, { config }) {
+      const relatedOpenSpecChanges = findRelatedOpenSpecChanges(config, input.issue);
       const terms: string[] = Array.from(
         new Set<string>(input.issue.split(/\s+/).filter((term: string) => term.length > 2)),
       ).slice(0, 6);
@@ -82,6 +84,17 @@ export const logTools: ToolDefinition[] = [
       }
       return {
         issue: input.issue,
+        openspecAuthority: {
+          relatedChanges: relatedOpenSpecChanges.map((change) => ({
+            changeId: change.changeId,
+            proposalSummary: change.proposalSummary,
+            requirements: change.requirements,
+            paths: change.paths,
+          })),
+          rule: relatedOpenSpecChanges.length > 0
+            ? "Diagnosis may explain evidence and fixes but must not override the related OpenSpec requirements."
+            : "No related OpenSpec change detected.",
+        },
         code,
         logs: await readRecentLogs(config, input.module === "website" ? "ucp" : input.module === "all" ? "all" : input.module, {
           maxBytes: 12_000,
