@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { LayoutDashboard, User, LogOut, Settings, CreditCard, Sun, Moon, ShieldAlert, Mail, BookOpen, Menu, X } from 'lucide-react';
 import { ADMIN_RANKS } from '../data/mockData';
 import { isPreviewEnv, API_URL, getResolvedApiUrl } from '../config';
+import { UCP_VERSION } from '../version';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -223,6 +224,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
                  <LogOut size={16} />
                </button>
              </div>
+             <p className="mt-3 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 dark:text-gray-500">
+               UCP {UCP_VERSION}
+             </p>
         </div>
       </aside>
 
