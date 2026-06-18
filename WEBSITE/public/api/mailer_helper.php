@@ -18,6 +18,10 @@ function localMailMode(): string {
     return strtolower((string) app_env('UCP_LOCAL_MAIL_MODE', 'smtp'));
 }
 
+function isLocalOtpPreviewMode(): bool {
+    return isLocalDevEnvironment() && localMailMode() === 'preview';
+}
+
 function shouldBypassLocalPreviewMail(): bool {
     $host = $_SERVER['HTTP_HOST'] ?? '';
     if (strpos($host, 'run.app') !== false) {
@@ -50,6 +54,18 @@ function localMailTroubleshootingMessage(): string {
     }
 
     return 'Local dev OTP email is not configured: ' . implode('; ', $issues) . '.';
+}
+
+function localOtpPreviewPayload($otpCode, string $context = 'verification'): array {
+    $normalizedOtp = str_pad(trim((string) $otpCode), 6, '0', STR_PAD_LEFT);
+    error_log('[LOCAL OTP PREVIEW][' . $context . '] OTP=' . $normalizedOtp . ' (disabled in production)');
+
+    return [
+        'enabled' => true,
+        'context' => $context,
+        'message' => 'Local-only OTP preview is enabled for this environment. This preview is disabled in production.',
+        'otp_code' => $normalizedOtp,
+    ];
 }
 
 function sendVerificationEmail($toEmail, $username, $otpCode, $context = 'register', $device = '', $location = '') {

@@ -78,6 +78,18 @@ if ($action === 'login') {
                 $stmt_update->execute(['new_token' => $new_otp_code, 'id' => $user['id']]);
 
                 require_once __DIR__ . '/mailer_helper.php';
+
+                if (isLocalOtpPreviewMode()) {
+                    echo json_encode([
+                        'status' => 'unverified',
+                        'message' => $reason_msg,
+                        'registered_user' => $user['email'],
+                        'cooldown' => 1800,
+                        'local_preview' => localOtpPreviewPayload($new_otp_code, $reason_title),
+                    ]);
+                    exit;
+                }
+
                 $email_sent = sendVerificationEmail($user['email'], $user['username'], $new_otp_code, $reason_title, $device, $location);
 
                 if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
@@ -107,6 +119,7 @@ if ($action === 'login') {
             
             $msg_to_client = 'Akun belum aktif! Anda harus melakukan verifikasi email terlebih dahulu.';
             $cooldown_remaining = 0;
+            $local_preview = null;
             
             if (!empty($user['Register_Date'])) {
                 $last_request = strtotime($user['Register_Date']);
@@ -114,6 +127,9 @@ if ($action === 'login') {
 
                 if ($time_passed < 1800) {
                     $cooldown_remaining = max(0, 1800 - $time_passed);
+                    if (isLocalOtpPreviewMode()) {
+                        $local_preview = localOtpPreviewPayload($user['Verify_Code'] ?? '', 'existing_unverified');
+                    }
                 } else {
                     // Cek limit OTP Attempts
                     $attempts = (int)($user['OTP_Attempts'] ?? 0);
@@ -127,15 +143,19 @@ if ($action === 'login') {
                         $stmt_update = $conn->prepare("UPDATE player_ucp SET Verify_Code = :new_token, Register_Date = CURRENT_TIMESTAMP, OTP_Attempts = OTP_Attempts + 1 WHERE ID = :id");
                         $stmt_update->execute(['new_token' => $new_otp_code, 'id' => $user['id']]);
 
+                        if (isLocalOtpPreviewMode()) {
+                            $local_preview = localOtpPreviewPayload($new_otp_code, 'resend');
+                        } else {
                         // Nembak Email Langsung
-                        $email_sent = sendVerificationEmail($user['email'], $user['username'], $new_otp_code, 'resend');
+                            $email_sent = sendVerificationEmail($user['email'], $user['username'], $new_otp_code, 'resend');
 
-                        if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
-                            echo json_encode([
-                                'status' => 'error',
-                                'message' => localMailTroubleshootingMessage(),
-                            ]);
-                            exit;
+                            if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
+                                echo json_encode([
+                                    'status' => 'error',
+                                    'message' => localMailTroubleshootingMessage(),
+                                ]);
+                                exit;
+                            }
                         }
                         
                         $msg_to_client = 'Akun belum terverifikasi! Sistem baru saja MENGIRIM KODE OTP BARU secara otomatis ke Email Anda.';
@@ -148,7 +168,8 @@ if ($action === 'login') {
                 'status' => 'unverified', 
                 'message' => $msg_to_client,
                 'registered_user' => $user['email'], // Mengembalikan email saja agar frontend bisa pass ke VerifyForm
-                'cooldown' => $cooldown_remaining
+                'cooldown' => $cooldown_remaining,
+                'local_preview' => $local_preview,
             ]);
             exit;
         }

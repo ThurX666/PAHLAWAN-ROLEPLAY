@@ -55,6 +55,15 @@ if ($action === 'resend_otp') {
             'id' => $user['ID']
         ]);
 
+        if (isLocalOtpPreviewMode()) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Local-only OTP preview is enabled. This preview is disabled in production.',
+                'local_preview' => localOtpPreviewPayload($new_otp_code, 'resend'),
+            ]);
+            exit;
+        }
+
         // Triger pengiriman Email dengan teks Resend
         $email_sent = sendVerificationEmail($user['Email'], $user['UCP'], $new_otp_code, 'resend');
 
