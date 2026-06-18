@@ -1,21 +1,33 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
 import { CharacterList } from './components/CharacterList';
-import { CharacterDetail } from './components/CharacterDetail';
-import { Donation } from './components/Donation';
 import { Settings } from './components/Settings';
-import { Auth } from './components/Auth';
-import { AdminPanel } from './components/admin/AdminPanel';
-import { TicketSystem } from './components/TicketSystem';
-import { CharacterStoryPage } from './components/CharacterStory';
-import { Requests } from './components/requests/RequestsPage';
 import { ServerStats, Character, CharacterStory, PromoItem, InboxMessage, UserProfile } from './types';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
 import { isPreviewEnv, API_URL, UPLOAD_BASE_URL, getResolvedApiUrl } from './config';
 
 import { MOCK_TICKETS } from './data/mockData';
+
+const Auth = lazy(() => import('./components/Auth').then(module => ({ default: module.Auth })));
+const Donation = lazy(() => import('./components/Donation').then(module => ({ default: module.Donation })));
+const TicketSystem = lazy(() => import('./components/TicketSystem').then(module => ({ default: module.TicketSystem })));
+const CharacterStoryPage = lazy(() => import('./components/CharacterStory').then(module => ({ default: module.CharacterStoryPage })));
+const CharacterDetail = lazy(() => import('./components/CharacterDetail').then(module => ({ default: module.CharacterDetail })));
+const AdminPanel = lazy(() => import('./components/admin/AdminPanel').then(module => ({ default: module.AdminPanel })));
+const Requests = lazy(() => import('./components/requests/RequestsPage').then(module => ({ default: module.Requests })));
+
+const ScreenFallback: React.FC = () => (
+  <div className="flex min-h-[280px] items-center justify-center rounded-2xl border border-gray-200 bg-white/80 px-6 py-12 text-center shadow-sm dark:border-white/10 dark:bg-[#121212]/80">
+    <div>
+      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
+      <p className="text-sm font-bold uppercase tracking-[0.3em] text-gray-600 dark:text-gray-300">
+        Memuat Halaman...
+      </p>
+    </div>
+  </div>
+);
 
 const MOCK_STATS: ServerStats = {
   hostname: "Pahlawan Roleplay [ID/SEA]",
@@ -1220,7 +1232,11 @@ const App: React.FC = () => {
   };
 
   if (!isAuthenticated) {
-    return <Auth onLogin={handleLogin} serverStats={serverStats} />;
+    return (
+      <Suspense fallback={<ScreenFallback />}>
+        <Auth onLogin={handleLogin} serverStats={serverStats} />
+      </Suspense>
+    );
   }
 
   // Calculate Unread Messages
@@ -1239,7 +1255,9 @@ const App: React.FC = () => {
       unreadCount={unreadCount}
       discordId={userProfile?.discordId}
     >
-      {renderContent()}
+      <Suspense fallback={<ScreenFallback />}>
+        {renderContent()}
+      </Suspense>
 
       {/* Custom Alert Modal */}
       {alertConfig && (
