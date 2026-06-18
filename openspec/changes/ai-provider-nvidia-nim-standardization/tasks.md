@@ -9,7 +9,7 @@
 
 ## 1. Configuration and Contract
 
-- [ ] 1.1 For the selected Story Review task and admin level 5 role, capability-test the Bot-derived default model `deepseek-ai/deepseek-v4-flash` and approve request limits and production rate/token budgets before enabling provider traffic.
+- [x] 1.1 For the selected Story Review task and admin level 5 role, capability-test the Bot-derived default model `deepseek-ai/deepseek-v4-flash` and approve request limits and production rate/token budgets before enabling provider traffic.
 - [x] 1.2 Document server-only AI configuration for local/development and production, including preferred `nvidia` selection, blank secret placeholders, `https://integrate.api.nvidia.com/v1` and `deepseek-ai/deepseek-v4-flash` as defaults, explicit override rules, timeouts, output bounds, rate limits, and disabled-by-default fallback.
 - [x] 1.3 Define shared message and option types for `sendMessage(messages, options)`, including normalized output and error categories compatible with the Discord bot contract.
 - [x] 1.4 Add configuration validation that rejects unsupported providers, unsafe endpoints, missing required production settings, and any attempt to source provider credentials from frontend-visible variables.
@@ -36,15 +36,15 @@
 
 ## 5. Validation and Operational Tests
 
-- [ ] 5.1 Test authenticated success, unauthenticated rejection, unauthorized task access, malformed and oversized input rejection, and unsupported client-supplied provider controls.
+- [x] 5.1 Test authenticated success, unauthenticated rejection, unauthorized task access, malformed and oversized input rejection, and unsupported client-supplied provider controls.
 - [x] 5.2 Test per-account/task rate limiting and confirm rejected traffic does not call NVIDIA NIM.
-- [ ] 5.3 Test timeout, retryable failure, non-retryable failure, missing configuration, fallback-disabled, and explicitly configured fallback behavior without exposing provider details.
+- [x] 5.3 Test timeout, retryable failure, non-retryable failure, missing configuration, fallback-disabled, and explicitly configured fallback behavior without exposing provider details.
 - [x] 5.4 Verify logs contain required operational metadata while excluding credentials, authorization/session data, full prompts, and full responses.
 - [x] 5.5 Run the Website production build, relevant backend checks, secret/bundle inspection, `openspec validate ai-provider-nvidia-nim-standardization --type change`, and `git diff --check`.
 
 ## 6. Story Review Persistence and Comparison
 
-- [ ] 6.1 Review and manually apply `DATABASE/migrations/20260618_story_review_system.sql` to the exact database returned by the Website runtime's `SELECT DATABASE()`; verify `ucp_character_stories` exists in that schema before import and verify `ucp_story_reviews` and `ucp_story_review_matches` there afterward. Inspect any old non-prefixed tables separately and do not drop them automatically.
+- [x] 6.1 Review and manually apply `DATABASE/migrations/20260618_story_review_system.sql` to the exact database returned by the Website runtime's `SELECT DATABASE()`; verify `ucp_character_stories` exists in that schema before import and verify `ucp_story_reviews` and `ucp_story_review_matches` there afterward. Inspect any old non-prefixed tables separately and do not drop them automatically.
 - [x] 6.2 Load the selected story and character ownership relationship from the database; reject browser-provided story content and invalid identifiers.
 - [x] 6.3 Compute word count, character count, content hash, and versioned local similarity against other database stories in bounded batches.
 - [x] 6.4 Persist immutable `ucp_story_reviews` rows and ranked `ucp_story_review_matches`, including the threshold and provider/model metadata used.

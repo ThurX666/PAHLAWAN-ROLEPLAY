@@ -81,6 +81,89 @@ try {
     story_review_test_assert($exception->category() === 'configuration', 'Invalid base URL category mismatch.');
 }
 
+$fallbackConfig = $missingKeyConfig;
+$fallbackConfig['api_key'] = 'offline-placeholder-not-a-real-key';
+$fallbackConfig['fallback_enabled'] = true;
+try {
+    ai_validate_server_configuration($fallbackConfig);
+    throw new RuntimeException('Unapproved fallback configuration was accepted.');
+} catch (AiProviderException $exception) {
+    story_review_test_assert($exception->category() === 'configuration', 'Fallback category mismatch.');
+}
+
+putenv('AI_STORY_REVIEW_MAX_INPUT_CHARS=1000');
+try {
+    ai_validate_messages([
+        ['role' => 'user', 'content' => str_repeat('a', 1001)],
+    ]);
+    throw new RuntimeException('Oversized provider input was accepted.');
+} catch (AiProviderException $exception) {
+    story_review_test_assert($exception->category() === 'validation', 'Oversized input category mismatch.');
+}
+
+putenv('AI_ENABLED=true');
+putenv('AI_STORY_REVIEW_ENABLED=true');
+putenv('AI_PROVIDER=nvidia');
+putenv('NVIDIA_NIM_API_KEY=offline-placeholder-not-a-real-key');
+putenv('AI_BASE_URL=' . AI_DEFAULT_NVIDIA_BASE_URL);
+putenv('AI_ALLOWED_BASE_URLS=' . AI_DEFAULT_NVIDIA_BASE_URL);
+putenv('AI_STORY_REVIEW_MODEL=' . AI_DEFAULT_STORY_REVIEW_MODEL);
+putenv('AI_ALLOWED_MODELS=' . AI_DEFAULT_STORY_REVIEW_MODEL);
+putenv('AI_FALLBACK_ENABLED=false');
+try {
+    ai_send_message(
+        [['role' => 'user', 'content' => 'Offline validation only.']],
+        ['task' => 'story_review', 'base_url' => 'https://client.invalid/v1']
+    );
+    throw new RuntimeException('Unsupported client provider control was accepted.');
+} catch (AiProviderException $exception) {
+    story_review_test_assert($exception->category() === 'validation', 'Provider-control category mismatch.');
+}
+try {
+    ai_send_message(
+        [['role' => 'user', 'content' => 'Offline validation only.']],
+        ['task' => 'unapproved_task']
+    );
+    throw new RuntimeException('Unsupported AI task was accepted.');
+} catch (AiProviderException $exception) {
+    story_review_test_assert($exception->category() === 'validation', 'Unsupported task category mismatch.');
+}
+
+foreach ([408, 429, 500, 502, 503, 504] as $retryableStatus) {
+    story_review_test_assert(
+        ai_provider_retryable_status($retryableStatus),
+        "HTTP {$retryableStatus} must be classified as retryable."
+    );
+}
+foreach ([400, 401, 403, 404, 422] as $nonRetryableStatus) {
+    story_review_test_assert(
+        !ai_provider_retryable_status($nonRetryableStatus),
+        "HTTP {$nonRetryableStatus} must not be classified as retryable."
+    );
+}
+
+putenv('AI_BASE_URL=https://127.0.0.1:9/v1');
+putenv('AI_ALLOWED_BASE_URLS=https://127.0.0.1:9/v1');
+putenv('AI_CONNECT_TIMEOUT_MS=500');
+putenv('AI_STORY_REVIEW_TIMEOUT_MS=1000');
+putenv('AI_MAX_RETRIES=0');
+try {
+    ai_send_message(
+        [['role' => 'user', 'content' => 'Local timeout/unavailable classification test.']],
+        ['task' => 'story_review']
+    );
+    throw new RuntimeException('Unavailable local transport unexpectedly succeeded.');
+} catch (AiProviderException $exception) {
+    story_review_test_assert($exception->category() === 'unavailable', 'Timeout/unavailable category mismatch.');
+}
+
+putenv('AI_ENABLED=false');
+putenv('AI_STORY_REVIEW_ENABLED=false');
+putenv('NVIDIA_NIM_API_KEY=');
+putenv('AI_BASE_URL=' . AI_DEFAULT_NVIDIA_BASE_URL);
+putenv('AI_ALLOWED_BASE_URLS=' . AI_DEFAULT_NVIDIA_BASE_URL);
+putenv('AI_STORY_REVIEW_MAX_INPUT_CHARS=50000');
+
 $story = 'Raka tiba di Los Santos dan berusaha membangun hidup baru secara masuk akal.';
 $messages = story_review_ai_build_messages($story);
 story_review_test_assert(count($messages) === 2, 'Story Review prompt shape is invalid.');
@@ -117,6 +200,20 @@ foreach ($invalidResponses as $invalidResponse) {
             'Invalid response category mismatch.'
         );
     }
+}
+
+$providerErrors = [
+    new AiProviderException('configuration', 'provider detail must not leak'),
+    new AiProviderException('quota', 'provider detail must not leak'),
+    new AiProviderException('unavailable', 'provider detail must not leak'),
+    new AiProviderException('invalid_response', 'provider response must not leak', 502),
+];
+foreach ($providerErrors as $providerError) {
+    $publicError = story_review_ai_public_error($providerError);
+    story_review_test_assert(
+        !str_contains($publicError['message'], 'must not leak'),
+        'Provider detail leaked through the public error.'
+    );
 }
 
 $adminRateDirectory = story_review_test_temp_directory('admin-rate');
