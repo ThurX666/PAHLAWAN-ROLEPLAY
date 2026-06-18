@@ -15,4 +15,4 @@
 - [x] 3.2 Run `git diff --check` and report any whitespace or merge-marker issues.
 - [x] 3.3 Report risks and request approval before any patch if a real code bug is confirmed.
 
-Manual follow-up: authenticated admin-session smoke testing is still required to verify `HTTP 200` asset payload shapes for `houses`, `businesses`, and `families` on the repo-root runtime.
+Resolved follow-up: authenticated admin-session smoke testing completed successfully on the repo-root runtime for `houses`, `businesses`, and `families`.
