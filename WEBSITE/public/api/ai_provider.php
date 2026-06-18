@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/app_config.php';
+
 const AI_DEFAULT_PROVIDER = 'nvidia';
 const AI_DEFAULT_NVIDIA_BASE_URL = 'https://integrate.api.nvidia.com/v1';
 const AI_DEFAULT_STORY_REVIEW_MODEL = 'deepseek-ai/deepseek-v4-flash';
@@ -35,17 +37,7 @@ class AiProviderException extends RuntimeException
 
 function ai_config_value(string $key, string $default = ''): string
 {
-    $serverValue = getenv($key);
-    if ($serverValue !== false) {
-        return trim((string)$serverValue);
-    }
-
-    $env = get_app_env();
-    if (array_key_exists($key, $env)) {
-        return trim((string)$env[$key]);
-    }
-
-    return $default;
+    return app_env($key, $default);
 }
 
 function ai_config_bool(string $key, bool $default = false): bool

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/app_config.php';
+
 const DISCORD_CONFIG_ENV_MAP = [
     'client_id' => ['env' => 'DISCORD_CLIENT_ID', 'db' => 'discord_client_id'],
     'client_secret' => ['env' => 'DISCORD_CLIENT_SECRET', 'db' => 'discord_client_secret'],

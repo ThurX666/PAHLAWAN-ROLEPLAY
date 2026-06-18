@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/app_config.php';
+
 // Import PHPMailer classes into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;

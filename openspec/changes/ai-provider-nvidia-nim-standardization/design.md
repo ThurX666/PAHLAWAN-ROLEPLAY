@@ -89,6 +89,8 @@ During pre-launch development, local UCP may use the configured real development
 
 Website Discord OAuth and guild automation configuration uses private server-side environment variables as the primary source: `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID`, `DISCORD_ROLE_WARGA_ID`, and `DISCORD_REDIRECT_URI`. Existing lowercase `ucp_system_settings` values remain read-only runtime fallbacks for backward compatibility. A nonblank environment value always wins. The local callback remains `http://127.0.0.1:8000/api/discord_callback.php`; production uses its exact registered HTTPS callback. Authorized diagnostics expose only whether each value is present and which source supplied it, never the value itself.
 
+Website DB, SMTP, Discord, and AI configuration share one PHP environment bootstrap. It detects the Website runtime root from either repository layout `<website-root>/public/api` or flattened deployment layout `<website-root>/api`, then loads exactly `<website-root>/.env`. Process-level environment variables override file values, including explicit blanks used for fail-closed operation. Authorized diagnostics may expose only bootstrap readiness and the resolved path, never configuration values.
+
 ### 5. The gateway owns rate limiting and abuse controls
 
 Every task will have server-defined input size, output size, model, temperature, and timeout bounds. Requests will be rate-limited by authenticated account and, where appropriate, IP/session and task. Authorization will restrict administrative or review-oriented tasks to eligible roles. The gateway will reject malformed requests, unsupported tasks, prompt-control fields, excessive payloads, and repeated abusive traffic before calling the provider.

@@ -21,6 +21,7 @@ if ($action === 'get_settings') {
     echo json_encode([
         "status" => "success",
         "settings" => $results ?: [],
+        "config_bootstrap_status" => app_config_diagnostics(),
         "discord_config_status" => discord_config_diagnostics(discord_load_config($pdo)),
     ]);
     exit;
@@ -29,6 +30,7 @@ if ($action === 'get_settings') {
 if ($action === 'get_discord_config_status') {
     echo json_encode([
         "status" => "success",
+        "config_bootstrap_status" => app_config_diagnostics(),
         "discord_config_status" => discord_config_diagnostics(discord_load_config($pdo)),
     ]);
     exit;

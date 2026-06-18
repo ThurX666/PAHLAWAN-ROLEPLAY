@@ -6,6 +6,8 @@ This directory contains the UCP frontend and the PHP API document root used for 
 
 `WEBSITE/.env` is local or deployment-only runtime state. Do not commit `.env` files or any secret-bearing values such as SMTP credentials, API keys, cookies, OTPs, or private database passwords.
 
+The PHP configuration bootstrap supports both repository layout `WEBSITE/public/api` and a flattened deployment layout `<deployment-root>/api`. The environment file is always resolved from the Website runtime root: `WEBSITE/.env` in the repository and `<deployment-root>/.env` in a flattened deployment such as `C:\xampp\htdocs\pahlawan_roleplay\.env`. It does not fall back to `C:\xampp\htdocs\.env`. Process-level environment variables take priority over file values, including explicitly blank values used to fail closed.
+
 Use only the example files in this directory as templates:
 - `.env.local.example`
 - `.env.production.example`
@@ -89,6 +91,7 @@ Operational events are written as metadata-only JSON lines to `WEBSITE/.runtime-
 - Existing `ucp_system_settings` values remain compatibility fallbacks when the corresponding `.env` value is blank. Admin Setup does not override a nonblank environment value.
 - For local OAuth, register the exact callback `http://127.0.0.1:8000/api/discord_callback.php` in the Discord developer application and use the same value for `DISCORD_REDIRECT_URI`.
 - Level-10 admins can inspect value-free Discord readiness metadata through `api_admin_setup.php?action=get_discord_config_status`. The response reports only presence/source/readiness, never IDs, tokens, or secrets.
+- The same response includes configuration-bootstrap diagnostics: whether the environment file is readable, its resolved source path, runtime root, and bootstrap status. It never includes environment values.
 - Keep `WEBSITE/.env` private and ignored. Do not place any external-service credential in frontend variables or tracked examples.
 
 ### Manual Secret Rotation and Enablement

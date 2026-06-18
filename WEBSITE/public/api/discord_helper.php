@@ -11,10 +11,15 @@ function callDiscordBotAPI($endpoint, $method = 'GET', $data = null, $botToken) 
     
     $url = "https://discord.com/api/v10/" . ltrim($endpoint, '/');
     $ch = curl_init($url);
+    $trimmedBotToken = trim($botToken);
+    $authHeader = strpos($trimmedBotToken, 'Bot ') === 0
+        ? $trimmedBotToken
+        : 'Bot ' . $trimmedBotToken;
     
     $headers = [
-        'Authorization: Bot ' . $botToken,
-        'Content-Type: application/json'
+        'Authorization: ' . $authHeader,
+        'Content-Type: application/json',
+        'User-Agent: ArivenaUCP/1.0'
     ];
     
     if ($method === 'POST') {
@@ -32,6 +37,7 @@ function callDiscordBotAPI($endpoint, $method = 'GET', $data = null, $botToken) 
     
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
     
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);

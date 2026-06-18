@@ -67,3 +67,4 @@
 - Pre-launch local testing may use the configured `arivena` development database and real external services. After launch, a separate local/dev database is required, and production player data must not be used for destructive testing.
 - Local SMTP/OTP requires PHPMailer plus private SMTP credentials.
 - Website Discord OAuth/guild settings use private `.env` values first through the standardized `DISCORD_*` names, with existing `ucp_system_settings` values retained as fallback and diagnostics restricted to presence/source/readiness metadata.
+- Website DB, SMTP, Discord, and AI settings use one environment bootstrap that resolves `WEBSITE/.env` for repository `public/api` execution and `<deployment-root>/.env` for flattened `api` deployments; bootstrap diagnostics expose paths/status only.
