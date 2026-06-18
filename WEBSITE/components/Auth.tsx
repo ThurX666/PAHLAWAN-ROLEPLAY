@@ -69,6 +69,11 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   const [initialCooldown, setInitialCooldown] = useState<number>(0);
   const [deviceInfo, setDeviceInfo] = useState({ device: '', ip: '', location: '' });
 
+  const clearPendingAuthState = () => {
+    localStorage.removeItem('pending_discord_username');
+    localStorage.removeItem('pending_discord_password');
+  };
+
   // Get device Info
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -131,8 +136,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
       const roleSuccess = urlParams.get('roleSuccess') !== '0';
       
       if (u) {
-        localStorage.removeItem('pending_discord_username');
-        localStorage.removeItem('pending_discord_password');
+        clearPendingAuthState();
         
         // Clean URL
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -429,6 +433,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                    initialCooldown={initialCooldown}
                    deviceInfo={deviceInfo}
                    onVerifySuccess={(username, adminLvl, gold, isDiscordLinked) => {
+                       clearPendingAuthState();
                        // Bypass layar login, langsung hubungkan ke state App.js
                        onLogin(username, adminLvl, undefined, true, isDiscordLinked);
                    }}
@@ -445,7 +450,10 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
             {view === 'discord' && verifyUser && (
                 <DiscordLinkForm 
                     username={verifyUser}
-                    onLinkSuccess={(username, adminLvl, gold) => onLogin(username, adminLvl, undefined, true, true)}
+                    onLinkSuccess={(username, adminLvl, gold) => {
+                        clearPendingAuthState();
+                        onLogin(username, adminLvl, undefined, true, true);
+                    }}
                     setView={setView}
                     onError={setError}
                 />

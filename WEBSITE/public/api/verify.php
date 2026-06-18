@@ -21,6 +21,7 @@ if ($action === 'verify_otp') {
             admin_level,
             vip_status,
             gold,
+            discord_id,
             Verify_Status as is_verified, 
             Verify_Code as verify_token, 
             Register_Date as created_at 
@@ -124,14 +125,27 @@ if ($action === 'verify_otp') {
             sendWelcomeEmail($user['email'], $user['username']);
         }
 
-        // Kirim response sukses yang meniru payload auth.php supaya React bisa langsung auto-login
-        // Jika discord_id kosong (pasti karena baru verify) maka kita kirim discord_required
-        ucp_create_pending_session($user);
+        if (empty($user['discord_id'])) {
+            ucp_create_pending_session($user);
+            echo json_encode([
+                'status' => 'discord_required',
+                'message' => 'Verifikasi Email Berhasil! Lanjut hubungkan Discord...',
+                'username' => $user['username']
+            ]);
+            exit;
+        }
+
+        ucp_create_session($user);
         echo json_encode([
-            'status' => 'discord_required', 
-            'message' => 'Verifikasi Email Berhasil! Lanjut hubungkan Discord...',
-            'username' => $user['username']
+            'status' => 'success',
+            'message' => 'Verifikasi Email Berhasil! Anda akan masuk ke dashboard.',
+            'username' => $user['username'],
+            'admin_level' => (int)($user['admin_level'] ?? 0),
+            'vip_status' => $user['vip_status'] ?? 'None',
+            'gold' => (int)($user['gold'] ?? 0),
+            'is_discord_linked' => true,
         ]);
+        exit;
 
     } catch (PDOException $e) {
         echo json_encode(['status' => 'error', 'message' => 'Terjadi kesalahan sistem saat mencoba verifikasi OTP.']);
