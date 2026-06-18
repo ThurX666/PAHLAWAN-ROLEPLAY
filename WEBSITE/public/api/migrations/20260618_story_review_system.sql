@@ -32,10 +32,22 @@ CREATE TABLE IF NOT EXISTS `story_reviews` (
   `review_notes` longtext DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `idx_story_reviews_story_created` (`story_id`, `created_at`),
-  KEY `idx_story_reviews_character_created` (`character_id`, `created_at`),
+  KEY `idx_story_reviews_story_created` (`story_id`, `created_at`, `id`),
+  KEY `idx_story_reviews_character_created` (`character_id`, `created_at`, `id`),
   KEY `idx_story_reviews_reviewer` (`reviewer_id`),
-  KEY `idx_story_reviews_content_hash` (`story_content_hash`)
+  KEY `idx_story_reviews_content_hash` (`story_content_hash`),
+  CONSTRAINT `chk_story_reviews_overall_score`
+    CHECK (`overall_score` BETWEEN 0.00 AND 100.00),
+  CONSTRAINT `chk_story_reviews_grammar_score`
+    CHECK (`grammar_score` BETWEEN 0.00 AND 100.00),
+  CONSTRAINT `chk_story_reviews_readability_score`
+    CHECK (`readability_score` BETWEEN 0.00 AND 100.00),
+  CONSTRAINT `chk_story_reviews_roleplay_score`
+    CHECK (`roleplay_score` BETWEEN 0.00 AND 100.00),
+  CONSTRAINT `chk_story_reviews_plagiarism_score`
+    CHECK (`plagiarism_score` BETWEEN 0.00 AND 100.00),
+  CONSTRAINT `chk_story_reviews_plagiarism_threshold`
+    CHECK (`plagiarism_threshold` BETWEEN 0.00 AND 100.00)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `story_review_matches` (
@@ -49,11 +61,15 @@ CREATE TABLE IF NOT EXISTS `story_review_matches` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_story_review_match` (`review_id`, `matched_story_id`),
-  KEY `idx_story_review_matches_rank` (`review_id`, `match_rank`),
+  UNIQUE KEY `uq_story_review_rank` (`review_id`, `match_rank`),
   KEY `idx_story_review_matches_story` (`matched_story_id`),
+  CONSTRAINT `chk_story_review_matches_similarity`
+    CHECK (`similarity_percentage` BETWEEN 0.00 AND 100.00),
+  CONSTRAINT `chk_story_review_matches_rank`
+    CHECK (`match_rank` >= 1),
   CONSTRAINT `fk_story_review_matches_review`
     FOREIGN KEY (`review_id`) REFERENCES `story_reviews` (`id`)
-    ON DELETE CASCADE ON UPDATE RESTRICT
+    ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Destructive rollback (manual only; intentionally commented):
