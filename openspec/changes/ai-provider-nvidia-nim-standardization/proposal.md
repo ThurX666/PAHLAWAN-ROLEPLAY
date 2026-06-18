@@ -11,13 +11,16 @@ PAHLAWAN ROLEPLAY currently has a provider-neutral website AI service contract a
 - Require rate limiting, authorization, input limits, abuse controls, privacy-aware structured logging, and operational observability at the gateway.
 - Define safe unavailable-provider behavior, including bounded retries, timeouts, user-safe errors, and explicitly configured fallback or feature degradation.
 - Prohibit browser-side AI SDK dependencies and provider credentials.
-- Produce planning and implementation tasks only; this change does not modify feature code, bot runtime behavior, gamemode/Pawn, or database schema.
+- Select the UCP Admin Panel Story Review System as the first bounded NVIDIA NIM feature.
+- Define persisted story analysis and plagiarism-match records, task-oriented API contracts, and the admin review UI states.
+- Produce planning artifacts and SQL migration/schema scripts only; this change does not implement runtime AI calls, execute migrations, modify bot runtime behavior, or modify gamemode/Pawn.
 
 ## Capabilities
 
 ### New Capabilities
 
 - `shared-ai-provider-gateway`: Defines the preferred NVIDIA NIM provider direction, authenticated Website/UCP gateway, bot-compatible provider contract, secure configuration, operational controls, and safe fallback behavior.
+- `story-review-system`: Defines server-side story analysis, database-backed plagiarism comparison, persisted review history, task-oriented admin endpoints, and Admin Panel review states.
 
 ### Modified Capabilities
 
@@ -25,7 +28,8 @@ None.
 
 ## Impact
 
-- Future implementation will affect the Website/UCP PHP backend gateway, frontend API client integration, server-side environment/config documentation, and shared AI adapter conventions.
+- Future implementation will affect the Website/UCP PHP backend gateway, `api_admin_stories.php` integration surface, Admin Stories UI, frontend types/API client integration, server-side environment/config documentation, and shared AI adapter conventions.
+- The database plan adds `story_reviews` and `story_review_matches` without changing `ucp_character_stories` content ownership or the existing manual approve/revision/reject workflow.
 - The Discord bot provider implementation remains behaviorally unchanged in this planning change, but its `sendMessage(messages, options)` contract is the compatibility baseline.
 - Future frontend work must continue without browser AI SDK packages or provider secrets.
-- No gamemode/Pawn, database schema, migrations, or runtime feature behavior is changed by this proposal.
+- No gamemode/Pawn or runtime feature behavior is changed by this proposal. SQL is generated but is not executed automatically.

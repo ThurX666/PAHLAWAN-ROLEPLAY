@@ -4,7 +4,7 @@ The Discord bot already contains an AI provider abstraction with Groq, OpenAI, N
 
 The Website frontend previously contained dormant `@google/genai` usage. Task 2.3 of `ucp-frontend-bundle-optimization` removed that dependency and left a provider-neutral TypeScript interface with the same `sendMessage(messages, options)` shape. The frontend currently has no configured provider, which is the correct safe state until an authenticated backend gateway exists.
 
-This design covers a future PHP UCP gateway and shared provider conventions. It must preserve UCP authentication and session security, keep provider credentials outside the browser, avoid changes to current bot runtime behavior, and avoid gamemode or database changes.
+This design covers a future PHP UCP gateway, shared provider conventions, and the first bounded feature: Admin Panel Story Review. It must preserve UCP authentication and session security, keep provider credentials outside the browser, avoid changes to current bot runtime behavior and gamemode, and keep database changes limited to generated, unexecuted SQL.
 
 ## Goals / Non-Goals
 
@@ -16,14 +16,27 @@ This design covers a future PHP UCP gateway and shared provider conventions. It 
 - Keep provider, model, endpoint, timeout, and fallback choices configurable without frontend changes.
 - Define rate limiting, abuse controls, logging, privacy, failure behavior, and environment documentation.
 - Preserve the ability to add or select another provider through explicit server configuration.
+- Load story content from `ucp_character_stories` on the server using an authorized story identifier.
+- Persist immutable analysis history and database-derived plagiarism matches for admin review.
 
 **Non-Goals:**
 
 - Implementing the Website/UCP gateway or connecting existing UI features.
 - Changing the Discord bot's active provider, model, configuration format, or runtime behavior.
 - Adding browser-side AI SDKs or exposing raw provider credentials.
-- Modifying gamemode/Pawn, database schema, migrations, or database data.
+- Modifying gamemode/Pawn or database data.
+- Executing migrations or implementing live NVIDIA NIM calls in this planning step.
+- Building chat assistants, free-form prompting, player-facing AI, or automatic story approval.
 - Defining provider-specific billing commitments or selecting final production quotas.
+
+## Current Story Review Audit
+
+- Story text is stored in `ucp_character_stories.content`, keyed by `id` and linked to `player_characters.pID` through `character_id`.
+- Player submission uses `api_stories_upload.php`, enforces ownership plus a 300-word/3-paragraph minimum, upserts one story per character in application logic, and sets both story and character status to Pending.
+- Admin review uses `AdminStories.tsx` and `api_admin_stories.php`, requires admin level 5, lists all stories, and manually applies Active, Revision, or Rejected with feedback and inbox/admin-log side effects.
+- The current Admin Stories “AI Analysis” is browser-only: mock story records, randomized Jaccard plagiarism scoring, basic punctuation/capitalization checks, and no persisted review history.
+- The repository dump and original `stories_sql.txt` omitted `ucp_character_stories.username`, while upload and admin-review code already insert/select it. The tracked schema reference is now aligned, and the generated manual migration adds and backfills this compatibility column.
+- `story_sql.txt` is a divergent legacy schema draft containing `photo_path` and a non-persisted plagiarism column; it is not treated as the canonical migration source for this feature.
 
 ## Decisions
 
@@ -86,6 +99,53 @@ If NVIDIA NIM remains unavailable, the gateway returns a stable internal error c
 
 The Website package must not add NVIDIA, OpenAI, Groq, Google, or other browser AI SDKs for provider access. The frontend dependency surface is limited to the existing application/API client approach. Server-side implementation may use a suitable HTTP client or an OpenAI-compatible server SDK only after dependency and deployment compatibility are reviewed.
 
+### 9. Story Review is the first approved Website/UCP AI task
+
+The first task identifier is `story_review`. It is restricted to the existing Admin Panel story-review role boundary, currently enforced by `ucp_require_admin(5)`. The feature assists a human reviewer and never changes story status automatically.
+
+The browser sends only identifiers and task intent. For analysis, the server accepts a bounded `story_id`, authorizes the admin, loads the current story and character relationship from `ucp_character_stories`, and constructs trusted analysis input. Browser-provided story text is rejected or ignored.
+
+### 10. Analysis combines deterministic metrics with NVIDIA rubric scoring
+
+The server computes word count and character count deterministically from the stored story. Plagiarism similarity is also computed server-side against other `ucp_character_stories` rows, excluding the selected story.
+
+NVIDIA NIM is used only for the story-review rubric: grammar score, readability score, roleplay quality score, overall score, and concise review notes. The trusted prompt requires a strict structured result with each score bounded to `0..100`. The backend validates and normalizes the response before persistence. NVIDIA output is advisory and cannot approve, reject, or revise a story.
+
+The selected production model remains server configuration (`AI_STORY_REVIEW_MODEL`) and must be capability-tested before live traffic. No model name is embedded in the frontend or migration.
+
+### 11. Plagiarism comparison remains local to the database
+
+The initial plagiarism detector normalizes text and calculates a deterministic similarity score for existing stories in bounded batches. Implementation may use token shingles plus Jaccard or cosine similarity, but must document the exact algorithm and version it as `analysis_version`.
+
+Only the selected story is sent to NVIDIA NIM. Existing comparison stories are not sent to the provider. The threshold is server-configured through a setting equivalent to `AI_STORY_PLAGIARISM_THRESHOLD`, defaults to `50.00` until operators approve another value, and is stored with each review. The top five matches above zero similarity are persisted, while the API may label matches at or above the configured threshold as flagged.
+
+### 12. Review history is immutable and detects stale analysis
+
+Each successful analysis inserts a new `story_reviews` row. Re-analysis does not overwrite earlier reviews. `story_content_hash` records the SHA-256 hash of the analyzed database content so the API and UI can identify a review that predates a story edit.
+
+`story_review_matches` stores ranked matches for one review. New tables use indexed logical references to the existing story, character, and UCP account identifiers. The initial migration avoids new foreign keys to legacy tables because the current schema does not consistently declare relational constraints; the review-to-match relation uses an internal foreign key with cascade deletion.
+
+### 13. The public API is task-oriented
+
+A future authenticated endpoint, recommended as `WEBSITE/public/api/api_story_review.php`, exposes only:
+
+- `analyze_story`: `POST` JSON with `story_id` and optional `force`. Returns a completed persisted review or a normalized disabled/unavailable error. A non-forced request may return the latest non-stale review.
+- `get_story_review`: `GET` with `story_id` and optional `review_id`. Returns the latest or requested authorized review and an `is_stale` flag.
+- `get_story_matches`: `GET` with `review_id`. Returns ranked matches with character display data loaded through joins.
+
+Every action requires `ucp_require_admin(5)`. Responses never include provider credentials, raw provider payloads, trusted prompts, or unrestricted model controls.
+
+### 14. Admin Stories gains explicit analysis states
+
+The existing pending-story detail view will replace browser mock plagiarism and grammar checks with:
+
+- **Analyze Story** when no persisted review exists.
+- **Re-Analyze Story** when a review exists or is stale.
+- **View Analysis** showing word count, character count, readability, grammar, roleplay, plagiarism, overall score, notes, model metadata, reviewer, and timestamp.
+- **View Similar Stories** showing ranked matches and similarity percentages.
+
+Manual Active, Revision, and Rejected actions remain separate. Analysis failure preserves the existing manual workflow and displays a retryable or unavailable state without losing reviewer feedback.
+
 ## Risks / Trade-offs
 
 - [A generic adapter can expose unsafe model controls] → Keep public requests task-oriented and enforce server-owned option allowlists and bounds.
@@ -95,22 +155,28 @@ The Website package must not add NVIDIA, OpenAI, Groq, Google, or other browser 
 - [Bot and Website configuration formats differ] → Standardize the adapter contract first and preserve runtime-specific config readers behind it.
 - [NVIDIA's OpenAI-compatible behavior can differ by model] → Keep model defaults and provider-specific response normalization inside the NVIDIA adapter and validate the selected model in implementation.
 
+- [A story may change after analysis] → Store a content hash and mark prior reviews stale rather than presenting them as current.
+- [Comparing every story can become expensive] → Use bounded database batches, indexed identifiers, a versioned local algorithm, and a top-match limit.
+- [Model output may be malformed or overconfident] → Require strict structured output, validate every score, preserve manual authority, and fail without persisting partial results.
+
 ## Migration Plan
 
 1. Add server-side AI configuration documentation and safe example variable names with blank secret values.
 2. Implement a PHP provider interface and NVIDIA NIM adapter behind `sendMessage(messages, options)`.
 3. Implement authenticated, task-oriented UCP gateway routing with validation, authorization, rate limiting, logging, timeouts, and safe error mapping.
 4. Add local mock/disabled behavior and production configuration validation.
-5. Connect one bounded Website feature to the gateway without adding browser AI SDKs.
-6. Verify secret scanning, frontend bundle contents, auth/session behavior, abuse controls, and provider-unavailable behavior.
-7. Separately evaluate a bot configuration adapter only if alignment is needed; do not change its active runtime behavior as part of the initial Website implementation.
+5. Apply the reviewed Story Review SQL migration manually in an approved maintenance window.
+6. Implement the Story Review actions, deterministic metrics, local plagiarism comparison, persistence, and admin UI states.
+7. Connect only Story Review to NVIDIA NIM without adding browser AI SDKs.
+8. Verify secret scanning, frontend bundle contents, auth/session behavior, stale-review behavior, abuse controls, and provider-unavailable behavior.
+9. Separately evaluate a bot configuration adapter only if alignment is needed; do not change its active runtime behavior as part of the initial Website implementation.
 
-Rollback consists of disabling the affected AI task or gateway through server configuration and returning the deterministic unavailable state. No database rollback is required.
+Rollback consists of disabling the Story Review AI task or gateway through server configuration and returning the deterministic unavailable state. The generated migration includes a commented destructive rollback section; it must never be run automatically because dropping review tables deletes audit history.
 
 ## Open Questions
 
-- Which first Website/UCP AI task will be implemented and which account roles may invoke it?
 - What production rate and token budgets are approved per task?
 - Should production use application-level limiting, reverse-proxy limiting, or an existing shared cache before multi-instance deployment?
 - Which NVIDIA NIM model will be the production default after capability, latency, and cost validation?
 - Is any cross-provider fallback approved for production, or should all initial tasks fail closed when NVIDIA NIM is unavailable?
+- Which exact deterministic similarity algorithm and normalization rules are approved after representative Indonesian story testing?

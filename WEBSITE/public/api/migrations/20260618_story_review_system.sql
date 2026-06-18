@@ -1,25 +1,16 @@
-CREATE TABLE IF NOT EXISTS `ucp_character_stories` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `character_id` int(11) NOT NULL,
-  `username` varchar(22) DEFAULT NULL,
-  `character_name` varchar(255) NOT NULL,
-  `photo_url` varchar(255) DEFAULT NULL,
-  `skin_id` int(11) DEFAULT 0,
-  `content` text NOT NULL,
-  `status` enum('Pending','Revision','Active','Rejected') NOT NULL DEFAULT 'Pending',
-  `admin_feedback` text DEFAULT NULL,
-  `reviewed_by` varchar(255) DEFAULT NULL,
-  `reviewed_at` timestamp NULL DEFAULT NULL,
-  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- Story Review System planning migration.
+-- Generated 2026-06-18. Review and execute manually; do not auto-run.
 
-INSERT IGNORE INTO `ucp_character_stories` (`id`, `character_id`, `character_name`, `content`, `status`, `admin_feedback`) VALUES
-(1, 201, 'Ucok Subejo', 'Ucok lahir di Medan dan merantau ke Los Santos...', 'Pending', NULL),
-(2, 203, 'Budi Santoso', 'Budi adalah seorang dokter yang berdedikasi...', 'Revision', 'Tolong tambahkan detail masa kecil.');
+-- Normalize the existing story table to the contract already used by
+-- api_stories_upload.php and api_admin_stories.php.
+ALTER TABLE `ucp_character_stories`
+  ADD COLUMN IF NOT EXISTS `username` varchar(22) DEFAULT NULL AFTER `character_id`;
 
--- Story Review System schema reference.
--- Apply WEBSITE/public/api/migrations/20260618_story_review_system.sql manually.
+UPDATE `ucp_character_stories` AS `cs`
+JOIN `player_characters` AS `c` ON `c`.`pID` = `cs`.`character_id`
+SET `cs`.`username` = `c`.`Char_UCP`
+WHERE `cs`.`username` IS NULL OR `cs`.`username` = '';
+
 CREATE TABLE IF NOT EXISTS `story_reviews` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `story_id` int(11) NOT NULL,
@@ -64,3 +55,7 @@ CREATE TABLE IF NOT EXISTS `story_review_matches` (
     FOREIGN KEY (`review_id`) REFERENCES `story_reviews` (`id`)
     ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Destructive rollback (manual only; intentionally commented):
+-- DROP TABLE IF EXISTS `story_review_matches`;
+-- DROP TABLE IF EXISTS `story_reviews`;
