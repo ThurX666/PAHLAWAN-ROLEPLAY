@@ -50,3 +50,11 @@
 - [x] 6.4 Persist immutable `ucp_story_reviews` rows and ranked `ucp_story_review_matches`, including the threshold and provider/model metadata used.
 - [x] 6.5 Mark reviews stale when the stored story hash differs, and create a new row for every re-analysis.
 - [x] 6.6 Validate structured NVIDIA scores are numeric and bounded to `0..100`; never let AI output change story status automatically.
+
+## Operator Acknowledgment Before Archive
+
+- Acknowledged on 2026-06-19: one unintended NVIDIA NIM request occurred during missing-key testing because the local test process inherited the private server configuration.
+- The request created immutable Story Review record `review_id=6` for `story_id=1`. The record is retained as audit history and must not be deleted or rewritten.
+- No provider credential was printed, logged, committed, or added to frontend assets.
+- The request did not change the story approval status; manual approval authority remains unchanged.
+- The test process was stopped, subsequent failure tests used offline or deliberately invalid provider configuration, and no further live provider request was authorized.
