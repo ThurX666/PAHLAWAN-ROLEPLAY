@@ -1,17 +1,28 @@
 
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { Suspense, lazy, useRef, useState, useEffect } from 'react';
 import { Character } from '../types';
 import { PageHeader } from './ui/PageHeader';
-import Cropper from 'react-easy-crop';
-import getCroppedImg from '../utils/cropImage';
 import { saveCharacterPhoto, getCharacterPhotoUrl } from '../utils/imageUtils';
 import { isPreviewEnv, API_URL } from '../config';
 import { 
     ArrowLeft, Shield, Zap, Heart, Crosshair, DollarSign, CreditCard, 
     Briefcase, Car, Home, MapPin, Smartphone, AlertTriangle, Clock, 
     Trophy, User, Wallet, Landmark, Droplets, Utensils, FileCheck, FileX, Smile,
-    Skull, Building2, Camera, X, Check
+    Skull, Building2, Camera
 } from 'lucide-react';
+
+const ImageCropModal = lazy(() => import('./ui/ImageCropModal').then(module => ({ default: module.ImageCropModal })));
+
+const CropperFallback: React.FC = () => (
+  <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl w-full max-w-md border border-gray-200 dark:border-white/10 p-8 text-center shadow-2xl">
+      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
+      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+        Memuat Cropper...
+      </p>
+    </div>
+  </div>
+);
 
 interface CharacterDetailProps {
   character: Character;
@@ -136,14 +147,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
 
   // Cropper State
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   const [isCropping, setIsCropping] = useState(false);
-
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -161,14 +165,10 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
       }
   };
 
-  const handleCropConfirm = async () => {
-      if (!imageSrc || !croppedAreaPixels) return;
+  const handleCropConfirm = async (croppedImage: string) => {
       try {
-          const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
-          if (croppedImage) {
-              const savedPath = await saveCharacterPhoto(character.name, croppedImage);
-              onUpdateCharacter({ ...character, photoUrl: savedPath });
-          }
+          const savedPath = await saveCharacterPhoto(character.name, croppedImage);
+          onUpdateCharacter({ ...character, photoUrl: savedPath });
       } catch (e) {
           console.error(e);
       }
@@ -185,63 +185,15 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
     <div className="w-full animate-[fadeIn_0.4s_ease-out]">
       {/* Cropper Modal */}
       {isCropping && imageSrc && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-              <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl border border-gray-200 dark:border-white/10">
-                  <div className="p-4 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
-                      <h3 className="font-black uppercase tracking-wider text-gray-900 dark:text-white">Sesuaikan Foto</h3>
-                      <button onClick={handleCropCancel} className="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
-                          <X size={20} />
-                      </button>
-                  </div>
-                  
-                  <div className="relative w-full h-80 bg-black">
-                      <Cropper
-                          image={imageSrc}
-                          crop={crop}
-                          zoom={zoom}
-                          aspect={1}
-                          cropShape="rect"
-                          showGrid={true}
-                          onCropChange={setCrop}
-                          onCropComplete={onCropComplete}
-                          onZoomChange={setZoom}
-                      />
-                  </div>
-                  
-                  <div className="p-4 flex flex-col gap-4">
-                      <div className="flex items-center gap-4">
-                          <span className="text-xs font-bold text-gray-500 uppercase">Zoom</span>
-                          <input
-                              type="range"
-                              value={zoom}
-                              min={1}
-                              max={3}
-                              step={0.1}
-                              aria-labelledby="Zoom"
-                              onChange={(e) => {
-                                  setZoom(Number(e.target.value))
-                              }}
-                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-                          />
-                      </div>
-                      
-                      <div className="flex gap-3 mt-2">
-                          <button 
-                              onClick={handleCropCancel}
-                              className="flex-1 py-3 px-4 bg-gray-100 hover:bg-gray-200 dark:bg-white/5 dark:hover:bg-white/10 text-gray-900 dark:text-white rounded-xl font-bold uppercase tracking-wider text-sm transition-colors"
-                          >
-                              Batal
-                          </button>
-                          <button 
-                              onClick={handleCropConfirm}
-                              className="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-2 shadow-lg shadow-red-600/20"
-                          >
-                              <Check size={18} /> Simpan
-                          </button>
-                      </div>
-                  </div>
-              </div>
-          </div>
+          <Suspense fallback={<CropperFallback />}>
+              <ImageCropModal
+                  aspect={1}
+                  imageSrc={imageSrc}
+                  title="Sesuaikan Foto"
+                  onCancel={handleCropCancel}
+                  onConfirm={handleCropConfirm}
+              />
+          </Suspense>
       )}
 
       <PageHeader 
