@@ -1,12 +1,35 @@
 
-import React, { useState, useEffect } from 'react';
-    import { Database, Users, UserCheck, ShieldAlert, Home, Building, Briefcase, Flag, Users as FamilyIcon, ArrowLeft, Search, MessageSquare, FileText, CreditCard, ChevronRight, LayoutDashboard, FileEdit } from 'lucide-react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
+import { Database, Users, UserCheck, ShieldAlert, Home, Building, Briefcase, Flag, Users as FamilyIcon, ArrowLeft, Search, MessageSquare, FileText, CreditCard, ChevronRight, LayoutDashboard, FileEdit } from 'lucide-react';
 import { StatWidget, AssetStatWidget } from '../ui/StatWidget';
-import { EconomyChart } from './overview/EconomyChart';
 import { AssetList } from './overview/AssetList';
-import { AssetDetail } from './overview/AssetDetail';
 import { PageHeader } from '../ui/PageHeader';
 import { isPreviewEnv, API_URL } from '../../config';
+
+const EconomyChart = lazy(() => import('./overview/EconomyChart').then(module => ({ default: module.EconomyChart })));
+const AssetDetail = lazy(() => import('./overview/AssetDetail').then(module => ({ default: module.AssetDetail })));
+
+const ChartFallback: React.FC = () => (
+    <div className="bg-white dark:bg-[#121212] rounded-2xl border border-gray-100 dark:border-white/5 p-6 flex min-h-[350px] items-center justify-center shadow-sm">
+        <div className="text-center">
+            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+                Memuat Grafik...
+            </p>
+        </div>
+    </div>
+);
+
+const DetailFallback: React.FC = () => (
+    <div className="flex min-h-[320px] items-center justify-center p-6 text-center">
+        <div>
+            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+                Memuat Detail...
+            </p>
+        </div>
+    </div>
+);
 
 interface AdminOverviewProps {
     onNavigate?: (tab: 'overview' | 'players' | 'logs' | 'setup' | 'donations' | 'stories' | 'tickets' | 'tickets:tickets' | string) => void;
@@ -146,7 +169,9 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigate, ticket
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* CHART (2/3) */}
                     <div className="lg:col-span-2 h-full min-h-[350px]">
-                        <EconomyChart />
+                        <Suspense fallback={<ChartFallback />}>
+                            <EconomyChart />
+                        </Suspense>
                     </div>
 
                     {/* PENDING ACTIONS (1/3) */}
@@ -337,7 +362,9 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigate, ticket
         {/* DETAIL VIEW */}
         {viewLevel === 'detail' && (
             <div className="bg-white dark:bg-[#0a0a0a] rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden animate-[fadeIn_0.3s_ease-out]">
-                <AssetDetail category={selectedCategory} detailId={selectedDetailId} />
+                <Suspense fallback={<DetailFallback />}>
+                    <AssetDetail category={selectedCategory} detailId={selectedDetailId} />
+                </Suspense>
             </div>
         )}
     </div>

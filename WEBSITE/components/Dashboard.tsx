@@ -1,10 +1,22 @@
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { ServerStats, UserProfile } from '../types';
 import { DashboardHeader } from './dashboard/DashboardHeader';
 import { AccountInfo } from './dashboard/AccountInfo';
-import { ActivityChart } from './dashboard/ActivityChart';
 import { PlayerTable } from './dashboard/PlayerTable';
+
+const ActivityChart = lazy(() => import('./dashboard/ActivityChart').then(module => ({ default: module.ActivityChart })));
+
+const ChartFallback: React.FC = () => (
+  <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl md:rounded-2xl p-5 md:p-6 shadow-sm flex min-h-[300px] items-center justify-center">
+    <div className="text-center">
+      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
+      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+        Memuat Grafik...
+      </p>
+    </div>
+  </div>
+);
 
 interface DashboardProps {
   stats: ServerStats;
@@ -48,7 +60,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ stats, userName, onNavigat
 
         {/* Chart Row: Full Width */}
         <div className="col-span-1 xl:col-span-12 h-full flex flex-col">
-            <ActivityChart />
+            <Suspense fallback={<ChartFallback />}>
+                <ActivityChart />
+            </Suspense>
         </div>
 
       </div>

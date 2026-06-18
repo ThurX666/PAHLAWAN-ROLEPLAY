@@ -6,7 +6,7 @@
 
 ## 2. Heavy Nested Dependency Isolation
 
-- [ ] 2.1 Defer `recharts` usage behind lazy boundaries for dashboard and admin chart modules where feasible without changing user-visible behavior.
+- [x] 2.1 Defer `recharts` usage behind lazy boundaries for dashboard and admin chart modules where feasible without changing user-visible behavior.
 - [ ] 2.2 Defer `react-easy-crop` usage so cropper code loads only when the related donation or character-photo modal is opened.
 - [ ] 2.3 Audit `@google/genai` frontend service imports and either defer them behind explicit actions or remove accidental runtime usage in a separate bounded follow-up if they are not needed.
 
