@@ -40,6 +40,8 @@ BOT/*.rar
 # WEBSITE build/runtime
 WEBSITE/.env
 WEBSITE/.env.*
+!WEBSITE/.env.local.example
+!WEBSITE/.env.production.example
 WEBSITE/node_modules/
 WEBSITE/dist/
 WEBSITE/dist-ssr/

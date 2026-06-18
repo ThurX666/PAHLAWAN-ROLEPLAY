@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/story_review_ai.php';
+require_once __DIR__ . '/ai_runtime_safety.php';
 
 const STORY_REVIEW_ANALYSIS_VERSION = 'story-review-local-v1';
 const STORY_REVIEW_PROVIDER = 'local';
@@ -383,18 +385,41 @@ if ($action === 'get_story_matches') {
 }
 
 if ($action === 'analyze_story') {
+    $requestId = ai_story_review_request_id();
+    $requestStartedAt = hrtime(true);
+    $logRejectedRequest = static function (string $category, int $storyRef = 0) use (
+        $requestId,
+        $requestStartedAt,
+        $adminUser
+    ): void {
+        $config = ai_provider_config();
+        ai_story_review_log_event([
+            'request_id' => $requestId,
+            'provider' => $config['provider'],
+            'model' => $config['model'],
+            'actor_ref' => (int)$adminUser['id'],
+            'story_ref' => $storyRef,
+            'latency_ms' => (int)round((hrtime(true) - $requestStartedAt) / 1000000),
+            'result_category' => $category,
+            'usage' => null,
+        ]);
+    };
+
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $logRejectedRequest('method_rejected');
         ucp_json_error('Method tidak diizinkan.', 405);
     }
 
     foreach (['content', 'story', 'story_text'] as $forbiddenField) {
         if (array_key_exists($forbiddenField, $requestData)) {
+            $logRejectedRequest('client_content_rejected');
             ucp_json_error('Story text tidak boleh dikirim dari browser.', 422);
         }
     }
 
     $storyId = filter_var($requestData['story_id'] ?? null, FILTER_VALIDATE_INT);
     if (!$storyId || $storyId < 1) {
+        $logRejectedRequest('story_id_rejected');
         ucp_json_error('Story ID tidak valid.', 422);
     }
 
@@ -412,7 +437,57 @@ if ($action === 'analyze_story') {
     $originalityScore = max(0.0, 100.0 - $plagiarismScore);
     $overallScore = round(($readabilityScore + $originalityScore) / 2.0, 2);
     $threshold = story_review_threshold();
-    $reviewNotes = 'Deterministic placeholder only. Readability and local plagiarism were calculated server-side. Grammar and roleplay scores remain 0 until the approved NVIDIA NIM integration is implemented.';
+    $reviewNotes = 'Deterministic mode. Readability and local plagiarism were calculated server-side. NVIDIA rubric scoring is disabled, so grammar and roleplay scores remain 0.';
+    $reviewProvider = STORY_REVIEW_PROVIDER;
+    $reviewModel = STORY_REVIEW_MODEL;
+    $analysisVersion = STORY_REVIEW_ANALYSIS_VERSION;
+    $grammarScore = 0.0;
+    $roleplayScore = 0.0;
+    $providerUsage = null;
+    $providerEnabled = ai_story_review_is_enabled();
+
+    if ($providerEnabled) {
+        $rateLimitLease = null;
+        $providerException = null;
+        try {
+            $rateLimitLease = ai_story_review_acquire_limits(
+                (int)$adminUser['id'],
+                (int)$storyId
+            );
+            $aiRubric = story_review_ai_analyze($plainText);
+            $providerUsage = ai_provider_last_metadata()['usage'] ?? null;
+            $reviewProvider = (string)$aiRubric['ai_provider'];
+            $reviewModel = (string)$aiRubric['ai_model'];
+            $analysisVersion = (string)$aiRubric['analysis_version'];
+            $grammarScore = (float)$aiRubric['grammar_score'];
+            $readabilityScore = (float)$aiRubric['readability_score'];
+            $roleplayScore = (float)$aiRubric['roleplay_score'];
+            $overallScore = (float)$aiRubric['overall_score'];
+            $reviewNotes = (string)$aiRubric['review_notes'];
+        } catch (AiProviderException $e) {
+            $providerException = $e;
+        } finally {
+            if ($rateLimitLease instanceof AiRateLimitLease) {
+                $rateLimitLease->release();
+            }
+        }
+
+        if ($providerException instanceof AiProviderException) {
+            $config = ai_provider_config();
+            ai_story_review_log_event([
+                'request_id' => $requestId,
+                'provider' => $config['provider'],
+                'model' => $config['model'],
+                'actor_ref' => (int)$adminUser['id'],
+                'story_ref' => (int)$storyId,
+                'latency_ms' => (int)round((hrtime(true) - $requestStartedAt) / 1000000),
+                'result_category' => $providerException->category(),
+                'usage' => ai_provider_last_metadata()['usage'] ?? null,
+            ]);
+            $publicError = story_review_ai_public_error($providerException);
+            ucp_json_error($publicError['message'], $publicError['status']);
+        }
+    }
 
     $pdo->beginTransaction();
     try {
@@ -446,16 +521,16 @@ if ($action === 'analyze_story') {
             (int)$story['character_id'],
             (int)$adminUser['id'],
             (string)$adminUser['username'],
-            STORY_REVIEW_PROVIDER,
-            STORY_REVIEW_MODEL,
-            STORY_REVIEW_ANALYSIS_VERSION,
+            $reviewProvider,
+            $reviewModel,
+            $analysisVersion,
             $contentHash,
             $wordCount,
             $characterCount,
             $overallScore,
-            0.0,
+            $grammarScore,
             $readabilityScore,
-            0.0,
+            $roleplayScore,
             $plagiarismScore,
             $threshold,
             $reviewNotes,
@@ -486,15 +561,47 @@ if ($action === 'analyze_story') {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
+        ai_story_review_log_event([
+            'request_id' => $requestId,
+            'provider' => $reviewProvider,
+            'model' => $reviewModel,
+            'actor_ref' => (int)$adminUser['id'],
+            'story_ref' => (int)$storyId,
+            'latency_ms' => (int)round((hrtime(true) - $requestStartedAt) / 1000000),
+            'result_category' => 'persistence_conflict',
+            'usage' => $providerUsage,
+        ]);
         ucp_json_error($e->getMessage(), 409);
     } catch (PDOException $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
+        ai_story_review_log_event([
+            'request_id' => $requestId,
+            'provider' => $reviewProvider,
+            'model' => $reviewModel,
+            'actor_ref' => (int)$adminUser['id'],
+            'story_ref' => (int)$storyId,
+            'latency_ms' => (int)round((hrtime(true) - $requestStartedAt) / 1000000),
+            'result_category' => 'persistence_error',
+            'usage' => $providerUsage,
+        ]);
         ucp_json_error('Gagal menyimpan Story Review. Pastikan migrasi database telah diterapkan.', 503);
     }
 
     $persistedReview = story_review_fetch_review($pdo, (int)$storyId, $reviewId);
+    ai_story_review_log_event([
+        'request_id' => $requestId,
+        'provider' => $reviewProvider,
+        'model' => $reviewModel,
+        'actor_ref' => (int)$adminUser['id'],
+        'story_ref' => (int)$storyId,
+        'latency_ms' => (int)round((hrtime(true) - $requestStartedAt) / 1000000),
+        'result_category' => $providerEnabled
+            ? 'provider_review_persisted'
+            : 'deterministic_review_persisted',
+        'usage' => $providerUsage,
+    ]);
     story_review_json_success([
         'review' => $persistedReview,
         'match_count' => count($matches),

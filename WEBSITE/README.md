@@ -59,6 +59,42 @@ Production must remain separate from local development:
 
 Use `.env.production.example` only as a placeholder template. Fill real deployment values outside the repository.
 
+## Story Review NVIDIA NIM
+
+The Website/UCP backend contains a server-only NVIDIA NIM adapter compatible with `sendMessage(messages, options)`. Its defaults match Discord Bot/PHRP-AI:
+
+- provider: `nvidia`
+- base URL: `https://integrate.api.nvidia.com/v1`
+- model: `deepseek-ai/deepseek-v4-flash`
+
+Live provider traffic is disabled unless both `AI_ENABLED=true` and `AI_STORY_REVIEW_ENABLED=true`. While disabled, Story Review continues using deterministic readability and local plagiarism analysis. If AI is enabled with a missing credential, missing/unapproved model, unapproved HTTPS base URL, or invalid provider response, the request fails before a review is persisted.
+
+`NVIDIA_NIM_API_KEY` must be injected only into the PHP server environment or private `WEBSITE/.env`. Never expose provider credentials, models, or endpoints as browser-controlled values and never use a `VITE_` prefix for AI secrets. Overrides must also be listed in `AI_ALLOWED_MODELS` or `AI_ALLOWED_BASE_URLS`.
+
+Story Review sends only the selected database-loaded story text and trusted rubric instructions to the provider. Plagiarism matches, account/reviewer data, IDs, cookies, sessions, and secrets remain local.
+
+The server contract accepts ordered `{ role, content }` messages and bounded options named `task`, `model`, `maxTokens`, `temperature`, and `responseFormat`. Cross-provider fallback remains disabled through `AI_FALLBACK_ENABLED=false`. The documented rate variables reserve the approved limits for the separate gateway rate-limit task; enabling NVIDIA traffic before that enforcement and model capability testing are complete is not approved.
+
+Story Review provider traffic is limited per authenticated admin, per story, and by host-wide concurrent provider slots. Defaults are 3 requests per 5 minutes, 12 per hour, and 40 per day per admin; a 60-second story cooldown and 3 requests per story per hour; and 2 concurrent provider requests. State is stored outside the database using host-local locked files. Multi-host deployments require equivalent shared infrastructure limiting before production enablement.
+
+Operational events are written as metadata-only JSON lines to `WEBSITE/.runtime-logs/ai-story-review.jsonl` by default. Logged fields are request ID, task, provider, model, numeric admin/story references, latency, result category, and provider token counts when available. Story content, prompts, responses, cookies, session data, authorization headers, and credentials are never accepted by the logger.
+
+### Manual Secret Rotation and Staging Enablement
+
+Any provider key shared through chat or another messaging channel must be treated as compromised:
+
+1. Revoke or delete the exposed key in NVIDIA's key-management interface.
+2. Generate a new key with the minimum required access.
+3. Keep `AI_ENABLED=false` and `AI_STORY_REVIEW_ENABLED=false` while configuring staging.
+4. Place the replacement value only in the private local or production `WEBSITE/.env` as `NVIDIA_NIM_API_KEY`. Never paste it into source, example files, logs, commands committed to shell history, or a `VITE_` variable.
+5. Confirm `.env` remains ignored with `git check-ignore WEBSITE/.env`.
+6. Configure the approved model/base URL allowlists and private rate-limit/log paths if deployment defaults are unsuitable.
+7. Run PHP lint, the offline contract test, OpenSpec validation, and `git diff --check`.
+8. In a controlled staging maintenance window, set `AI_ENABLED=true` and `AI_STORY_REVIEW_ENABLED=true`, restart only the Website/PHP runtime, and perform one authorized Story Review request.
+9. Immediately restore both flags to `false` if schema validation, privacy logging, rate limiting, latency, token usage, persistence, stale detection, or manual approval behavior differs from the approved contract.
+
+Do not enable production traffic until the Bot-derived model passes capability testing and the staging results are explicitly approved.
+
 ## Manual Login and Session Smoke Test
 
 1. Start the PHP API and frontend with the commands above.
