@@ -60,6 +60,27 @@ try {
     story_review_test_assert($exception->category() === 'configuration', 'Missing key category mismatch.');
 }
 
+$invalidModelConfig = $missingKeyConfig;
+$invalidModelConfig['api_key'] = 'offline-placeholder-not-a-real-key';
+$invalidModelConfig['model'] = 'unapproved/model';
+try {
+    ai_validate_server_configuration($invalidModelConfig);
+    throw new RuntimeException('Invalid provider model was accepted.');
+} catch (AiProviderException $exception) {
+    story_review_test_assert($exception->category() === 'configuration', 'Invalid model category mismatch.');
+}
+
+$invalidBaseUrlConfig = $missingKeyConfig;
+$invalidBaseUrlConfig['api_key'] = 'offline-placeholder-not-a-real-key';
+$invalidBaseUrlConfig['base_url'] = 'http://invalid.example/v1';
+$invalidBaseUrlConfig['allowed_base_urls'] = ['http://invalid.example/v1'];
+try {
+    ai_validate_server_configuration($invalidBaseUrlConfig);
+    throw new RuntimeException('Invalid provider base URL was accepted.');
+} catch (AiProviderException $exception) {
+    story_review_test_assert($exception->category() === 'configuration', 'Invalid base URL category mismatch.');
+}
+
 $story = 'Raka tiba di Los Santos dan berusaha membangun hidup baru secara masuk akal.';
 $messages = story_review_ai_build_messages($story);
 story_review_test_assert(count($messages) === 2, 'Story Review prompt shape is invalid.');
