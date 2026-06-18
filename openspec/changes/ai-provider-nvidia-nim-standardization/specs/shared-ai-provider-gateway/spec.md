@@ -71,6 +71,24 @@ The system SHALL allow the active provider, model, approved endpoint, and operat
 - **THEN** configuration validation fails safely or the AI feature remains disabled
 - **AND** the system does not silently route to an unspecified provider
 
+### Requirement: Website NVIDIA defaults align with Discord Bot/PHRP-AI
+The Website/UCP NVIDIA adapter SHALL default to the audited Discord Bot/PHRP-AI NVIDIA configuration: base URL `https://integrate.api.nvidia.com/v1` and model `deepseek-ai/deepseek-v4-flash`. Website/UCP MUST keep its credentials and runtime configuration server-side and MUST NOT modify or depend on Bot configuration files at runtime.
+
+#### Scenario: Default Website NVIDIA configuration
+- **WHEN** Website/UCP Story Review is configured for NVIDIA without an explicitly approved model or endpoint override
+- **THEN** the server uses `https://integrate.api.nvidia.com/v1`
+- **AND** uses `deepseek-ai/deepseek-v4-flash`
+
+#### Scenario: Explicit server-side override
+- **WHEN** an operator configures a supported and explicitly approved provider, model, or endpoint override on the Website/UCP server
+- **THEN** the gateway may use that override without a frontend code change
+- **AND** no provider control or credential is exposed to the browser
+
+#### Scenario: Bot runtime isolation
+- **WHEN** Website/UCP loads or changes its AI runtime configuration
+- **THEN** it does not read, write, or mutate `BOT/PHRP-AI/config/app.json` at runtime
+- **AND** Discord Bot provider behavior remains unchanged
+
 ### Requirement: Gateway enforces rate limits and abuse controls
 The gateway MUST apply authorization, input limits, output limits, timeout limits, and rate limits before or during provider execution, with controls scoped by task and authenticated actor and supplemented by IP/session controls where appropriate.
 

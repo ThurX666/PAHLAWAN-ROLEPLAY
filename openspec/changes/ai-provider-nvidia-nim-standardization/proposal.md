@@ -5,6 +5,7 @@ PAHLAWAN ROLEPLAY currently has a provider-neutral website AI service contract a
 ## What Changes
 
 - Establish NVIDIA NIM as the preferred AI provider for PAHLAWAN ROLEPLAY AI features.
+- Use the Discord Bot/PHRP-AI NVIDIA NIM configuration as the Website/UCP default: `https://integrate.api.nvidia.com/v1` with `deepseek-ai/deepseek-v4-flash`, while retaining explicit server-side configuration overrides.
 - Define an authenticated server-side Website/UCP AI gateway; the browser calls this gateway and never calls NVIDIA or another model provider directly.
 - Standardize the provider-facing contract around `sendMessage(messages, options)` so website backend adapters remain compatible with the Discord bot provider abstraction.
 - Require provider selection, model settings, endpoints, and credentials to be supplied through server-side environment/configuration with safe local/development and production expectations.
@@ -30,6 +31,6 @@ None.
 
 - Future implementation will affect the Website/UCP PHP backend gateway, `api_admin_stories.php` integration surface, Admin Stories UI, frontend types/API client integration, server-side environment/config documentation, and shared AI adapter conventions.
 - The database plan adds UCP-owned `ucp_story_reviews` and `ucp_story_review_matches` under the dedicated `DATABASE/migrations/` artifact path without changing `ucp_character_stories` content ownership or the existing manual approve/revision/reject workflow.
-- The Discord bot provider implementation remains behaviorally unchanged in this planning change, but its `sendMessage(messages, options)` contract is the compatibility baseline.
+- The Discord bot provider implementation remains behaviorally unchanged in this planning change, but its `sendMessage(messages, options)` contract and current NVIDIA NIM base URL/model are the Website/UCP compatibility and default-configuration baseline.
 - Future frontend work must continue without browser AI SDK packages or provider secrets.
 - No gamemode/Pawn or runtime feature behavior is changed by this proposal. SQL is generated but is not executed automatically.

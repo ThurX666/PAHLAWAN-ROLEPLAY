@@ -1,6 +1,6 @@
 ## Context
 
-The Discord bot already contains an AI provider abstraction with Groq, OpenAI, NVIDIA NIM, and custom adapters. Its NVIDIA implementation uses NVIDIA's OpenAI-compatible endpoint and the public provider contract is `sendMessage(messages, options) -> Promise<string>`.
+The Discord bot already contains an AI provider abstraction with Groq, OpenAI, NVIDIA NIM, and custom adapters. Its NVIDIA implementation uses the OpenAI-compatible base URL `https://integrate.api.nvidia.com/v1`, and `BOT/PHRP-AI/config/app.json` currently selects provider `nvidia` with model `deepseek-ai/deepseek-v4-flash`. Its public provider contract is `sendMessage(messages, options) -> Promise<string>`.
 
 The Website frontend previously contained dormant `@google/genai` usage. Task 2.3 of `ucp-frontend-bundle-optimization` removed that dependency and left a provider-neutral TypeScript interface with the same `sendMessage(messages, options)` shape. The frontend currently has no configured provider, which is the correct safe state until an authenticated backend gateway exists.
 
@@ -11,6 +11,7 @@ This design covers a future PHP UCP gateway, shared provider conventions, and th
 **Goals:**
 
 - Make NVIDIA NIM the preferred provider for new PAHLAWAN ROLEPLAY AI features.
+- Default Website/UCP Story Review to the same NVIDIA NIM base URL and model currently selected by Discord Bot/PHRP-AI.
 - Define a server-side Website/UCP gateway that authenticates and authorizes every AI request.
 - Keep the internal provider adapter compatible with `sendMessage(messages, options)`.
 - Keep provider, model, endpoint, timeout, and fallback choices configurable without frontend changes.
@@ -52,6 +53,13 @@ sendMessage(messages, options) -> string
 
 This matches the bot's existing abstraction and permits later provider switching through configuration. Direct NVIDIA calls from React were rejected because they expose credentials, bypass UCP authorization, and duplicate provider logic in the browser.
 
+For the initial Website/UCP Story Review implementation, the audited Discord Bot/PHRP-AI NVIDIA configuration is the default configuration baseline:
+
+- base URL: `https://integrate.api.nvidia.com/v1`
+- model: `deepseek-ai/deepseek-v4-flash`
+
+Website/UCP must not independently select another default model or base URL. Server operators may still configure an explicitly approved provider, model, or endpoint override without changing frontend code. Website/UCP does not read or mutate `BOT/PHRP-AI/config/app.json` at runtime, and this alignment does not change Discord Bot behavior.
+
 ### 2. The browser calls a task-oriented authenticated UCP endpoint
 
 The frontend will call a same-origin or explicitly allowed UCP API endpoint using the existing authenticated session flow. The public HTTP request will identify an allowlisted AI task and provide validated task input. The server will build trusted system instructions and translate the request into `sendMessage(messages, options)`.
@@ -64,8 +72,8 @@ The Website/UCP runtime will read AI settings from non-public server environment
 
 - `AI_PROVIDER=nvidia`
 - `NVIDIA_NIM_API_KEY` with no example value
-- `AI_MODEL`
-- `AI_BASE_URL` defaulting internally to the approved NVIDIA NIM endpoint
+- `AI_STORY_REVIEW_MODEL`, defaulting to `deepseek-ai/deepseek-v4-flash`
+- `AI_BASE_URL`, defaulting to `https://integrate.api.nvidia.com/v1`
 - `AI_TIMEOUT_MS`, output-token limits, and rate-limit settings
 - optional fallback provider settings, disabled unless explicitly configured
 
@@ -111,7 +119,7 @@ The server computes word count and character count deterministically from the st
 
 NVIDIA NIM is used only for the story-review rubric: grammar score, readability score, roleplay quality score, overall score, and concise review notes. The trusted prompt requires a strict structured result with each score bounded to `0..100`. The backend validates and normalizes the response before persistence. NVIDIA output is advisory and cannot approve, reject, or revise a story.
 
-The selected production model remains server configuration (`AI_STORY_REVIEW_MODEL`) and must be capability-tested before live traffic. No model name is embedded in the frontend or migration.
+The Website/UCP server configuration (`AI_STORY_REVIEW_MODEL`) defaults to the Discord Bot/PHRP-AI model `deepseek-ai/deepseek-v4-flash`, and `AI_BASE_URL` defaults to `https://integrate.api.nvidia.com/v1`. These defaults must be capability-tested for the Story Review rubric before live traffic. An operator may select an explicitly approved override through server configuration, but no model name or endpoint is exposed as a frontend control or embedded in a migration.
 
 ### 11. Plagiarism comparison remains local to the database
 
@@ -174,7 +182,7 @@ Manual Active, Revision, and Rejected actions remain separate. Analysis failure 
 
 ## Migration Plan
 
-1. Add server-side AI configuration documentation and safe example variable names with blank secret values.
+1. Add server-side AI configuration documentation and safe example variable names with blank secret values, defaulting the Website NVIDIA model/base URL to the audited Discord Bot/PHRP-AI values.
 2. Implement a PHP provider interface and NVIDIA NIM adapter behind `sendMessage(messages, options)`.
 3. Implement authenticated, task-oriented UCP gateway routing with validation, authorization, rate limiting, logging, timeouts, and safe error mapping.
 4. Add local mock/disabled behavior and production configuration validation.
@@ -182,7 +190,7 @@ Manual Active, Revision, and Rejected actions remain separate. Analysis failure 
 6. Implement the Story Review actions, deterministic metrics, local plagiarism comparison, persistence, and admin UI states.
 7. Connect only Story Review to NVIDIA NIM without adding browser AI SDKs.
 8. Verify secret scanning, frontend bundle contents, auth/session behavior, stale-review behavior, abuse controls, and provider-unavailable behavior.
-9. Separately evaluate a bot configuration adapter only if alignment is needed; do not change its active runtime behavior as part of the initial Website implementation.
+9. Verify the Website defaults remain aligned with the audited Bot NVIDIA model/base URL while keeping configuration loading independent and leaving Bot files and runtime behavior unchanged.
 
 Rollback consists of disabling the Story Review AI task or gateway through server configuration and returning the deterministic unavailable state. The generated migration includes a commented destructive rollback section; it must never be run automatically because dropping review tables deletes audit history.
 
@@ -190,6 +198,6 @@ Rollback consists of disabling the Story Review AI task or gateway through serve
 
 - What production rate and token budgets are approved per task?
 - Should production use application-level limiting, reverse-proxy limiting, or an existing shared cache before multi-instance deployment?
-- Which NVIDIA NIM model will be the production default after capability, latency, and cost validation?
+- Does `deepseek-ai/deepseek-v4-flash`, inherited from Discord Bot/PHRP-AI as the default, pass the Story Review capability, latency, structured-output, and cost validation required before live traffic?
 - Is any cross-provider fallback approved for production, or should all initial tasks fail closed when NVIDIA NIM is unavailable?
 - Which exact deterministic similarity algorithm and normalization rules are approved after representative Indonesian story testing?

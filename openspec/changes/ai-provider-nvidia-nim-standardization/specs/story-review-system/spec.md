@@ -7,6 +7,12 @@ The Website/UCP SHALL use NVIDIA NIM only for the Admin Panel Story Review task 
 - **WHEN** a client requests chat, arbitrary completion, or another unapproved AI task
 - **THEN** the backend rejects the request before provider execution
 
+#### Scenario: Default Story Review provider target
+- **WHEN** Story Review uses NVIDIA NIM without an explicitly approved server-side override
+- **THEN** it uses the Discord Bot/PHRP-AI default base URL `https://integrate.api.nvidia.com/v1`
+- **AND** uses the Discord Bot/PHRP-AI default model `deepseek-ai/deepseek-v4-flash`
+- **AND** no model or endpoint control is accepted from the browser
+
 ### Requirement: Story analysis uses database-loaded content
 The backend MUST load the selected story from `ucp_character_stories` after authenticating and authorizing the admin. It MUST NOT analyze story text supplied only by browser state.
 
