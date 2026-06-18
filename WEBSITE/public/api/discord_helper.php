@@ -1,12 +1,9 @@
 <?php
 // helpers/discord_helper.php
-function getDiscordSettings($conn) {
-    $stmt = $conn->query("SELECT setting_key, setting_value FROM ucp_system_settings WHERE setting_key LIKE 'discord_%'");
-    $settings = [];
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $settings[$row['setting_key']] = $row['setting_value'];
-    }
-    return $settings;
+require_once __DIR__ . '/discord_config.php';
+
+function getDiscordSettings(PDO $conn): array {
+    return discord_load_config($conn);
 }
 
 function callDiscordBotAPI($endpoint, $method = 'GET', $data = null, $botToken) {

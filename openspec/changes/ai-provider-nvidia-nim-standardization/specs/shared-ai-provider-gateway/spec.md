@@ -147,13 +147,55 @@ The project SHALL document safe local/development and production expectations fo
 
 #### Scenario: Local development without credentials
 - **WHEN** a developer runs the Website/UCP locally without a provider credential
-- **THEN** AI features remain disabled or use an explicit deterministic mock/stub
+- **THEN** enabled provider requests fail closed without partial persistence
+- **AND** the operator may explicitly disable both AI flags to use deterministic-only Story Review
 - **AND** no browser credential or committed secret is required
 
 #### Scenario: Production configuration
 - **WHEN** AI is enabled in production
 - **THEN** provider credentials are injected outside the repository
 - **AND** authentication, TLS, provider/model validation, timeouts, output bounds, rate limits, logging, and safe failure behavior are enabled
+
+#### Scenario: Approved local and production environment examples
+- **WHEN** operators prepare local development or production from the tracked environment examples after capability and readiness approval
+- **THEN** `AI_ENABLED=true` and `AI_STORY_REVIEW_ENABLED=true` are the documented environment policy
+- **AND** `AI_PROVIDER=nvidia`, `AI_BASE_URL=https://integrate.api.nvidia.com/v1`, and `AI_STORY_REVIEW_MODEL=deepseek-ai/deepseek-v4-flash` remain the defaults
+- **AND** the credential placeholder remains blank in tracked files
+- **AND** `AI_FALLBACK_ENABLED=false` remains required for the initial Story Review task
+- **AND** missing or invalid private configuration fails closed without implicit fallback
+
+#### Scenario: Pre-launch local development database
+- **WHEN** the project is tested locally before production launch
+- **THEN** the configured `arivena` development database may be used with real external services
+- **AND** destructive database operations still require explicit approval
+
+#### Scenario: Post-launch data isolation
+- **WHEN** production player data exists after launch
+- **THEN** operators create and use a separate local/dev database
+- **AND** production player data is not used for destructive tests, resets, fixtures, migration experiments, or failure simulations
+
+### Requirement: Website Discord configuration remains server-side
+Website Discord OAuth and guild automation configuration SHALL use private server-side environment variables as the primary source while retaining existing `ucp_system_settings` values as backward-compatible fallbacks.
+
+#### Scenario: Environment configuration is present
+- **WHEN** a nonblank Website Discord environment value is configured
+- **THEN** it takes priority over the corresponding `ucp_system_settings` value
+- **AND** the value is not exposed through frontend source or diagnostics
+
+#### Scenario: Environment configuration is absent
+- **WHEN** a Website Discord environment value is blank or missing
+- **THEN** the corresponding existing `ucp_system_settings` value may be used
+- **AND** no database setting is deleted or migrated automatically
+
+#### Scenario: Local Discord callback
+- **WHEN** local Discord OAuth is configured
+- **THEN** `DISCORD_REDIRECT_URI` may use `http://127.0.0.1:8000/api/discord_callback.php`
+- **AND** the same exact callback is registered in the Discord developer application
+
+#### Scenario: Discord configuration diagnostics
+- **WHEN** an authorized level-10 admin requests Discord configuration diagnostics
+- **THEN** the API reports only presence, source, redirect validity, and readiness categories
+- **AND** does not return client IDs, secrets, bot tokens, guild IDs, role IDs, or callback values
 
 ### Requirement: Browser-side AI SDK dependencies are prohibited
 The Website frontend MUST NOT depend on provider AI SDKs for model access.

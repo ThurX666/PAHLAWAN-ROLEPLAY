@@ -81,9 +81,13 @@ No provider key may use the `VITE_` prefix, be emitted into frontend bundles, be
 
 ### 4. Local/development and production fail safely
 
-Local development may run with AI disabled and deterministic mock/stub responses for UI development. Live NVIDIA calls require an explicitly supplied server-side credential and must never be silently enabled from frontend configuration.
+Local development supports production-like Story Review testing. The tracked local example enables Story Review through environment flags, but live NVIDIA calls still require an explicitly supplied private server-side credential and must never be silently enabled from frontend configuration. Operators may temporarily disable the flags for deterministic-only development.
 
-Production requires an authenticated gateway, a configured provider and model, secret injection outside the repository, TLS at the public boundary, bounded timeouts and output sizes, rate limits, and operational logging. Missing or invalid production configuration disables the AI feature or fails startup/config validation according to the hosting model; it must not fall back to a browser key or embedded credential.
+Following successful capability and production-readiness validation, tracked local and production environment examples SHALL set `AI_ENABLED=true` and `AI_STORY_REVIEW_ENABLED=true`. This is an environment policy only; runtime source defaults remain fail-safe and no credential is embedded in source. Production requires an authenticated gateway, a valid private server-side credential, approved provider and model configuration, secret injection outside the repository, TLS at the public boundary, bounded timeouts and output sizes, rate limits, and operational logging. Missing or invalid configuration fails closed before partial AI review persistence; it must not fall back to a browser key, embedded credential, or alternate provider.
+
+During pre-launch development, local UCP may use the configured real development database `arivena` and real NVIDIA, SMTP, and Discord services where their private configuration and dependencies are available. After launch, operators must create a separate local/dev database. Production player data must not be used for destructive tests, resets, fixtures, migration experiments, or failure simulations.
+
+Website Discord OAuth and guild automation configuration uses private server-side environment variables as the primary source: `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID`, `DISCORD_ROLE_WARGA_ID`, and `DISCORD_REDIRECT_URI`. Existing lowercase `ucp_system_settings` values remain read-only runtime fallbacks for backward compatibility. A nonblank environment value always wins. The local callback remains `http://127.0.0.1:8000/api/discord_callback.php`; production uses its exact registered HTTPS callback. Authorized diagnostics expose only whether each value is present and which source supplied it, never the value itself.
 
 ### 5. The gateway owns rate limiting and abuse controls
 
@@ -102,6 +106,8 @@ Logs must not contain provider credentials, authorization headers, session token
 The adapter will apply a bounded timeout and only retry failures classified as transient, with a small configured retry count and backoff. Authentication errors, invalid requests, policy failures, and exhausted quotas will not be retried blindly.
 
 If NVIDIA NIM remains unavailable, the gateway returns a stable internal error category and a user-safe response. Features that can degrade will show deterministic unavailable-state content or preserve manual workflow. Cross-provider fallback is allowed only when a fallback provider and its server-side credentials are explicitly configured and the task is approved for fallback; otherwise the request fails closed. Provider error bodies and credentials must not reach the frontend.
+
+For the initial Story Review production policy, no cross-provider fallback is approved: `AI_FALLBACK_ENABLED=false` remains required. Any future fallback approval requires a separate reviewed configuration and scope change.
 
 ### 8. Browser-side AI SDK dependencies remain prohibited
 
@@ -199,5 +205,5 @@ Rollback consists of disabling the Story Review AI task or gateway through serve
 - What production rate and token budgets are approved per task?
 - Should production use application-level limiting, reverse-proxy limiting, or an existing shared cache before multi-instance deployment?
 - Does `deepseek-ai/deepseek-v4-flash`, inherited from Discord Bot/PHRP-AI as the default, pass the Story Review capability, latency, structured-output, and cost validation required before live traffic?
-- Is any cross-provider fallback approved for production, or should all initial tasks fail closed when NVIDIA NIM is unavailable?
+- Resolved: initial Story Review production traffic fails closed when NVIDIA NIM is unavailable; cross-provider fallback remains disabled.
 - Which exact deterministic similarity algorithm and normalization rules are approved after representative Indonesian story testing?

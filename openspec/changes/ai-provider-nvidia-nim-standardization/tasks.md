@@ -58,3 +58,12 @@
 - No provider credential was printed, logged, committed, or added to frontend assets.
 - The request did not change the story approval status; manual approval authority remains unchanged.
 - The test process was stopped, subsequent failure tests used offline or deliberately invalid provider configuration, and no further live provider request was authorized.
+
+## Final Environment Policy Before Archive
+
+- Approved on 2026-06-19: local and production examples enable NVIDIA NIM Story Review through `AI_ENABLED=true` and `AI_STORY_REVIEW_ENABLED=true` when a valid private server-side key is configured.
+- Runtime source defaults remain fail-safe; credentials remain blank in tracked examples, fallback remains disabled, and invalid or missing configuration fails closed.
+- Rate limits, privacy-safe logging, strict response validation, deterministic local plagiarism, immutable history, and manual story approval authority remain required.
+- Pre-launch local testing may use the configured `arivena` development database and real external services. After launch, a separate local/dev database is required, and production player data must not be used for destructive testing.
+- Local SMTP/OTP requires PHPMailer plus private SMTP credentials.
+- Website Discord OAuth/guild settings use private `.env` values first through the standardized `DISCORD_*` names, with existing `ucp_system_settings` values retained as fallback and diagnostics restricted to presence/source/readiness metadata.

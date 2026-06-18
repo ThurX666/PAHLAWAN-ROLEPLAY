@@ -1,27 +1,14 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/discord_config.php';
 
 $username = ucp_require_pending_username($_GET['username'] ?? null);
-
-$stmt = $conn->prepare("
-    SELECT setting_key, setting_value
-    FROM ucp_system_settings
-    WHERE setting_key IN ('discord_client_id', 'discord_client_secret')
-");
-$stmt->execute();
-$settings = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $settings[$row['setting_key']] = $row['setting_value'];
-}
-
-$clientId = $settings['discord_client_id'] ?? '';
-if ($clientId === '') {
+$discordConfig = discord_load_config($pdo);
+$clientId = (string)$discordConfig['client_id'];
+$redirectUri = (string)$discordConfig['redirect_uri'];
+if ($clientId === '' || !discord_redirect_uri_is_valid($redirectUri)) {
     ucp_json_error('Konfigurasi Discord OAuth belum tersedia.', 503);
 }
-
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-$baseUrl = $protocol . '://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
-$redirectUri = rtrim($baseUrl, '/') . '/discord_callback.php';
 
 ucp_session_start();
 $_SESSION['discord_link_username'] = $username;

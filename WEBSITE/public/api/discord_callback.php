@@ -13,22 +13,17 @@ if (empty($code) || empty($username) || empty($state) || empty($expectedState) |
 }
 unset($_SESSION['discord_oauth_state']);
 
-$stmt = $conn->prepare("SELECT setting_key, setting_value FROM ucp_system_settings WHERE setting_key LIKE 'discord_%'");
-$stmt->execute();
-$settings = [];
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $settings[$row['setting_key']] = $row['setting_value'];
+$discordConfig = getDiscordSettings($pdo);
+$client_id = (string)$discordConfig['client_id'];
+$client_secret = (string)$discordConfig['client_secret'];
+$bot_token = (string)$discordConfig['bot_token'];
+$guild_id = (string)$discordConfig['guild_id'];
+$role_warga_id = (string)$discordConfig['role_warga_id'];
+$redirect_uri = (string)$discordConfig['redirect_uri'];
+
+if ($client_id === '' || $client_secret === '' || !discord_redirect_uri_is_valid($redirect_uri)) {
+    die('Konfigurasi Discord OAuth belum tersedia.');
 }
-
-$client_id = $settings['discord_client_id'] ?? '';
-$client_secret = $settings['discord_client_secret'] ?? '';
-$bot_token = $settings['discord_bot_token'] ?? '';
-$guild_id = $settings['discord_guild_id'] ?? '';
-$role_warga_id = $settings['discord_role_warga_id'] ?? '';
-
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
-$base_url = $protocol . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']);
-$redirect_uri = rtrim($base_url, '/') . "/discord_callback.php";
 
 // Tukar kode dengan Token
 $token_url = "https://discord.com/api/oauth2/token";
@@ -92,23 +87,24 @@ if (isset($token_data['access_token'])) {
         // --- END INBOX NOTIFICATION ---
 
         // Add to Guild (if not already in) using OAuth access token
-        $add_guild_url = "https://discord.com/api/guilds/$guild_id/members/$discord_id";
-        $ch2 = curl_init($add_guild_url);
-        curl_setopt($ch2, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch2, CURLOPT_HTTPHEADER, [
-            "Authorization: Bot $bot_token",
-            "Content-Type: application/json"
-        ]);
-        $payload = json_encode(['access_token' => $access_token]);
-        curl_setopt($ch2, CURLOPT_POSTFIELDS, $payload);
-        curl_exec($ch2);
-        curl_close($ch2);
+        if ($guild_id !== '' && $bot_token !== '') {
+            $add_guild_url = "https://discord.com/api/guilds/$guild_id/members/$discord_id";
+            $ch2 = curl_init($add_guild_url);
+            curl_setopt($ch2, CURLOPT_CUSTOMREQUEST, 'PUT');
+            curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch2, CURLOPT_HTTPHEADER, [
+                "Authorization: Bot $bot_token",
+                "Content-Type: application/json"
+            ]);
+            $payload = json_encode(['access_token' => $access_token]);
+            curl_setopt($ch2, CURLOPT_POSTFIELDS, $payload);
+            curl_exec($ch2);
+            curl_close($ch2);
 
-        // Update Nickname dan Role Warga menggunakan bot token
-        require_once __DIR__ . '/discord_helper.php';
-        setDiscordRole($guild_id, $discord_id, $role_warga_id, $bot_token);
-        updateDiscordNickname($guild_id, $discord_id, $username, $bot_token);
+            // Update Nickname dan Role Warga menggunakan bot token
+            setDiscordRole($guild_id, $discord_id, $role_warga_id, $bot_token);
+            updateDiscordNickname($guild_id, $discord_id, $username, $bot_token);
+        }
         
         echo "<h1>Autentikasi Discord Berhasil!</h1><p>Akun Discord anda telah terhubung dengan UCP. Anda kini memiliki role Warga di server kami.</p>";
         echo "<script>setTimeout(() => window.close(), 2000);</script>";

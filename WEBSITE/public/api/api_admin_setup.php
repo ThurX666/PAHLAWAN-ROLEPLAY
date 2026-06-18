@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/discord_config.php';
 
 $action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : null);
 if (!$action) {
@@ -17,7 +18,19 @@ if ($action === 'get_settings') {
             $results[$sensitiveKey] = '__CONFIGURED__';
         }
     }
-    echo json_encode(["status" => "success", "settings" => $results ?: []]);
+    echo json_encode([
+        "status" => "success",
+        "settings" => $results ?: [],
+        "discord_config_status" => discord_config_diagnostics(discord_load_config($pdo)),
+    ]);
+    exit;
+}
+
+if ($action === 'get_discord_config_status') {
+    echo json_encode([
+        "status" => "success",
+        "discord_config_status" => discord_config_diagnostics(discord_load_config($pdo)),
+    ]);
     exit;
 }
 

@@ -9,6 +9,9 @@ PAHLAWAN ROLEPLAY currently has a provider-neutral website AI service contract a
 - Define an authenticated server-side Website/UCP AI gateway; the browser calls this gateway and never calls NVIDIA or another model provider directly.
 - Standardize the provider-facing contract around `sendMessage(messages, options)` so website backend adapters remain compatible with the Discord bot provider abstraction.
 - Require provider selection, model settings, endpoints, and credentials to be supplied through server-side environment/configuration with safe local/development and production expectations.
+- Define local and production examples with Story Review enabled through environment flags after capability and production-readiness approval, while failing closed when the private server-side key or approved configuration is missing or invalid.
+- Permit pre-launch local testing against the configured `arivena` development database and real external services, while requiring a separate local/dev database after launch and prohibiting destructive testing against production player data.
+- Standardize Website Discord OAuth/guild configuration in private server-side environment variables, with existing `ucp_system_settings` rows retained only as backward-compatible fallbacks and value-free diagnostics available to authorized admins.
 - Require rate limiting, authorization, input limits, abuse controls, privacy-aware structured logging, and operational observability at the gateway.
 - Define safe unavailable-provider behavior, including bounded retries, timeouts, user-safe errors, and explicitly configured fallback or feature degradation.
 - Prohibit browser-side AI SDK dependencies and provider credentials.
