@@ -44,8 +44,8 @@
 ## 6. Story Review Persistence and Comparison
 
 - [ ] 6.1 Review and manually apply `20260618_story_review_system.sql`; do not add it to automatic migration execution.
-- [ ] 6.2 Load the selected story and character ownership relationship from the database; reject browser-provided story content and invalid identifiers.
-- [ ] 6.3 Compute word count, character count, content hash, and versioned local similarity against other database stories in bounded batches.
-- [ ] 6.4 Persist immutable `story_reviews` rows and ranked `story_review_matches`, including the threshold and provider/model metadata used.
-- [ ] 6.5 Mark reviews stale when the stored story hash differs, and create a new row for every re-analysis.
+- [x] 6.2 Load the selected story and character ownership relationship from the database; reject browser-provided story content and invalid identifiers.
+- [x] 6.3 Compute word count, character count, content hash, and versioned local similarity against other database stories in bounded batches.
+- [x] 6.4 Persist immutable `story_reviews` rows and ranked `story_review_matches`, including the threshold and provider/model metadata used.
+- [x] 6.5 Mark reviews stale when the stored story hash differs, and create a new row for every re-analysis.
 - [ ] 6.6 Validate structured NVIDIA scores are numeric and bounded to `0..100`; never let AI output change story status automatically.
