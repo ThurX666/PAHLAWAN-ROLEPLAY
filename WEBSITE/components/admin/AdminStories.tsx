@@ -1,53 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { CharacterStory } from '../../types';
-import { CheckCircle, XCircle, AlertTriangle, Search, FileText, RefreshCw, ChevronRight, ChevronLeft, User, Calendar, ShieldCheck, BookOpen } from 'lucide-react';
+import { CheckCircle, XCircle, AlertTriangle, Search, FileText, RefreshCw, ChevronRight, ChevronLeft, User, Calendar, BookOpen } from 'lucide-react';
 import { getCharacterPhotoUrl } from '../../utils/imageUtils';
 import { isPreviewEnv, API_URL } from '../../config';
-
-// --- MOCK DATABASE FOR PLAGIARISM CHECK ---
-const EXISTING_STORIES_DB = [
-    { id: 101, char: "Michael DeSanta", content: "Michael lahir di Los Santos pada tahun 1990. Dia tumbuh di lingkungan yang keras dan belajar bertahan hidup sejak kecil. Ayahnya adalah seorang mekanik dan ibunya bekerja di restoran." },
-    { id: 102, char: "Franklin Clinton", content: "Franklin adalah seorang pemuda yang ambisius. Dia ingin keluar dari kehidupan geng dan menjadi sukses. Dia ahli dalam mengemudi dan sering terlibat balapan liar." },
-    { id: 103, char: "Trevor Philips", content: "Trevor lahir di perbatasan Kanada. Dia memiliki masa kecil yang sulit dan sering berpindah-pindah. Dia pernah menjadi pilot angkatan udara sebelum diberhentikan karena masalah mental." },
-    { id: 104, char: "Tommy Vercetti", content: "Tommy baru saja keluar dari penjara setelah 15 tahun. Dia dikirim ke Vice City untuk melakukan transaksi narkoba yang kemudian berantakan. Sekarang dia mencoba membangun kembali kekuasaannya." },
-    { id: 105, char: "Carl Johnson", content: "CJ kembali ke Los Santos setelah ibunya meninggal. Dia menemukan geng lamanya, Grove Street Families, dalam keadaan berantakan. Dia harus menyatukan kembali keluarga dan teman-temannya." }
-];
-
-// --- UTILITY: SIMULATED AI PLAGIARISM CHECK ---
-const checkPlagiarism = (content: string) => {
-    if (!content) return { score: 0, match: null };
-    
-    const normalize = (str: string) => str.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/);
-    const inputTokens = normalize(content);
-    const inputSet = new Set(inputTokens);
-
-    let maxSimilarity = 0;
-    let bestMatch = null;
-
-    for (const dbStory of EXISTING_STORIES_DB) {
-        const dbTokens = normalize(dbStory.content);
-        const dbSet = new Set(dbTokens);
-        
-        // Jaccard Similarity
-        const intersection = new Set([...inputSet].filter(x => dbSet.has(x)));
-        const union = new Set([...inputSet, ...dbSet]);
-        const similarity = (intersection.size / union.size) * 100;
-
-        if (similarity > maxSimilarity) {
-            maxSimilarity = similarity;
-            bestMatch = dbStory;
-        }
-    }
-
-    // Add some random noise to make it feel more "AI"
-    const noise = Math.random() * 5; 
-    const finalScore = Math.min(100, Math.max(0, maxSimilarity + (maxSimilarity > 0 ? noise : 0)));
-
-    return {
-        score: parseFloat(finalScore.toFixed(1)),
-        match: bestMatch ? { source: `Story of ${bestMatch.char}`, similarity: parseFloat(finalScore.toFixed(1)) } : null
-    };
-};
+import { StoryReviewPanel } from './story-review/StoryReviewPanel';
 
 // --- MOCK PENDING STORIES ---
 const INITIAL_STORIES: CharacterStory[] = [
@@ -126,18 +82,16 @@ const INITIAL_STORIES: CharacterStory[] = [
 ];
 
 interface AdminStoriesProps {
+    adminLevel: number;
     onStoryReviewed?: (characterName: string, status: string, feedback: string) => void;
 }
 
-export const AdminStories: React.FC<AdminStoriesProps> = ({ onStoryReviewed }) => {
+export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryReviewed }) => {
     const [stories, setStories] = useState<CharacterStory[]>(INITIAL_STORIES);
     const [selectedStory, setSelectedStory] = useState<CharacterStory | null>(null);
     const [filter, setFilter] = useState<'All' | 'Pending' | 'Revision' | 'Active' | 'Rejected'>('All');
     const [searchQuery, setSearchQuery] = useState('');
-    const [isChecking, setIsChecking] = useState(false);
     const [feedback, setFeedback] = useState('');
-
-    const [grammarCheckResult, setGrammarCheckResult] = useState<{ isValid: boolean; errors: string[] } | null>(null);
 
     const fetchStories = async () => {
         if (!isPreviewEnv()) {
@@ -171,10 +125,6 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ onStoryReviewed }) =
         fetchStories();
     }, []);
 
-    React.useEffect(() => {
-        setGrammarCheckResult(null);
-    }, [selectedStory]);
-
     const countWords = (text: string) => {
         if (!text) return 0;
         return text.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -183,32 +133,6 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ onStoryReviewed }) =
     const countParagraphs = (text: string) => {
         if (!text) return 0;
         return text.trim().split(/\n+/).filter(para => para.trim().length > 0).length;
-    };
-
-    const handleCheckGrammar = () => {
-        if (!selectedStory) return;
-        const text = selectedStory.content;
-        const errors: string[] = [];
-
-        // 1. Punctuation Spacing
-        if (/(?<=[.,?!])(?=[^\s])/.test(text)) {
-            errors.push("Spasi hilang setelah tanda baca (titik/koma).");
-        }
-
-        // 2. Repetitive Characters
-        if (/(.)\1{4,}/.test(text)) {
-            errors.push("Terdeteksi spam karakter berulang (misal: 'aaaaa').");
-        }
-
-        // 3. Capitalization (Basic check: Start of story)
-        if (text.length > 0 && /^[a-z]/.test(text)) {
-            errors.push("Awal cerita tidak menggunakan huruf kapital.");
-        }
-
-        setGrammarCheckResult({
-            isValid: errors.length === 0,
-            errors
-        });
     };
 
     const [alertState, setAlertState] = useState<{
@@ -243,25 +167,6 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ onStoryReviewed }) =
     React.useEffect(() => {
         setCurrentPage(1);
     }, [filter, searchQuery]);
-
-    const handleCheckPlagiarism = () => {
-        if (!selectedStory) return;
-        setIsChecking(true);
-        
-        // Simulate API delay
-        setTimeout(() => {
-            const result = checkPlagiarism(selectedStory.content);
-            const updatedStory = {
-                ...selectedStory,
-                plagiarismScore: result.score,
-                plagiarismDetails: result.match ? [result.match] : []
-            };
-            
-            setStories(stories.map(s => s.id === selectedStory.id ? updatedStory : s));
-            setSelectedStory(updatedStory);
-            setIsChecking(false);
-        }, 1500);
-    };
 
     const [isShaking, setIsShaking] = useState(false);
 
@@ -494,17 +399,14 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ onStoryReviewed }) =
                                 </div>
                             </div>
                             
-                            {/* AI Score Badge */}
-                            {selectedStory.plagiarismScore !== undefined && (
-                                <div className={`flex flex-col items-end px-3 py-2 rounded-lg border w-full md:w-auto ${
-                                    selectedStory.plagiarismScore > 50 
-                                    ? 'bg-red-50 border-red-200 text-red-700' 
-                                    : 'bg-green-50 border-green-200 text-green-700'
-                                }`}>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider">AI Plagiarism Score</span>
-                                    <span className="text-xl font-black">{selectedStory.plagiarismScore}%</span>
-                                </div>
-                            )}
+                            <div className="rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-right dark:border-indigo-900/30 dark:bg-indigo-900/10">
+                                <span className="block text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                                    Manual Review Authority
+                                </span>
+                                <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
+                                    AI tidak mengubah status
+                                </span>
+                            </div>
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar bg-white dark:bg-[#151515]">
@@ -570,97 +472,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ onStoryReviewed }) =
                                 </div>
                             </div>
 
-                            {/* AI Analysis Section (Only for Pending) */}
-                            {selectedStory.status === 'Pending' && (
-                                <div className="mb-8">
-                                    <div className="flex items-center justify-between mb-3">
-                                        <h3 className="text-sm font-bold uppercase text-gray-400 flex items-center gap-2">
-                                            <ShieldCheck size={16} /> AI Analysis
-                                        </h3>
-                                        <div className="flex gap-2">
-                                            <button 
-                                                onClick={handleCheckGrammar}
-                                                className="text-xs flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                                            >
-                                                <BookOpen size={12}/> Check Grammar
-                                            </button>
-                                            <button 
-                                                onClick={handleCheckPlagiarism}
-                                                disabled={isChecking}
-                                                className="text-xs flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors disabled:opacity-50"
-                                            >
-                                                {isChecking ? <RefreshCw size={12} className="animate-spin"/> : <Search size={12}/>}
-                                                {isChecking ? 'Checking...' : 'Check Plagiarism'}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Grammar Check Result Display */}
-                                    {grammarCheckResult && (
-                                        <div className={`mb-4 p-3 rounded-lg border text-xs ${
-                                            grammarCheckResult.isValid 
-                                            ? 'bg-green-50 border-green-200 text-green-700' 
-                                            : 'bg-orange-50 border-orange-200 text-orange-700'
-                                        }`}>
-                                            <div className="flex items-start gap-2">
-                                                {grammarCheckResult.isValid ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
-                                                <div>
-                                                    <span className="font-bold block mb-1">Grammar Check Result:</span>
-                                                    {grammarCheckResult.isValid ? (
-                                                        <span>No obvious grammar issues found.</span>
-                                                    ) : (
-                                                        <ul className="list-disc pl-4 space-y-1">
-                                                            {grammarCheckResult.errors.map((err, idx) => (
-                                                                <li key={idx}>{err}</li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {selectedStory.plagiarismScore !== undefined ? (
-                                        <div className={`p-4 rounded-xl border ${
-                                            selectedStory.plagiarismScore > 50 
-                                            ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30' 
-                                            : 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30'
-                                        }`}>
-                                            <div className="flex items-start gap-3">
-                                                {selectedStory.plagiarismScore > 50 
-                                                    ? <AlertTriangle className="text-red-500 shrink-0" size={20} />
-                                                    : <CheckCircle className="text-green-500 shrink-0" size={20} />
-                                                }
-                                                <div>
-                                                    <h4 className={`font-bold text-sm ${selectedStory.plagiarismScore > 50 ? 'text-red-700 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
-                                                        {selectedStory.plagiarismScore > 50 ? 'High Similarity Detected' : 'Original Content'}
-                                                    </h4>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                                        {selectedStory.plagiarismScore > 50 
-                                                            ? `This story shares ${selectedStory.plagiarismScore}% similarity with existing database records.` 
-                                                            : "This story appears to be unique and does not match existing records."}
-                                                    </p>
-                                                    {selectedStory.plagiarismDetails && selectedStory.plagiarismDetails.length > 0 && (
-                                                        <div className="mt-3 pt-3 border-t border-red-200 dark:border-red-900/30">
-                                                            <p className="text-[10px] uppercase font-bold text-red-500 mb-1">Potential Match:</p>
-                                                            {selectedStory.plagiarismDetails.map((match, idx) => (
-                                                                <div key={idx} className="flex justify-between text-xs">
-                                                                    <span className="font-medium">{match.source}</span>
-                                                                    <span className="font-bold">{match.similarity}% Match</span>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="p-8 text-center border-2 border-dashed border-gray-200 dark:border-white/10 rounded-xl">
-                                            <p className="text-xs text-gray-400">Run plagiarism check to analyze this story.</p>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                            <StoryReviewPanel storyId={selectedStory.id} adminLevel={adminLevel} />
                         </div>
 
                         {/* Action Form - Fixed at bottom (Only for Pending) */}

@@ -168,7 +168,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ promoConfig, onUpdatePro
                 onSendNotification={onSendNotification}
             />
         )}
-        {activeTab === 'stories' && <AdminStories onStoryReviewed={onStoryReviewed} />}
+        {activeTab === 'stories' && <AdminStories adminLevel={adminLevel} onStoryReviewed={onStoryReviewed} />}
         {activeTab === 'setup' && <AdminSetup />}
         {activeTab === 'logs' && <AdminLogs />}
         {activeTab === 'guide' && <AdminGuide />}

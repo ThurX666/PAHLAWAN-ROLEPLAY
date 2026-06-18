@@ -25,9 +25,9 @@
 
 ## 3. Website Frontend Integration
 
-- [ ] 3.1 Implement a provider-neutral frontend API adapter that calls the authenticated UCP AI gateway and satisfies the existing Website `sendMessage(messages, options)` service boundary without accepting provider credentials or endpoints.
-- [ ] 3.2 Replace Admin Stories browser mock analysis with Analyze Story, Re-Analyze Story, View Analysis, and View Similar Stories states while preserving manual status actions.
-- [ ] 3.3 Verify Website dependencies and generated frontend assets contain no browser-side NVIDIA, OpenAI, Groq, Google GenAI, or equivalent provider SDK usage and no provider credentials.
+- [x] 3.1 Implement a provider-neutral frontend API adapter that calls the authenticated UCP AI gateway and satisfies the existing Website `sendMessage(messages, options)` service boundary without accepting provider credentials or endpoints.
+- [x] 3.2 Replace Admin Stories browser mock analysis with Analyze Story, Re-Analyze Story, View Analysis, and View Similar Stories states while preserving manual status actions.
+- [x] 3.3 Verify Website dependencies and generated frontend assets contain no browser-side NVIDIA, OpenAI, Groq, Google GenAI, or equivalent provider SDK usage and no provider credentials.
 
 ## 4. Discord Bot Compatibility
 
@@ -40,7 +40,7 @@
 - [x] 5.2 Test per-account/task rate limiting and confirm rejected traffic does not call NVIDIA NIM.
 - [ ] 5.3 Test timeout, retryable failure, non-retryable failure, missing configuration, fallback-disabled, and explicitly configured fallback behavior without exposing provider details.
 - [x] 5.4 Verify logs contain required operational metadata while excluding credentials, authorization/session data, full prompts, and full responses.
-- [ ] 5.5 Run the Website production build, relevant backend checks, secret/bundle inspection, `openspec validate ai-provider-nvidia-nim-standardization --type change`, and `git diff --check`.
+- [x] 5.5 Run the Website production build, relevant backend checks, secret/bundle inspection, `openspec validate ai-provider-nvidia-nim-standardization --type change`, and `git diff --check`.
 
 ## 6. Story Review Persistence and Comparison
 

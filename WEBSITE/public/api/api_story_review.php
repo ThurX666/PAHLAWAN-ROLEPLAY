@@ -286,6 +286,25 @@ function story_review_fetch_review(PDO $pdo, int $storyId, ?int $reviewId = null
     return $review ? story_review_format_review($review) : null;
 }
 
+function story_review_fetch_history(PDO $pdo, int $storyId): array
+{
+    $stmt = $pdo->prepare(
+        'SELECT r.*, cs.content AS current_content, c.Char_Name AS character_name
+         FROM ucp_story_reviews r
+         LEFT JOIN ucp_character_stories cs ON cs.id = r.story_id
+         LEFT JOIN player_characters c ON c.pID = r.character_id
+         WHERE r.story_id = ?
+         ORDER BY r.created_at DESC, r.id DESC
+         LIMIT 50'
+    );
+    $stmt->execute([$storyId]);
+
+    return array_map(
+        static fn(array $review): array => story_review_format_review($review),
+        $stmt->fetchAll(PDO::FETCH_ASSOC)
+    );
+}
+
 $jsonData = get_sanitized_json();
 $requestData = array_merge($_GET, $_POST, $jsonData);
 $action = (string)($requestData['action'] ?? '');
@@ -319,6 +338,10 @@ if ($action === 'get_story_review') {
     }
     story_review_json_success([
         'review' => $review,
+        'history' => filter_var(
+            $requestData['include_history'] ?? false,
+            FILTER_VALIDATE_BOOLEAN
+        ) ? story_review_fetch_history($pdo, (int)$storyId) : [],
     ]);
 }
 
