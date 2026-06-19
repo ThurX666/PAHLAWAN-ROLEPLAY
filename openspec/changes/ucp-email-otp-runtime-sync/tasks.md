@@ -33,7 +33,7 @@
 
 - [x] 5.1 Document Composer install/package steps for repo development and flattened XAMPP deployment, including the decision on whether `vendor` is built on-host or packaged before sync.
 - [x] 5.2 Document local preview, local real SMTP, and production SMTP environment contracts without including real values.
-- [ ] 5.3 Run PHP lint and all email/OTP contract tests.
+- [x] 5.3 Run PHP lint and all email/OTP contract tests.
 - [ ] 5.4 Perform an authorized local preview smoke test and an authorized local real-SMTP smoke test using private environment configuration.
 - [x] 5.5 Verify the flattened deployment layout resolves `.env`, Composer autoloading, templates, and secret-safe diagnostics before production enablement.
-- [ ] 5.6 Run `openspec validate ucp-email-otp-runtime-sync --type change` and `git diff --check`.
+- [x] 5.6 Run `openspec validate ucp-email-otp-runtime-sync --type change` and `git diff --check`.
