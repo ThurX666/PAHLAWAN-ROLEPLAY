@@ -7,14 +7,14 @@
 
 ## 2. Shared Mail Runtime
 
-- [ ] 2.1 Refactor `mailer_helper.php` to construct PHPMailer from env-first transport configuration instead of hardcoded Gmail host, port, encryption, and sender settings.
+- [x] 2.1 Refactor `mailer_helper.php` to construct PHPMailer from env-first transport configuration instead of hardcoded Gmail host, port, encryption, and sender settings.
 - [x] 2.2 Enforce the mail-mode matrix: local preview bypasses SMTP, local SMTP requires full readiness, and every non-local environment forbids preview.
 - [x] 2.3 Make dependency, configuration, transport, and provider failures fail closed with sanitized categories and without exposing message bodies, addresses, OTPs, or credentials.
 - [x] 2.4 Preserve HTML and plain-text templates for verification, welcome, forgot-password, and reset-success messages using the shared mailer construction path.
 
 ## 3. Email And OTP Caller Alignment
 
-- [ ] 3.1 Verify registration email uses the repository `player_ucp` persistence flow and does not import the XAMPP `ucp_pending_registrations` dependency.
+- [x] 3.1 Verify registration email uses the repository `player_ucp` persistence flow and does not import the XAMPP `ucp_pending_registrations` dependency.
 - [x] 3.2 Align login re-verification and automatic resend branches with the shared delivery result while preserving device/location checks, attempt counts, cooldowns, and session behavior.
 - [x] 3.3 Align the explicit resend endpoint with local preview and real SMTP modes without changing OTP issuance or verification semantics.
 - [x] 3.4 Align forgot-password OTP and password-reset-success email handling with the same mode and failure policy.
@@ -25,8 +25,8 @@
 - [ ] 4.1 Add offline tests for repository and flattened Composer loader resolution, plus missing-dependency fail-closed behavior.
 - [ ] 4.2 Add mode-matrix tests proving preview works only for `APP_ENV=local` plus `UCP_LOCAL_MAIL_MODE=preview`.
 - [ ] 4.3 Add SMTP readiness tests for local and production using synthetic configuration without contacting an external provider.
-- [ ] 4.4 Add caller contract tests for registration, login OTP, resend, forgot password, verification welcome email, and reset-success email.
-- [ ] 4.5 Add negative checks proving diagnostics and responses do not expose credentials, private addresses, OTP values outside approved local preview, cookies, or session identifiers.
+- [x] 4.4 Add caller contract tests for registration, login OTP, resend, forgot password, verification welcome email, and reset-success email.
+- [x] 4.5 Add negative checks proving diagnostics and responses do not expose credentials, private addresses, OTP values outside approved local preview, cookies, or session identifiers.
 - [ ] 4.6 Restrict or replace `test_email.php` so production readiness can be diagnosed without an unauthenticated or unsolicited send path.
 
 ## 5. Documentation And Deployment Validation

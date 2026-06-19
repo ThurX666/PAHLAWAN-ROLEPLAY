@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/mailer_helper.php';
 // Masukkan konfigurasi database sentral
 
 $action = isset($_POST['action']) ? $_POST['action'] : '';
@@ -42,8 +43,17 @@ if ($action === 'register') {
             'verify_token' => $otp_code
         ]);
 
+        if (isLocalOtpPreviewMode()) {
+            echo json_encode([
+                'status' => 'success_verify',
+                'message' => 'Local-only OTP preview is enabled. This preview is disabled in production.',
+                'registered_user' => $username,
+                'local_preview' => localOtpPreviewPayload($otp_code, 'register'),
+            ]);
+            exit;
+        }
+
         // Panggil script pengirim Email OTP
-        require_once 'mailer_helper.php';
         $email_sent = sendVerificationEmail($email, $username, $otp_code);
 
         if ($email_sent) {
@@ -54,8 +64,8 @@ if ($action === 'register') {
             ]);
         } else {
             echo json_encode([
-                'status' => 'error', 
-                'message' => 'Akun terdaftar, namun gagal mengirim email OTP. Hubungi Admin.'
+                'status' => 'error',
+                'message' => sharedMailFailureClientMessage('Akun terdaftar, namun gagal mengirim email OTP. Hubungi Admin.')
             ]);
         }
     } catch (PDOException $e) {
