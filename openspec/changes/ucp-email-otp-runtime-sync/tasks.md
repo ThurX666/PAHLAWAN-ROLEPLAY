@@ -1,9 +1,9 @@
 ## 1. Dependency And Configuration Foundation
 
-- [ ] 1.1 Add repository-owned Composer metadata for `phpmailer/phpmailer`, generate the lock file, and confirm no credentials or private runtime values are added.
-- [ ] 1.2 Extend Website environment examples with placeholder-only SMTP host, port, encryption, sender identity, username, and password settings.
-- [ ] 1.3 Extend `app_config.php` diagnostics and mail configuration accessors to expose only readiness, loader type, and bounded path status.
-- [ ] 1.4 Implement a Website-root Composer autoloader resolution for repository and flattened deployment layouts, with a documented temporary legacy `api/PHPMailer/src` fallback only if required.
+- [x] 1.1 Add repository-owned Composer metadata for `phpmailer/phpmailer`, generate the lock file, and confirm no credentials or private runtime values are added.
+- [x] 1.2 Extend Website environment examples with placeholder-only SMTP host, port, encryption, sender identity, username, and password settings.
+- [x] 1.3 Extend `app_config.php` diagnostics and mail configuration accessors to expose only readiness, loader type, and bounded path status.
+- [x] 1.4 Implement a Website-root Composer autoloader resolution for repository and flattened deployment layouts, with a documented temporary legacy `api/PHPMailer/src` fallback only if required.
 
 ## 2. Shared Mail Runtime
 

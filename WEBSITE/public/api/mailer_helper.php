@@ -7,8 +7,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 function smtpCredentialsAvailable(): bool {
-    global $smtp_user, $smtp_pass;
-    return !empty($smtp_user) && !empty($smtp_pass);
+    $mailConfig = app_mail_config();
+    return $mailConfig['user'] !== '' && $mailConfig['pass'] !== '';
 }
 
 function isLocalDevEnvironment(): bool {
@@ -34,21 +34,110 @@ function shouldBypassLocalPreviewMail(): bool {
 }
 
 function phpMailerLibraryAvailable(): bool {
-    $base = __DIR__ . '/PHPMailer/src/';
-    return file_exists($base . 'Exception.php')
-        && file_exists($base . 'PHPMailer.php')
-        && file_exists($base . 'SMTP.php');
+    $loaderStatus = app_mail_loader_status();
+    return (bool) $loaderStatus['ready'];
+}
+
+function loadPhpMailerLibrary(): bool {
+    if (class_exists(PHPMailer::class)) {
+        return true;
+    }
+
+    $loaderStatus = app_mail_loader_status();
+
+    if ($loaderStatus['selected_loader'] === 'composer') {
+        require_once $loaderStatus['composer']['path'];
+    } elseif ($loaderStatus['selected_loader'] === 'legacy') {
+        $legacyBase = $loaderStatus['legacy']['path'] . DIRECTORY_SEPARATOR;
+        require_once $legacyBase . 'Exception.php';
+        require_once $legacyBase . 'PHPMailer.php';
+        require_once $legacyBase . 'SMTP.php';
+    } else {
+        return false;
+    }
+
+    return class_exists(PHPMailer::class);
+}
+
+function smtpTransportConfiguration(): array {
+    $mailConfig = app_mail_config();
+
+    return [
+        'host' => $mailConfig['host'],
+        'port' => (int) $mailConfig['port'],
+        'encryption' => $mailConfig['encryption'],
+        'user' => $mailConfig['user'],
+        'pass' => $mailConfig['pass'],
+        'from_email' => $mailConfig['from_email'],
+        'from_name' => $mailConfig['from_name'] !== '' ? $mailConfig['from_name'] : 'Pahlawan Roleplay',
+    ];
+}
+
+function smtpTransportReady(): bool {
+    $transport = smtpTransportConfiguration();
+    $requiredValues = [
+        $transport['host'],
+        (string) $transport['port'],
+        $transport['encryption'],
+        $transport['user'],
+        $transport['pass'],
+        $transport['from_email'],
+        $transport['from_name'],
+    ];
+
+    foreach ($requiredValues as $value) {
+        if (trim($value) === '') {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function resolvePhpMailerEncryption(string $encryption): string {
+    $normalized = strtolower(trim($encryption));
+
+    if ($normalized === 'ssl' || $normalized === 'smtps') {
+        return PHPMailer::ENCRYPTION_SMTPS;
+    }
+
+    if ($normalized === 'tls' || $normalized === 'starttls') {
+        return PHPMailer::ENCRYPTION_STARTTLS;
+    }
+
+    return $encryption;
+}
+
+function buildConfiguredMailer(): ?PHPMailer {
+    if (!loadPhpMailerLibrary()) {
+        return null;
+    }
+
+    $transport = smtpTransportConfiguration();
+
+    $mail = new PHPMailer(true);
+    $mail->isSMTP();
+    $mail->Host = $transport['host'];
+    $mail->SMTPAuth = true;
+    $mail->Username = $transport['user'];
+    $mail->Password = $transport['pass'];
+    $mail->SMTPSecure = resolvePhpMailerEncryption($transport['encryption']);
+    $mail->Port = $transport['port'];
+    $mail->setFrom($transport['from_email'], $transport['from_name']);
+
+    return $mail;
 }
 
 function localMailTroubleshootingMessage(): string {
     $issues = [];
+    $mailDiagnostics = app_mail_diagnostics();
 
-    if (!smtpCredentialsAvailable()) {
-        $issues[] = 'SMTP_USER/SMTP_PASS are not configured';
+    if (!$mailDiagnostics['smtp_ready']) {
+        $issues[] = 'missing mail env vars: ' . implode(', ', $mailDiagnostics['missing_fields']);
     }
 
     if (!phpMailerLibraryAvailable()) {
-        $issues[] = 'PHPMailer is not installed under WEBSITE/public/api/PHPMailer';
+        $issues[] = 'mail dependency loader is unavailable (' . $mailDiagnostics['loader_type'] . ')';
     }
 
     if (empty($issues)) {
@@ -71,37 +160,21 @@ function localOtpPreviewPayload($otpCode, string $context = 'verification'): arr
 }
 
 function sendVerificationEmail($toEmail, $username, $otpCode, $context = 'register', $device = '', $location = '') {
-    global $smtp_user, $smtp_pass;
-    if (!smtpCredentialsAvailable()) return false;
+    if (!smtpTransportReady()) return false;
     
     // BYPASS hanya untuk preview yang diizinkan secara eksplisit.
     if (shouldBypassLocalPreviewMail()) {
         return true; 
     }
 
-    if (!phpMailerLibraryAvailable()) {
-        error_log('Mailer Error: PHPMailer library is missing from WEBSITE/public/api/PHPMailer.');
+    $mail = buildConfiguredMailer();
+    if ($mail === null) {
+        error_log('Mailer Error: PHPMailer dependency loader is unavailable.');
         return false;
     }
 
-    require 'PHPMailer/src/Exception.php';
-    require 'PHPMailer/src/PHPMailer.php';
-    require 'PHPMailer/src/SMTP.php';
-
-    $mail = new PHPMailer(true);
-
     try {
-        // Konfigurasi Server SMTP
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtp_user;
-        $mail->Password   = $smtp_pass;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port       = 465;
-
         // Penerima
-        $mail->setFrom($smtp_user, 'Pahlawan Roleplay');
         $mail->addAddress($toEmail, $username);
 
         // Konten Email
@@ -185,27 +258,16 @@ function sendVerificationEmail($toEmail, $username, $otpCode, $context = 'regist
 }
 
 function sendWelcomeEmail($toEmail, $username) {
-    global $smtp_user, $smtp_pass;
-    if (!smtpCredentialsAvailable()) return false;
+    if (!smtpTransportReady()) return false;
     
     if (shouldBypassLocalPreviewMail()) {
         return true; 
     }
 
-    if (!phpMailerLibraryAvailable()) return false;
-
-    $mail = new PHPMailer(true);
+    $mail = buildConfiguredMailer();
+    if ($mail === null) return false;
 
     try {
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtp_user;
-        $mail->Password   = $smtp_pass;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port       = 465;
-
-        $mail->setFrom($smtp_user, 'Pahlawan Roleplay');
         $mail->addAddress($toEmail, $username);
 
         $mail->isHTML(true);
@@ -268,27 +330,16 @@ function sendWelcomeEmail($toEmail, $username) {
 }
 
 function sendForgotPasswordEmail($toEmail, $username, $otpCode) {
-    global $smtp_user, $smtp_pass;
-    if (!smtpCredentialsAvailable()) return false;
+    if (!smtpTransportReady()) return false;
     
     if (shouldBypassLocalPreviewMail()) {
         return true; 
     }
 
-    if (!phpMailerLibraryAvailable()) return false;
-
-    $mail = new PHPMailer(true);
+    $mail = buildConfiguredMailer();
+    if ($mail === null) return false;
 
     try {
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtp_user;
-        $mail->Password   = $smtp_pass;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port       = 465;
-
-        $mail->setFrom($smtp_user, 'Pahlawan Roleplay');
         $mail->addAddress($toEmail, $username);
 
         $mail->isHTML(true);
@@ -351,26 +402,17 @@ function sendForgotPasswordEmail($toEmail, $username, $otpCode) {
 }
 
 function sendPasswordResetSuccessEmail($toEmail, $username) {
-    global $smtp_user, $smtp_pass;
-    if (!smtpCredentialsAvailable()) return false;
+    if (!smtpTransportReady()) return false;
     
     $host = $_SERVER['HTTP_HOST'] ?? '';
     if (strpos($host, 'run.app') !== false || strpos($host, 'localhost:5173') !== false) {
         return true; 
     }
 
-    $mail = new PHPMailer(true);
+    $mail = buildConfiguredMailer();
+    if ($mail === null) return false;
 
     try {
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtp_user;
-        $mail->Password   = $smtp_pass;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-        $mail->Port       = 465;
-
-        $mail->setFrom($smtp_user, 'Pahlawan Roleplay');
         $mail->addAddress($toEmail, $username);
 
         $mail->isHTML(true);

@@ -1,0 +1,7 @@
+{
+    "name": "pahlawan-roleplay/website",
+    "description": "Pahlawan Roleplay Website/UCP",
+    "require": {
+        "phpmailer/phpmailer": "^7.0"
+    }
+}

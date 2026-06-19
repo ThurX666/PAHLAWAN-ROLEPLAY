@@ -24,15 +24,16 @@ Local runtime targets:
 - PHP API: `http://127.0.0.1:8000/api`
 
 Setup:
-1. From `WEBSITE`, install dependencies with `npm install`.
-2. Copy `.env.local.example` to `.env` and fill only local/private values.
-3. Start the PHP API from the repo root:
+1. From `WEBSITE`, install frontend dependencies with `npm install`.
+2. If you will use local SMTP mode, install PHP dependencies with Composer so `WEBSITE/vendor/autoload.php` exists.
+3. Copy `.env.local.example` to `.env` and fill only local/private values.
+4. Start the PHP API from the repo root:
 
 ```powershell
 php -S 127.0.0.1:8000 -t WEBSITE/public
 ```
 
-4. Start the frontend from `WEBSITE`:
+5. Start the frontend from `WEBSITE`:
 
 ```powershell
 npm run dev -- --host 0.0.0.0 --port 3000
@@ -44,6 +45,7 @@ Required local env values:
 - `APP_ENV=local`
 - `UCP_LOCAL_MAIL_MODE=preview`
 - `UCP_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173`
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_ENCRYPTION`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USER`, and `SMTP_PASS` only when intentionally testing real local SMTP delivery
 
 During pre-launch development, local UCP testing may use the currently configured real development database `arivena`. Treat it as development data: avoid destructive operations unless they are explicitly approved and backed up. After production launch, create a separate local/dev database. Production player data must never be reused for destructive tests, resets, fixtures, migration experiments, or failure simulations.
 
@@ -86,7 +88,7 @@ Operational events are written as metadata-only JSON lines to `WEBSITE/.runtime-
 ### Local External-Service Testing
 
 - Real NVIDIA NIM Story Review is allowed locally when both AI flags are true and the private key exists.
-- Real SMTP and OTP delivery are allowed locally when `UCP_LOCAL_MAIL_MODE=smtp`, valid `SMTP_USER`/`SMTP_PASS` values exist, and PHPMailer is installed under the server's expected dependency path.
+- Real SMTP and OTP delivery are allowed locally when `UCP_LOCAL_MAIL_MODE=smtp`, valid `SMTP_HOST`, `SMTP_PORT`, `SMTP_ENCRYPTION`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USER`, and `SMTP_PASS` values exist, and PHPMailer is available from `WEBSITE/vendor/autoload.php` or, during deployment transition only, the legacy `api/PHPMailer/src` fallback.
 - Website Discord configuration uses private `.env` values first: `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID`, `DISCORD_ROLE_WARGA_ID`, and `DISCORD_REDIRECT_URI`.
 - Existing `ucp_system_settings` values remain compatibility fallbacks when the corresponding `.env` value is blank. Admin Setup does not override a nonblank environment value.
 - For local OAuth, register the exact callback `http://127.0.0.1:8000/api/discord_callback.php` in the Discord developer application and use the same value for `DISCORD_REDIRECT_URI`.
