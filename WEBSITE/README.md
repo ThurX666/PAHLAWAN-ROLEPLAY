@@ -65,6 +65,71 @@ Production must remain separate from local development:
 
 Use `.env.production.example` only as a placeholder template. Fill real deployment values outside the repository.
 
+## Email Runtime Deployment Package
+
+Deployment package email runtime harus mengikuti kontrak berikut:
+
+1. Dependensi PHPMailer utama dipasang melalui Composer di root `WEBSITE`, lalu deployment membawa `vendor/autoload.php`.
+2. Layout repo memakai `WEBSITE/vendor/autoload.php`.
+3. Layout flattened deployment memakai `<deployment-root>/vendor/autoload.php`.
+4. Fallback legacy `api/PHPMailer/src` hanya dipertahankan sementara selama transisi deployment lama. Deployment baru tetap mengutamakan Composer.
+5. File private `.env` harus berada di root runtime Website:
+   - repo: `WEBSITE/.env`
+   - flattened deployment: `<deployment-root>/.env`
+6. Kunci SMTP yang wajib diisi di private `.env`:
+   - `SMTP_HOST`
+   - `SMTP_PORT`
+   - `SMTP_ENCRYPTION`
+   - `SMTP_FROM_EMAIL`
+   - `SMTP_FROM_NAME`
+   - `SMTP_USER`
+   - `SMTP_PASS`
+7. Local preview hanya valid saat `APP_ENV=local` dan `UCP_LOCAL_MAIL_MODE=preview`.
+8. Production wajib `APP_ENV=production` dan `UCP_LOCAL_MAIL_MODE=smtp`, tanpa preview.
+
+Sebelum sync deployment, verifikasi:
+- `WEBSITE/.env` tetap di-ignore dengan `git check-ignore WEBSITE/.env`
+- `composer validate` lolos
+- `openspec validate ucp-email-otp-runtime-sync --type change` lolos
+- `git diff --check` lolos
+
+## Email Runtime Diagnostic Endpoint
+
+`WEBSITE/public/api/test_email.php` sekarang hanya endpoint diagnostik aman:
+
+- tidak mengirim email
+- hanya menampilkan status hadir/tidak hadir konfigurasi
+- tidak menampilkan nilai SMTP, OTP, cookie, session, token, atau provider error
+- via HTTP hanya boleh dipakai admin level 10 di local mode
+- via CLI hanya untuk inspeksi diagnostik lokal
+
+Jika butuh cek runtime:
+
+```powershell
+php WEBSITE/public/api/test_email.php
+```
+
+Respons hanya berisi metadata readiness seperti mode delivery, status loader, dan field SMTP yang masih kosong.
+
+## Authorized Manual Smoke Test
+
+Smoke test manual email/OTP harus dilakukan secara terotorisasi dan tanpa membocorkan OTP atau credential:
+
+1. Pastikan `WEBSITE/.env` private tidak ikut commit.
+2. Tentukan mode test:
+   - local preview: `APP_ENV=local`, `UCP_LOCAL_MAIL_MODE=preview`
+   - local SMTP nyata: `APP_ENV=local`, `UCP_LOCAL_MAIL_MODE=smtp`
+   - production-like SMTP: `APP_ENV=production`, `UCP_LOCAL_MAIL_MODE=smtp`
+3. Verifikasi diagnostik aman:
+   - `php WEBSITE/public/api/test_email.php`
+4. Uji flow `register`.
+5. Uji flow `resend_otp`.
+6. Uji flow `forgot_password`.
+7. Uji flow `verify_otp`.
+8. Untuk mode preview, baca OTP hanya dari preview lokal privat yang sudah diizinkan. Jangan salin OTP ke source, test file, atau commit.
+9. Untuk mode SMTP nyata, cukup verifikasi pesan berhasil diterima. Jangan simpan isi inbox, credential, atau header provider ke repo.
+10. Jika mail gagal di production-like mode, endpoint harus fail closed dan tidak boleh mengklaim email berhasil terkirim.
+
 ## Story Review NVIDIA NIM
 
 The Website/UCP backend contains a server-only NVIDIA NIM adapter compatible with `sendMessage(messages, options)`. Its defaults match Discord Bot/PHRP-AI:

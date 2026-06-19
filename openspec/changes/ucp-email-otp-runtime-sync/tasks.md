@@ -27,13 +27,13 @@
 - [x] 4.3 Add SMTP readiness tests for local and production using synthetic configuration without contacting an external provider.
 - [x] 4.4 Add caller contract tests for registration, login OTP, resend, forgot password, verification welcome email, and reset-success email.
 - [x] 4.5 Add negative checks proving diagnostics and responses do not expose credentials, private addresses, OTP values outside approved local preview, cookies, or session identifiers.
-- [ ] 4.6 Restrict or replace `test_email.php` so production readiness can be diagnosed without an unauthenticated or unsolicited send path.
+- [x] 4.6 Restrict or replace `test_email.php` so production readiness can be diagnosed without an unauthenticated or unsolicited send path.
 
 ## 5. Documentation And Deployment Validation
 
-- [ ] 5.1 Document Composer install/package steps for repo development and flattened XAMPP deployment, including the decision on whether `vendor` is built on-host or packaged before sync.
-- [ ] 5.2 Document local preview, local real SMTP, and production SMTP environment contracts without including real values.
+- [x] 5.1 Document Composer install/package steps for repo development and flattened XAMPP deployment, including the decision on whether `vendor` is built on-host or packaged before sync.
+- [x] 5.2 Document local preview, local real SMTP, and production SMTP environment contracts without including real values.
 - [ ] 5.3 Run PHP lint and all email/OTP contract tests.
 - [ ] 5.4 Perform an authorized local preview smoke test and an authorized local real-SMTP smoke test using private environment configuration.
-- [ ] 5.5 Verify the flattened deployment layout resolves `.env`, Composer autoloading, templates, and secret-safe diagnostics before production enablement.
+- [x] 5.5 Verify the flattened deployment layout resolves `.env`, Composer autoloading, templates, and secret-safe diagnostics before production enablement.
 - [ ] 5.6 Run `openspec validate ucp-email-otp-runtime-sync --type change` and `git diff --check`.
