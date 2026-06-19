@@ -130,6 +130,25 @@ Smoke test manual email/OTP harus dilakukan secara terotorisasi dan tanpa memboc
 9. Untuk mode SMTP nyata, cukup verifikasi pesan berhasil diterima. Jangan simpan isi inbox, credential, atau header provider ke repo.
 10. Jika mail gagal di production-like mode, endpoint harus fail closed dan tidak boleh mengklaim email berhasil terkirim.
 
+Untuk local preview smoke test yang lebih stabil dari PowerShell lokal:
+
+1. Buka terminal PowerShell terpisah.
+2. Start PHP server secara manual di foreground:
+
+```powershell
+php -S 127.0.0.1:8000 -t "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\public"
+```
+
+3. Dari terminal lain, jalankan helper smoke test:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\tests\local_email_preview_smoke.ps1"
+```
+
+4. Script hanya mencetak status flow `register`, `resend`, `forgot`, dan `verify`, tanpa mencetak OTP mentah.
+5. Jika endpoint belum siap, script berhenti dengan pesan readiness yang aman.
+6. Jika `register` tidak mengembalikan `local_preview`, hentikan pengujian dan cek kembali `APP_ENV=local` serta `UCP_LOCAL_MAIL_MODE=preview`.
+
 ## Story Review NVIDIA NIM
 
 The Website/UCP backend contains a server-only NVIDIA NIM adapter compatible with `sendMessage(messages, options)`. Its defaults match Discord Bot/PHRP-AI:
