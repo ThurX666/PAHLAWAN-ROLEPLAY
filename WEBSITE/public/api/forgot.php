@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/mailer_helper.php';
 
 $action = isset($_POST['action']) ? $_POST['action'] : '';
 
@@ -34,7 +35,15 @@ if ($action === 'forgot_password') {
             'id' => $user['id']
         ]);
 
-        require_once __DIR__ . '/mailer_helper.php';
+        if (isLocalOtpPreviewMode()) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Local-only OTP preview is enabled. This preview is disabled in production.',
+                'local_preview' => localOtpPreviewPayload($otpCode, 'forgot_password'),
+            ]);
+            exit;
+        }
+
         $emailSent = sendForgotPasswordEmail($email, $user['username'], $otpCode);
 
         if ($emailSent) {
@@ -43,7 +52,10 @@ if ($action === 'forgot_password') {
                 'message' => 'Kode OTP untuk reset kata sandi telah dikirim ke email Anda.'
             ]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Gagal mengirim email OTP. SIlakan coba lagi.']);
+            echo json_encode([
+                'status' => 'error',
+                'message' => sharedMailFailureClientMessage('Gagal mengirim email OTP. Silakan coba lagi.')
+            ]);
         }
 
     } catch (PDOException $e) {
@@ -87,8 +99,10 @@ if ($action === 'forgot_password') {
             'id' => $user['id']
         ]);
 
-        require_once __DIR__ . '/mailer_helper.php';
-        sendPasswordResetSuccessEmail($email, $user['username'] ?? 'Player');
+        $resetSuccessMailSent = sendPasswordResetSuccessEmail($email, $user['username'] ?? 'Player');
+        if (!$resetSuccessMailSent && hasMailFailureCategory()) {
+            error_log('Password reset success mail skipped [' . lastMailFailureCategory() . '].');
+        }
 
         echo json_encode(['status' => 'success', 'message' => 'Kata sandi berhasil diubah! Silakan masuk dengan sandi baru Anda.']);
 

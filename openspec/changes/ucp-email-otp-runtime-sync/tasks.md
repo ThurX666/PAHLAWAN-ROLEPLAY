@@ -15,9 +15,9 @@
 ## 3. Email And OTP Caller Alignment
 
 - [ ] 3.1 Verify registration email uses the repository `player_ucp` persistence flow and does not import the XAMPP `ucp_pending_registrations` dependency.
-- [ ] 3.2 Align login re-verification and automatic resend branches with the shared delivery result while preserving device/location checks, attempt counts, cooldowns, and session behavior.
-- [ ] 3.3 Align the explicit resend endpoint with local preview and real SMTP modes without changing OTP issuance or verification semantics.
-- [ ] 3.4 Align forgot-password OTP and password-reset-success email handling with the same mode and failure policy.
+- [x] 3.2 Align login re-verification and automatic resend branches with the shared delivery result while preserving device/location checks, attempt counts, cooldowns, and session behavior.
+- [x] 3.3 Align the explicit resend endpoint with local preview and real SMTP modes without changing OTP issuance or verification semantics.
+- [x] 3.4 Align forgot-password OTP and password-reset-success email handling with the same mode and failure policy.
 - [ ] 3.5 Verify post-registration welcome email remains best-effort after successful verification and cannot roll back or bypass OTP verification.
 
 ## 4. Safety And Contract Tests

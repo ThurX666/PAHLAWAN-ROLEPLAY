@@ -67,25 +67,18 @@ if ($action === 'resend_otp') {
         // Triger pengiriman Email dengan teks Resend
         $email_sent = sendVerificationEmail($user['Email'], $user['UCP'], $new_otp_code, 'resend');
 
-        if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
+        if (!$email_sent) {
             echo json_encode([
                 'status' => 'error',
-                'message' => localMailTroubleshootingMessage(),
+                'message' => sharedMailFailureClientMessage('Gagal mengirim email OTP dari server. Hubungi Admin.'),
             ]);
             exit;
         }
 
-        if ($email_sent) {
-            echo json_encode([
-                'status' => 'success', 
-                'message' => 'Kode OTP baru telah berhasil dikirim ulang ke email ' . $user['Email']
-            ]);
-        } else {
-            echo json_encode([
-                'status' => 'error', 
-                'message' => 'Gagal mengirim email OTP dari server. Hubungi Admin.'
-            ]);
-        }
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Kode OTP baru telah berhasil dikirim ulang ke email ' . $user['Email']
+        ]);
 
     } catch (PDOException $e) {
         echo json_encode(['status' => 'error', 'message' => 'Terjadi kesalahan sistem saat mencoba mengirim ulang OTP.']);

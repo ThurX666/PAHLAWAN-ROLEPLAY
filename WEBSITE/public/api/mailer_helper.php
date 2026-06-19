@@ -28,6 +28,10 @@ function lastMailFailureCategory(): ?string {
     return $GLOBALS['phrp_mail_last_failure_category'] ?? null;
 }
 
+function hasMailFailureCategory(): bool {
+    return lastMailFailureCategory() !== null;
+}
+
 function mailFailureMessage(string $category): string {
     $messages = [
         'mail_mode_invalid' => 'mail mode is invalid for the current environment',
@@ -314,6 +318,18 @@ function localMailTroubleshootingMessage(): string {
     $runtimeStatus = mailRuntimeStatus();
     $category = lastMailFailureCategory() ?? $runtimeStatus['failure_category'] ?? 'smtp_transport_failed';
     return 'Local dev OTP email is not configured: ' . mailFailureMessage($category) . '.';
+}
+
+function shouldExposeLocalMailDiagnostic(): bool {
+    return isLocalDevEnvironment() && !isLocalOtpPreviewMode() && hasMailFailureCategory();
+}
+
+function sharedMailFailureClientMessage(string $fallbackMessage): string {
+    if (shouldExposeLocalMailDiagnostic()) {
+        return localMailTroubleshootingMessage();
+    }
+
+    return $fallbackMessage;
 }
 
 function localOtpPreviewPayload($otpCode, string $context = 'verification'): array {

@@ -76,6 +76,24 @@ mail_runtime_test_assert(
     localMailTroubleshootingMessage() === 'Local dev OTP email is not configured: SMTP transport failed.',
     'Troubleshooting message should use the sanitized failure category.'
 );
+putenv('APP_ENV=local');
+putenv('UCP_LOCAL_MAIL_MODE=smtp');
+mail_runtime_test_assert(
+    shouldExposeLocalMailDiagnostic(),
+    'Local SMTP failures should expose the sanitized troubleshooting message.'
+);
+mail_runtime_test_assert(
+    sharedMailFailureClientMessage('fallback') === 'Local dev OTP email is not configured: SMTP transport failed.',
+    'Local SMTP failures should return the sanitized troubleshooting message to callers.'
+);
+putenv('APP_ENV=production');
+putenv('UCP_LOCAL_MAIL_MODE=smtp');
+mail_runtime_test_assert(
+    sharedMailFailureClientMessage('fallback') === 'fallback',
+    'Non-local callers must receive the generic fallback message.'
+);
+putenv('APP_ENV');
+putenv('UCP_LOCAL_MAIL_MODE');
 setLastMailFailureCategory(null);
 
 echo "mail_runtime_contract_test=passed\n";

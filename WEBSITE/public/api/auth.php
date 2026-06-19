@@ -6,6 +6,8 @@ require_once __DIR__ . '/config.php';
 $action = isset($_POST['action']) ? $_POST['action'] : '';
 
 if ($action === 'login') {
+    require_once __DIR__ . '/mailer_helper.php';
+
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     $device = $_POST['device'] ?? 'Unknown Device';
@@ -77,8 +79,6 @@ if ($action === 'login') {
                 $stmt_update = $conn->prepare("UPDATE player_ucp SET Verify_Status = 0, Verify_Code = :new_token, Register_Date = CURRENT_TIMESTAMP, OTP_Attempts = 1 WHERE ID = :id");
                 $stmt_update->execute(['new_token' => $new_otp_code, 'id' => $user['id']]);
 
-                require_once __DIR__ . '/mailer_helper.php';
-
                 if (isLocalOtpPreviewMode()) {
                     echo json_encode([
                         'status' => 'unverified',
@@ -92,10 +92,12 @@ if ($action === 'login') {
 
                 $email_sent = sendVerificationEmail($user['email'], $user['username'], $new_otp_code, $reason_title, $device, $location);
 
-                if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
+                if (!$email_sent) {
                     echo json_encode([
-                        'status' => 'error',
-                        'message' => localMailTroubleshootingMessage(),
+                        'status' => 'unverified',
+                        'message' => sharedMailFailureClientMessage('Gagal mengirim email OTP dari server. Hubungi Admin.'),
+                        'registered_user' => $user['email'],
+                        'cooldown' => 1800,
                     ]);
                     exit;
                 }
@@ -115,8 +117,6 @@ if ($action === 'login') {
             
             // LOGIC BARU: Coba Auto-Send saat mereka klik Register
             // Kita juga tetep jaga dari serangan brutal dengan filter 3 Menit
-            require_once __DIR__ . '/mailer_helper.php';
-            
             $msg_to_client = 'Akun belum aktif! Anda harus melakukan verifikasi email terlebih dahulu.';
             $cooldown_remaining = 0;
             $local_preview = null;
@@ -146,20 +146,17 @@ if ($action === 'login') {
                         if (isLocalOtpPreviewMode()) {
                             $local_preview = localOtpPreviewPayload($new_otp_code, 'resend');
                         } else {
-                        // Nembak Email Langsung
+                            // Nembak Email Langsung
                             $email_sent = sendVerificationEmail($user['email'], $user['username'], $new_otp_code, 'resend');
 
-                            if (!$email_sent && isLocalDevEnvironment() && localMailMode() === 'error') {
-                                echo json_encode([
-                                    'status' => 'error',
-                                    'message' => localMailTroubleshootingMessage(),
-                                ]);
-                                exit;
+                            if (!$email_sent) {
+                                $msg_to_client = sharedMailFailureClientMessage('Akun belum terverifikasi dan email OTP gagal dikirim. Hubungi Admin.');
+                                $cooldown_remaining = 1800;
+                            } else {
+                                $msg_to_client = 'Akun belum terverifikasi! Sistem baru saja MENGIRIM KODE OTP BARU secara otomatis ke Email Anda.';
+                                $cooldown_remaining = 1800;
                             }
                         }
-                        
-                        $msg_to_client = 'Akun belum terverifikasi! Sistem baru saja MENGIRIM KODE OTP BARU secara otomatis ke Email Anda.';
-                        $cooldown_remaining = 1800;
                     }
                 }
             }
