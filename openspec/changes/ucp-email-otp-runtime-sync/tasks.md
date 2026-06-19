@@ -8,9 +8,9 @@
 ## 2. Shared Mail Runtime
 
 - [ ] 2.1 Refactor `mailer_helper.php` to construct PHPMailer from env-first transport configuration instead of hardcoded Gmail host, port, encryption, and sender settings.
-- [ ] 2.2 Enforce the mail-mode matrix: local preview bypasses SMTP, local SMTP requires full readiness, and every non-local environment forbids preview.
-- [ ] 2.3 Make dependency, configuration, transport, and provider failures fail closed with sanitized categories and without exposing message bodies, addresses, OTPs, or credentials.
-- [ ] 2.4 Preserve HTML and plain-text templates for verification, welcome, forgot-password, and reset-success messages using the shared mailer construction path.
+- [x] 2.2 Enforce the mail-mode matrix: local preview bypasses SMTP, local SMTP requires full readiness, and every non-local environment forbids preview.
+- [x] 2.3 Make dependency, configuration, transport, and provider failures fail closed with sanitized categories and without exposing message bodies, addresses, OTPs, or credentials.
+- [x] 2.4 Preserve HTML and plain-text templates for verification, welcome, forgot-password, and reset-success messages using the shared mailer construction path.
 
 ## 3. Email And OTP Caller Alignment
 

@@ -20,17 +20,201 @@ function localMailMode(): string {
     return strtolower((string) app_env('UCP_LOCAL_MAIL_MODE', 'smtp'));
 }
 
+function setLastMailFailureCategory(?string $category): void {
+    $GLOBALS['phrp_mail_last_failure_category'] = $category;
+}
+
+function lastMailFailureCategory(): ?string {
+    return $GLOBALS['phrp_mail_last_failure_category'] ?? null;
+}
+
+function mailFailureMessage(string $category): string {
+    $messages = [
+        'mail_mode_invalid' => 'mail mode is invalid for the current environment',
+        'preview_forbidden' => 'preview mode is forbidden outside local development',
+        'smtp_credentials_missing' => 'SMTP credentials are not configured',
+        'smtp_configuration_invalid' => 'SMTP configuration is incomplete or invalid',
+        'mail_dependency_missing' => 'PHPMailer dependency is unavailable',
+        'smtp_transport_failed' => 'SMTP transport failed',
+    ];
+
+    return $messages[$category] ?? 'mail delivery failed';
+}
+
+function mailModePolicy(?string $appEnv = null, ?string $mode = null): array {
+    $appEnv = strtolower(trim((string) ($appEnv ?? app_env('APP_ENV', 'production'))));
+    $mode = strtolower(trim((string) ($mode ?? localMailMode())));
+    $isLocal = in_array($appEnv, ['local', 'development', 'dev'], true);
+
+    if ($isLocal) {
+        if ($mode === 'preview') {
+            return [
+                'environment' => $appEnv,
+                'requested_mode' => $mode,
+                'is_local' => true,
+                'delivery_mode' => 'preview',
+                'preview_allowed' => true,
+                'failure_category' => null,
+            ];
+        }
+
+        if ($mode === '' || $mode === 'smtp' || $mode === 'error') {
+            return [
+                'environment' => $appEnv,
+                'requested_mode' => $mode === '' ? 'smtp' : $mode,
+                'is_local' => true,
+                'delivery_mode' => 'smtp',
+                'preview_allowed' => false,
+                'failure_category' => null,
+            ];
+        }
+
+        return [
+            'environment' => $appEnv,
+            'requested_mode' => $mode,
+            'is_local' => true,
+            'delivery_mode' => 'blocked',
+            'preview_allowed' => false,
+            'failure_category' => 'mail_mode_invalid',
+        ];
+    }
+
+    if ($mode === 'preview' || $mode === 'preview_bypass') {
+        return [
+            'environment' => $appEnv,
+            'requested_mode' => $mode,
+            'is_local' => false,
+            'delivery_mode' => 'blocked',
+            'preview_allowed' => false,
+            'failure_category' => 'preview_forbidden',
+        ];
+    }
+
+    if ($mode !== '' && $mode !== 'smtp') {
+        return [
+            'environment' => $appEnv,
+            'requested_mode' => $mode,
+            'is_local' => false,
+            'delivery_mode' => 'blocked',
+            'preview_allowed' => false,
+            'failure_category' => 'mail_mode_invalid',
+        ];
+    }
+
+    return [
+        'environment' => $appEnv,
+        'requested_mode' => $mode === '' ? 'smtp' : $mode,
+        'is_local' => false,
+        'delivery_mode' => 'smtp',
+        'preview_allowed' => false,
+        'failure_category' => null,
+    ];
+}
+
+function smtpConfigurationStatus(?array $mailConfig = null): array {
+    $mailConfig = $mailConfig ?? app_mail_config();
+    $missingCredentials = [];
+    foreach (['user' => 'SMTP_USER', 'pass' => 'SMTP_PASS'] as $field => $label) {
+        if (trim((string) ($mailConfig[$field] ?? '')) === '') {
+            $missingCredentials[] = $label;
+        }
+    }
+
+    if ($missingCredentials !== []) {
+        return [
+            'ready' => false,
+            'failure_category' => 'smtp_credentials_missing',
+            'missing' => $missingCredentials,
+        ];
+    }
+
+    $missingConfiguration = [];
+    foreach (['host' => 'SMTP_HOST', 'port' => 'SMTP_PORT', 'encryption' => 'SMTP_ENCRYPTION', 'from_email' => 'SMTP_FROM_EMAIL', 'from_name' => 'SMTP_FROM_NAME'] as $field => $label) {
+        if (trim((string) ($mailConfig[$field] ?? '')) === '') {
+            $missingConfiguration[] = $label;
+        }
+    }
+
+    $port = (int) ($mailConfig['port'] ?? 0);
+    $encryption = strtolower(trim((string) ($mailConfig['encryption'] ?? '')));
+    $validEncryption = in_array($encryption, ['tls', 'starttls', 'ssl', 'smtps', 'none'], true);
+    $validPort = $port >= 1 && $port <= 65535;
+
+    if ($missingConfiguration !== [] || !$validPort || !$validEncryption) {
+        return [
+            'ready' => false,
+            'failure_category' => 'smtp_configuration_invalid',
+            'missing' => $missingConfiguration,
+            'valid_port' => $validPort,
+            'valid_encryption' => $validEncryption,
+        ];
+    }
+
+    return [
+        'ready' => true,
+        'failure_category' => null,
+        'missing' => [],
+        'valid_port' => true,
+        'valid_encryption' => true,
+    ];
+}
+
+function mailRuntimeStatus(?array $policy = null, ?array $mailConfig = null, ?array $loaderStatus = null): array {
+    $policy = $policy ?? mailModePolicy();
+    $loaderStatus = $loaderStatus ?? app_mail_loader_status();
+    $configurationStatus = smtpConfigurationStatus($mailConfig);
+
+    if ($policy['failure_category'] !== null) {
+        return [
+            'ready' => false,
+            'delivery_mode' => $policy['delivery_mode'],
+            'failure_category' => $policy['failure_category'],
+            'loader_type' => $loaderStatus['selected_loader'],
+        ];
+    }
+
+    if ($policy['delivery_mode'] === 'preview') {
+        return [
+            'ready' => true,
+            'delivery_mode' => 'preview',
+            'failure_category' => null,
+            'loader_type' => $loaderStatus['selected_loader'],
+        ];
+    }
+
+    if (!$configurationStatus['ready']) {
+        return [
+            'ready' => false,
+            'delivery_mode' => 'smtp',
+            'failure_category' => $configurationStatus['failure_category'],
+            'loader_type' => $loaderStatus['selected_loader'],
+        ];
+    }
+
+    if (!(bool) ($loaderStatus['ready'] ?? false)) {
+        return [
+            'ready' => false,
+            'delivery_mode' => 'smtp',
+            'failure_category' => 'mail_dependency_missing',
+            'loader_type' => $loaderStatus['selected_loader'],
+        ];
+    }
+
+    return [
+        'ready' => true,
+        'delivery_mode' => 'smtp',
+        'failure_category' => null,
+        'loader_type' => $loaderStatus['selected_loader'],
+    ];
+}
+
 function isLocalOtpPreviewMode(): bool {
-    return isLocalDevEnvironment() && localMailMode() === 'preview';
+    $policy = mailModePolicy();
+    return $policy['delivery_mode'] === 'preview' && $policy['preview_allowed'];
 }
 
 function shouldBypassLocalPreviewMail(): bool {
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (strpos($host, 'run.app') !== false) {
-        return true;
-    }
-
-    return isLocalDevEnvironment() && localMailMode() === 'preview_bypass';
+    return isLocalOtpPreviewMode();
 }
 
 function phpMailerLibraryAvailable(): bool {
@@ -74,24 +258,7 @@ function smtpTransportConfiguration(): array {
 }
 
 function smtpTransportReady(): bool {
-    $transport = smtpTransportConfiguration();
-    $requiredValues = [
-        $transport['host'],
-        (string) $transport['port'],
-        $transport['encryption'],
-        $transport['user'],
-        $transport['pass'],
-        $transport['from_email'],
-        $transport['from_name'],
-    ];
-
-    foreach ($requiredValues as $value) {
-        if (trim($value) === '') {
-            return false;
-        }
-    }
-
-    return true;
+    return mailRuntimeStatus()['ready'] && mailRuntimeStatus()['delivery_mode'] === 'smtp';
 }
 
 function resolvePhpMailerEncryption(string $encryption): string {
@@ -105,11 +272,22 @@ function resolvePhpMailerEncryption(string $encryption): string {
         return PHPMailer::ENCRYPTION_STARTTLS;
     }
 
+    if ($normalized === 'none') {
+        return '';
+    }
+
     return $encryption;
 }
 
 function buildConfiguredMailer(): ?PHPMailer {
+    $runtimeStatus = mailRuntimeStatus();
+    if (!$runtimeStatus['ready'] || $runtimeStatus['delivery_mode'] !== 'smtp') {
+        setLastMailFailureCategory($runtimeStatus['failure_category']);
+        return null;
+    }
+
     if (!loadPhpMailerLibrary()) {
+        setLastMailFailureCategory('mail_dependency_missing');
         return null;
     }
 
@@ -121,30 +299,21 @@ function buildConfiguredMailer(): ?PHPMailer {
     $mail->SMTPAuth = true;
     $mail->Username = $transport['user'];
     $mail->Password = $transport['pass'];
-    $mail->SMTPSecure = resolvePhpMailerEncryption($transport['encryption']);
+    $resolvedEncryption = resolvePhpMailerEncryption($transport['encryption']);
+    if ($resolvedEncryption !== '') {
+        $mail->SMTPSecure = $resolvedEncryption;
+    }
     $mail->Port = $transport['port'];
     $mail->setFrom($transport['from_email'], $transport['from_name']);
 
+    setLastMailFailureCategory(null);
     return $mail;
 }
 
 function localMailTroubleshootingMessage(): string {
-    $issues = [];
-    $mailDiagnostics = app_mail_diagnostics();
-
-    if (!$mailDiagnostics['smtp_ready']) {
-        $issues[] = 'missing mail env vars: ' . implode(', ', $mailDiagnostics['missing_fields']);
-    }
-
-    if (!phpMailerLibraryAvailable()) {
-        $issues[] = 'mail dependency loader is unavailable (' . $mailDiagnostics['loader_type'] . ')';
-    }
-
-    if (empty($issues)) {
-        $issues[] = 'mail delivery failed; check SMTP connectivity and PHP error logs';
-    }
-
-    return 'Local dev OTP email is not configured: ' . implode('; ', $issues) . '.';
+    $runtimeStatus = mailRuntimeStatus();
+    $category = lastMailFailureCategory() ?? $runtimeStatus['failure_category'] ?? 'smtp_transport_failed';
+    return 'Local dev OTP email is not configured: ' . mailFailureMessage($category) . '.';
 }
 
 function localOtpPreviewPayload($otpCode, string $context = 'verification'): array {
@@ -160,16 +329,15 @@ function localOtpPreviewPayload($otpCode, string $context = 'verification'): arr
 }
 
 function sendVerificationEmail($toEmail, $username, $otpCode, $context = 'register', $device = '', $location = '') {
-    if (!smtpTransportReady()) return false;
-    
-    // BYPASS hanya untuk preview yang diizinkan secara eksplisit.
+    setLastMailFailureCategory(null);
+
     if (shouldBypassLocalPreviewMail()) {
-        return true; 
+        return true;
     }
 
     $mail = buildConfiguredMailer();
     if ($mail === null) {
-        error_log('Mailer Error: PHPMailer dependency loader is unavailable.');
+        error_log('Mailer Error [' . (lastMailFailureCategory() ?? 'smtp_transport_failed') . '].');
         return false;
     }
 
@@ -250,22 +418,27 @@ function sendVerificationEmail($toEmail, $username, $otpCode, $context = 'regist
         $mail->AltBody = "Halo $username,\n\nKode OTP Anda adalah: $otpCode\n\nJangan berikan kepada siapapun!";
 
         $mail->send();
+        setLastMailFailureCategory(null);
         return true;
-    } catch (Exception $e) {
-        error_log("Pesan tidak dapat terkirim. Mailer Error: {$mail->ErrorInfo}");
+    } catch (Throwable $e) {
+        setLastMailFailureCategory('smtp_transport_failed');
+        error_log('Mailer Error [smtp_transport_failed].');
         return false;
     }
 }
 
 function sendWelcomeEmail($toEmail, $username) {
-    if (!smtpTransportReady()) return false;
-    
+    setLastMailFailureCategory(null);
+
     if (shouldBypassLocalPreviewMail()) {
-        return true; 
+        return true;
     }
 
     $mail = buildConfiguredMailer();
-    if ($mail === null) return false;
+    if ($mail === null) {
+        error_log('Mailer Error [' . (lastMailFailureCategory() ?? 'smtp_transport_failed') . '].');
+        return false;
+    }
 
     try {
         $mail->addAddress($toEmail, $username);
@@ -322,22 +495,27 @@ function sendWelcomeEmail($toEmail, $username) {
         $mail->AltBody = "Halo $username,\n\nSelamat karena pendaftaran UCP Anda berhasil diverifikasi!\n\nSelamat datang di Pahlawan Roleplay.";
 
         $mail->send();
+        setLastMailFailureCategory(null);
         return true;
-    } catch (Exception $e) {
-        error_log("Pesan tidak dapat terkirim. Mailer Error: {$mail->ErrorInfo}");
+    } catch (Throwable $e) {
+        setLastMailFailureCategory('smtp_transport_failed');
+        error_log('Mailer Error [smtp_transport_failed].');
         return false;
     }
 }
 
 function sendForgotPasswordEmail($toEmail, $username, $otpCode) {
-    if (!smtpTransportReady()) return false;
-    
+    setLastMailFailureCategory(null);
+
     if (shouldBypassLocalPreviewMail()) {
-        return true; 
+        return true;
     }
 
     $mail = buildConfiguredMailer();
-    if ($mail === null) return false;
+    if ($mail === null) {
+        error_log('Mailer Error [' . (lastMailFailureCategory() ?? 'smtp_transport_failed') . '].');
+        return false;
+    }
 
     try {
         $mail->addAddress($toEmail, $username);
@@ -394,23 +572,27 @@ function sendForgotPasswordEmail($toEmail, $username, $otpCode) {
         $mail->AltBody = "Halo $username,\n\nKode OTP reset sandi Anda adalah: $otpCode\n\nJangan berikan kepada siapapun!";
 
         $mail->send();
+        setLastMailFailureCategory(null);
         return true;
-    } catch (Exception $e) {
-        error_log("Pesan tidak dapat terkirim. Mailer Error: {$mail->ErrorInfo}");
+    } catch (Throwable $e) {
+        setLastMailFailureCategory('smtp_transport_failed');
+        error_log('Mailer Error [smtp_transport_failed].');
         return false;
     }
 }
 
 function sendPasswordResetSuccessEmail($toEmail, $username) {
-    if (!smtpTransportReady()) return false;
-    
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (strpos($host, 'run.app') !== false || strpos($host, 'localhost:5173') !== false) {
-        return true; 
+    setLastMailFailureCategory(null);
+
+    if (shouldBypassLocalPreviewMail()) {
+        return true;
     }
 
     $mail = buildConfiguredMailer();
-    if ($mail === null) return false;
+    if ($mail === null) {
+        error_log('Mailer Error [' . (lastMailFailureCategory() ?? 'smtp_transport_failed') . '].');
+        return false;
+    }
 
     try {
         $mail->addAddress($toEmail, $username);
@@ -462,9 +644,11 @@ function sendPasswordResetSuccessEmail($toEmail, $username) {
         $mail->AltBody = "Halo $username,\n\nKata sandi akun UCP Anda telah berhasil diubah.\n\nBila ini bukan Anda, segera hubungi staff.";
 
         $mail->send();
+        setLastMailFailureCategory(null);
         return true;
-    } catch (Exception $e) {
-        error_log("Pesan tidak dapat terkirim. Mailer Error: {$mail->ErrorInfo}");
+    } catch (Throwable $e) {
+        setLastMailFailureCategory('smtp_transport_failed');
+        error_log('Mailer Error [smtp_transport_failed].');
         return false;
     }
 }

@@ -46,13 +46,23 @@ putenv('APP_CONFIG_CONTRACT_VALUE');
 
 $diagnostics = app_config_diagnostics();
 app_config_test_assert(
-    array_keys($diagnostics) === ['env_loaded', 'env_source_path', 'runtime_root', 'bootstrap_status'],
+    array_keys($diagnostics) === ['env_loaded', 'env_source_path', 'runtime_root', 'bootstrap_status', 'mail_runtime'],
     'Configuration diagnostics contain unexpected fields.'
+);
+app_config_test_assert(
+    array_keys($diagnostics['mail_runtime']) === ['smtp_ready', 'missing_fields', 'loader_ready', 'loader_type', 'loader_paths'],
+    'Mail runtime diagnostics contain unexpected fields.'
 );
 app_config_test_assert(
     !str_contains(json_encode($diagnostics), 'NVIDIA_NIM_API_KEY'),
     'Configuration diagnostics exposed a secret name.'
 );
+foreach (['your-smtp-password', 'your-smtp-username'] as $privateValue) {
+    app_config_test_assert(
+        !str_contains((string) json_encode($diagnostics), $privateValue),
+        'Configuration diagnostics exposed a mail runtime value.'
+    );
+}
 
 foreach ([$repoApi, dirname($repoApi), dirname($repoApi, 2), $flatApi, dirname($flatApi), $testRoot] as $directory) {
     if (is_dir($directory)) {
