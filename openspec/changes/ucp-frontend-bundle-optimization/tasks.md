@@ -13,5 +13,5 @@
 ## 3. Verification
 
 - [x] 3.1 Run `npm run build` in `WEBSITE` and record the new chunk layout plus any remaining warnings.
-- [ ] 3.2 Verify login, session continuity, dashboard navigation, donation flow, ticket flow, settings flow, character detail flow, and admin access still behave the same after lazy loading.
+- [x] 3.2 Verify login, session continuity, dashboard navigation, donation flow, ticket flow, settings flow, character detail flow, and admin access still behave the same after lazy loading.
 - [x] 3.3 Run `openspec validate ucp-frontend-bundle-optimization --type change` and `git diff --check` before requesting review of the implementation patch.
