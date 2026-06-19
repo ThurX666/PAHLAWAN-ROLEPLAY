@@ -13,6 +13,38 @@ $localPreview = mailModePolicy('local', 'preview');
 mail_runtime_test_assert($localPreview['delivery_mode'] === 'preview', 'Local preview mode should be allowed.');
 mail_runtime_test_assert($localPreview['preview_allowed'], 'Local preview mode should report preview as allowed.');
 
+$localSmtp = mailRuntimeStatus(
+    mailModePolicy('local', 'smtp'),
+    [
+        'host' => 'smtp.example.com',
+        'port' => '587',
+        'encryption' => 'tls',
+        'user' => 'smtp-user',
+        'pass' => 'smtp-pass',
+        'from_email' => 'no-reply@example.com',
+        'from_name' => 'Pahlawan Roleplay',
+    ],
+    ['ready' => true, 'selected_loader' => 'composer']
+);
+mail_runtime_test_assert($localSmtp['ready'], 'Local SMTP mode should be ready when loader and config are complete.');
+mail_runtime_test_assert($localSmtp['delivery_mode'] === 'smtp', 'Local SMTP mode should use SMTP delivery.');
+
+$productionSmtp = mailRuntimeStatus(
+    mailModePolicy('production', 'smtp'),
+    [
+        'host' => 'smtp.example.com',
+        'port' => '587',
+        'encryption' => 'tls',
+        'user' => 'smtp-user',
+        'pass' => 'smtp-pass',
+        'from_email' => 'no-reply@example.com',
+        'from_name' => 'Pahlawan Roleplay',
+    ],
+    ['ready' => true, 'selected_loader' => 'composer']
+);
+mail_runtime_test_assert($productionSmtp['ready'], 'Production SMTP mode should be ready when loader and config are complete.');
+mail_runtime_test_assert($productionSmtp['delivery_mode'] === 'smtp', 'Production mode should use SMTP delivery.');
+
 $productionPreview = mailModePolicy('production', 'preview');
 mail_runtime_test_assert($productionPreview['failure_category'] === 'preview_forbidden', 'Production preview mode must be forbidden.');
 
@@ -63,6 +95,7 @@ $missingDependency = mailRuntimeStatus(
     ['ready' => false, 'selected_loader' => 'missing']
 );
 mail_runtime_test_assert($missingDependency['failure_category'] === 'mail_dependency_missing', 'Missing PHPMailer should fail with the dependency category.');
+mail_runtime_test_assert($missingDependency['loader_type'] === 'missing', 'Missing dependency should report the missing loader type.');
 
 putenv('APP_ENV=production');
 putenv('UCP_LOCAL_MAIL_MODE=preview');
@@ -72,6 +105,7 @@ putenv('APP_ENV');
 putenv('UCP_LOCAL_MAIL_MODE');
 
 setLastMailFailureCategory('smtp_transport_failed');
+mail_runtime_test_assert(lastMailFailureCategory() === 'smtp_transport_failed', 'Transport failure category should be recorded.');
 mail_runtime_test_assert(
     localMailTroubleshootingMessage() === 'Local dev OTP email is not configured: SMTP transport failed.',
     'Troubleshooting message should use the sanitized failure category.'

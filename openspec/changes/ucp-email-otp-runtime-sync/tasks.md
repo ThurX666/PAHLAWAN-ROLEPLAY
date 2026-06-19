@@ -18,13 +18,13 @@
 - [x] 3.2 Align login re-verification and automatic resend branches with the shared delivery result while preserving device/location checks, attempt counts, cooldowns, and session behavior.
 - [x] 3.3 Align the explicit resend endpoint with local preview and real SMTP modes without changing OTP issuance or verification semantics.
 - [x] 3.4 Align forgot-password OTP and password-reset-success email handling with the same mode and failure policy.
-- [ ] 3.5 Verify post-registration welcome email remains best-effort after successful verification and cannot roll back or bypass OTP verification.
+- [x] 3.5 Verify post-registration welcome email remains best-effort after successful verification and cannot roll back or bypass OTP verification.
 
 ## 4. Safety And Contract Tests
 
-- [ ] 4.1 Add offline tests for repository and flattened Composer loader resolution, plus missing-dependency fail-closed behavior.
-- [ ] 4.2 Add mode-matrix tests proving preview works only for `APP_ENV=local` plus `UCP_LOCAL_MAIL_MODE=preview`.
-- [ ] 4.3 Add SMTP readiness tests for local and production using synthetic configuration without contacting an external provider.
+- [x] 4.1 Add offline tests for repository and flattened Composer loader resolution, plus missing-dependency fail-closed behavior.
+- [x] 4.2 Add mode-matrix tests proving preview works only for `APP_ENV=local` plus `UCP_LOCAL_MAIL_MODE=preview`.
+- [x] 4.3 Add SMTP readiness tests for local and production using synthetic configuration without contacting an external provider.
 - [x] 4.4 Add caller contract tests for registration, login OTP, resend, forgot password, verification welcome email, and reset-success email.
 - [x] 4.5 Add negative checks proving diagnostics and responses do not expose credentials, private addresses, OTP values outside approved local preview, cookies, or session identifiers.
 - [ ] 4.6 Restrict or replace `test_email.php` so production readiness can be diagnosed without an unauthenticated or unsolicited send path.

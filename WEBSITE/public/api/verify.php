@@ -122,7 +122,10 @@ if ($action === 'verify_otp') {
         // --- KIRIM EMAIL SELAMAT DATANG ---
         require_once __DIR__ . '/mailer_helper.php';
         if (!empty($user['email'])) {
-            sendWelcomeEmail($user['email'], $user['username']);
+            $welcomeMailSent = sendWelcomeEmail($user['email'], $user['username']);
+            if (!$welcomeMailSent && hasMailFailureCategory()) {
+                error_log('Welcome mail skipped [' . lastMailFailureCategory() . '].');
+            }
         }
 
         if (empty($user['discord_id'])) {
