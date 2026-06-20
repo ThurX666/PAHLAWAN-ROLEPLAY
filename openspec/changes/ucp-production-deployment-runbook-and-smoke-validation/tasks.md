@@ -1,12 +1,12 @@
 ## 1. Deployment package and env contract planning
 
-- [ ] 1.1 Audit the current Website/UCP deployable artifacts for repo layout and flattened XAMPP layout without changing runtime files.
-- [ ] 1.2 Define the production package checklist, including frontend build output, PHP API files, vendor/composer readiness, and private deployment-only artifacts.
-- [ ] 1.3 Define the local vs production env contract, including tracked example files, private `.env`, required readiness categories, and forbidden secret exposure.
+- [x] 1.1 Audit the current Website/UCP deployable artifacts for repo layout and flattened XAMPP layout without changing runtime files.
+- [x] 1.2 Define the production package checklist, including frontend build output, PHP API files, vendor/composer readiness, and private deployment-only artifacts.
+- [x] 1.3 Define the local vs production env contract, including tracked example files, private `.env`, required readiness categories, and forbidden secret exposure.
 
 ## 2. Runtime mapping and diagnostic planning
 
-- [ ] 2.1 Map repository Website paths to the approved XAMPP/htdocs runtime paths and document required post-sync checks.
+- [x] 2.1 Map repository Website paths to the approved XAMPP/htdocs runtime paths and document required post-sync checks.
 - [ ] 2.2 Inventory existing secret-safe diagnostics for API health, session/auth, email runtime, and bounded read-only validation.
 - [ ] 2.3 Identify any missing runbook-only documentation or diagnostic gaps that must be addressed before launch, without implementing runtime changes yet.
 

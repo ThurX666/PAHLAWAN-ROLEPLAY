@@ -67,6 +67,8 @@ Production must remain separate from local development:
 
 Use `.env.production.example` only as a placeholder template. Fill real deployment values outside the repository.
 
+Production deployment baseline runbook for package, env, and XAMPP mapping is documented in [PRODUCTION_DEPLOYMENT_RUNBOOK.md](./PRODUCTION_DEPLOYMENT_RUNBOOK.md).
+
 ## Email Runtime Deployment Package
 
 Deployment package email runtime harus mengikuti kontrak berikut:
