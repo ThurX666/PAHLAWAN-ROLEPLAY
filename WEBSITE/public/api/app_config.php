@@ -105,6 +105,43 @@ function env_value(array $env, string $key, string $default = ''): string
     return $default;
 }
 
+function app_is_local_environment(): bool
+{
+    $appEnv = strtolower((string) app_env('APP_ENV', 'production'));
+    return in_array($appEnv, ['local', 'development', 'dev'], true);
+}
+
+function app_local_mail_mode(): string
+{
+    return strtolower((string) app_env('UCP_LOCAL_MAIL_MODE', 'smtp'));
+}
+
+function app_is_local_preview_environment(): bool
+{
+    return app_is_local_environment() && app_local_mail_mode() === 'preview';
+}
+
+function app_default_otp_resend_cooldown_seconds(): int
+{
+    return 1800;
+}
+
+function app_otp_resend_cooldown_seconds(): int
+{
+    $default = app_default_otp_resend_cooldown_seconds();
+
+    if (!app_is_local_preview_environment()) {
+        return $default;
+    }
+
+    $raw = trim((string) app_env('UCP_LOCAL_OTP_RESEND_COOLDOWN_SECONDS', ''));
+    if ($raw === '' || !ctype_digit($raw)) {
+        return $default;
+    }
+
+    return max(0, (int) $raw);
+}
+
 function app_mail_config(): array
 {
     static $config = null;

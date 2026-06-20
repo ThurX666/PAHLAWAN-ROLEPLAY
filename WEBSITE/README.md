@@ -44,6 +44,7 @@ Required local env values:
 - `VITE_DEV_API_PROXY_TARGET=http://127.0.0.1:8000`
 - `APP_ENV=local`
 - `UCP_LOCAL_MAIL_MODE=preview`
+- `UCP_LOCAL_OTP_RESEND_COOLDOWN_SECONDS` only for authorized local preview smoke tests, for example `0`
 - `UCP_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173`
 - `SMTP_HOST`, `SMTP_PORT`, `SMTP_ENCRYPTION`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USER`, and `SMTP_PASS` only when intentionally testing real local SMTP delivery
 
@@ -51,6 +52,7 @@ During pre-launch development, local UCP testing may use the currently configure
 
 Local OTP preview rule:
 - OTP preview is allowed only when `APP_ENV=local` and `UCP_LOCAL_MAIL_MODE=preview`.
+- Optional resend cooldown override is allowed only under that same local preview combination.
 - If you are not intentionally testing local OTP preview, switch to a non-preview local mode before testing other mail behavior.
 
 ## Production Expectations
@@ -85,7 +87,8 @@ Deployment package email runtime harus mengikuti kontrak berikut:
    - `SMTP_USER`
    - `SMTP_PASS`
 7. Local preview hanya valid saat `APP_ENV=local` dan `UCP_LOCAL_MAIL_MODE=preview`.
-8. Production wajib `APP_ENV=production` dan `UCP_LOCAL_MAIL_MODE=smtp`, tanpa preview.
+8. Override `UCP_LOCAL_OTP_RESEND_COOLDOWN_SECONDS` hanya boleh dipakai untuk smoke test local preview terotorisasi.
+9. Production wajib `APP_ENV=production` dan `UCP_LOCAL_MAIL_MODE=smtp`, tanpa preview atau override cooldown lokal.
 
 Sebelum sync deployment, verifikasi:
 - `WEBSITE/.env` tetap di-ignore dengan `git check-ignore WEBSITE/.env`
@@ -120,6 +123,7 @@ Smoke test manual email/OTP harus dilakukan secara terotorisasi dan tanpa memboc
    - local preview: `APP_ENV=local`, `UCP_LOCAL_MAIL_MODE=preview`
    - local SMTP nyata: `APP_ENV=local`, `UCP_LOCAL_MAIL_MODE=smtp`
    - production-like SMTP: `APP_ENV=production`, `UCP_LOCAL_MAIL_MODE=smtp`
+   - optional local preview resend override: `UCP_LOCAL_OTP_RESEND_COOLDOWN_SECONDS=0`
 3. Verifikasi diagnostik aman:
    - `php WEBSITE/public/api/test_email.php`
 4. Uji flow `register`.
@@ -160,16 +164,17 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLE
 ```
 
 8. Salin field `resend_target_identifier` dari output JSON. Field ini aman karena hanya identifier akun uji, bukan OTP atau secret.
-9. Tunggu cooldown resend lewat, lalu jalankan ulang:
+9. Jika local preview override diaktifkan dengan `UCP_LOCAL_OTP_RESEND_COOLDOWN_SECONDS=0`, Anda dapat langsung menjalankan ulang tanpa menunggu cooldown.
+10. Jika override tidak diaktifkan, tunggu cooldown resend lewat lalu jalankan ulang:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\tests\local_email_preview_smoke.ps1" -ResendOnly -ResendIdentifier "<identifier>"
 ```
 
-10. Mode `-ResendOnly` tidak menjalankan flow `verify`, sehingga target resend tetap unverified.
-11. Jika `resend` pada target baru melaporkan `resend blocked by cooldown`, itu bukan bug, tetapi juga belum cukup untuk menutup task `5.4`.
-12. Jika endpoint belum siap, script berhenti dengan pesan readiness yang aman.
-13. Jika `register` tidak mengembalikan `local_preview`, hentikan pengujian dan cek kembali `APP_ENV=local` serta `UCP_LOCAL_MAIL_MODE=preview`.
+11. Mode `-ResendOnly` tidak menjalankan flow `verify`, sehingga target resend tetap unverified.
+12. Jika `resend` pada target baru masih melaporkan `resend blocked by cooldown`, itu berarti override belum aktif atau target lama masih dalam cooldown.
+13. Jika endpoint belum siap, script berhenti dengan pesan readiness yang aman.
+14. Jika `register` tidak mengembalikan `local_preview`, hentikan pengujian dan cek kembali `APP_ENV=local` serta `UCP_LOCAL_MAIL_MODE=preview`.
 
 ## Story Review NVIDIA NIM
 

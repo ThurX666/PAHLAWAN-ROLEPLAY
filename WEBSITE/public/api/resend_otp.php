@@ -6,6 +6,7 @@ $action = isset($_POST['action']) ? $_POST['action'] : '';
 
 if ($action === 'resend_otp') {
     $email_or_username = $_POST['username'] ?? '';
+    $cooldownSeconds = app_otp_resend_cooldown_seconds();
 
     if (empty($email_or_username)) {
         echo json_encode(['status' => 'error', 'message' => 'Email atau Username tidak valid!']);
@@ -31,8 +32,8 @@ if ($action === 'resend_otp') {
         // ANTI-SPAM: Cek waktu terakhir minta OTP
         if (!empty($user['Register_Date'])) {
             $last_request = strtotime($user['Register_Date']);
-            if (time() - $last_request < 1800) {
-                $remaining = max(0, 1800 - (time() - $last_request));
+            if (time() - $last_request < $cooldownSeconds) {
+                $remaining = max(0, $cooldownSeconds - (time() - $last_request));
                 echo json_encode(['status' => 'error', 'message' => 'Tunggu 30 menit sebelum mengirim ulang OTP!', 'cooldown' => $remaining]);
                 exit;
             }

@@ -77,6 +77,7 @@ function endpoint_contract_mail_state(array $overrides = []): array
         'sessions' => [],
         'pending_sessions' => [],
         'preview_calls' => [],
+        'resend_cooldown_seconds' => 1800,
     ], $overrides);
 }
 
@@ -98,6 +99,11 @@ function hasMailFailureCategory(): bool
 function isLocalOtpPreviewMode(): bool
 {
     return (bool) ($GLOBALS['__endpoint_mail_state']['preview'] ?? false);
+}
+
+function app_otp_resend_cooldown_seconds(): int
+{
+    return (int) ($GLOBALS['__endpoint_mail_state']['resend_cooldown_seconds'] ?? 1800);
 }
 
 function localOtpPreviewPayload($otpCode, string $context = 'verification'): array
@@ -300,6 +306,41 @@ endpoint_contract_assert($authFailure['json']['status'] === 'unverified', 'Auth 
 endpoint_contract_assert(($authFailure['json']['cooldown'] ?? null) === 1800, 'Auth reauth harus mempertahankan cooldown 1800.');
 assert_no_secret_leak($authFailure['raw'], ['000000', 'smtp-user', 'smtp-pass', 'ErrorInfo', 'Set-Cookie', 'session'], 'auth failure');
 
+$authPreviewCooldownPdo = new EndpointFakePdo(function (string $sql, array $params): array {
+    if (str_contains($sql, 'FROM player_ucp WHERE UCP = :username OR Email = :username')) {
+        return ['fetch' => [
+            'id' => 11,
+            'username' => 'authPreview',
+            'email' => 'auth-preview@example.com',
+            'password' => password_hash('secret', PASSWORD_BCRYPT),
+            'is_verified' => 1,
+            'Verify_Code' => '-1',
+            'Register_Date' => date('Y-m-d H:i:s', time() - 7200),
+            'Last_Login' => date('Y-m-d H:i:s', time() - 172800),
+            'OTP_Attempts' => 0,
+            'admin_level' => 0,
+            'vip_status' => 'None',
+            'gold' => 0,
+            'last_device' => 'Old Device',
+            'last_ip' => '10.0.0.1',
+            'last_location' => 'Old City',
+            'discord_id' => 'discord-2',
+        ]];
+    }
+    if (str_contains($sql, 'UPDATE player_ucp SET Verify_Status = 0')) {
+        return ['rowCount' => 1];
+    }
+    throw new RuntimeException('Query auth preview cooldown tidak dikenali: ' . $sql);
+});
+$authPreviewCooldown = run_endpoint_contract(
+    $apiRoot . '/auth.php',
+    ['action' => 'login', 'username' => 'authPreview', 'password' => 'secret', 'device' => 'New Device', 'ip' => '20.0.0.3', 'location' => 'Bandung'],
+    $authPreviewCooldownPdo,
+    ['preview' => true, 'resend_cooldown_seconds' => 0]
+);
+endpoint_contract_assert(($authPreviewCooldown['json']['cooldown'] ?? null) === 0, 'Auth local preview boleh memakai override cooldown sintetis.');
+endpoint_contract_assert(isset($authPreviewCooldown['json']['local_preview']['otp_code']), 'Auth local preview override harus tetap mengembalikan local_preview.');
+
 $resendPdo = new EndpointFakePdo(function (string $sql, array $params): array {
     if (str_contains($sql, 'SELECT ID, UCP, Email, Verify_Status')) {
         return ['fetch' => [
@@ -325,6 +366,33 @@ $resendFailure = run_endpoint_contract(
 );
 endpoint_contract_assert($resendFailure['json']['status'] === 'error', 'Resend harus fail closed jika email gagal terkirim.');
 assert_no_secret_leak($resendFailure['raw'], ['123456', 'smtp-user', 'smtp-pass', 'ErrorInfo', 'Set-Cookie', 'token'], 'resend failure');
+
+$resendPreviewCooldownPdo = new EndpointFakePdo(function (string $sql, array $params): array {
+    if (str_contains($sql, 'SELECT ID, UCP, Email, Verify_Status')) {
+        return ['fetch' => [
+            'ID' => 23,
+            'UCP' => 'resendPreview',
+            'Email' => 'resend-preview@example.com',
+            'Verify_Status' => 0,
+            'Verify_Code' => '123456',
+            'Register_Date' => date('Y-m-d H:i:s'),
+            'OTP_Attempts' => 0,
+        ]];
+    }
+    if (str_contains($sql, 'UPDATE player_ucp SET Verify_Code = :new_token')) {
+        return ['rowCount' => 1];
+    }
+    throw new RuntimeException('Query resend preview cooldown tidak dikenali: ' . $sql);
+});
+$resendPreviewCooldown = run_endpoint_contract(
+    $apiRoot . '/resend_otp.php',
+    ['action' => 'resend_otp', 'username' => 'resendPreview'],
+    $resendPreviewCooldownPdo,
+    ['preview' => true, 'resend_cooldown_seconds' => 0]
+);
+endpoint_contract_assert($resendPreviewCooldown['json']['status'] === 'success', 'Resend local preview dengan override cooldown harus sukses.');
+endpoint_contract_assert(isset($resendPreviewCooldown['json']['local_preview']['otp_code']), 'Resend local preview dengan override harus mengembalikan local_preview.');
+assert_no_secret_leak($resendPreviewCooldown['raw'], ['smtp-user', 'smtp-pass', 'ErrorInfo', 'Set-Cookie', 'token'], 'resend preview override');
 
 $forgotPdo = new EndpointFakePdo(function (string $sql, array $params): array {
     if (str_contains($sql, 'SELECT ID as id, UCP as username, Verify_Status as is_verified FROM player_ucp')) {

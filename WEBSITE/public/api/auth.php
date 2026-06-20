@@ -7,6 +7,7 @@ $action = isset($_POST['action']) ? $_POST['action'] : '';
 
 if ($action === 'login') {
     require_once __DIR__ . '/mailer_helper.php';
+    $cooldownSeconds = app_otp_resend_cooldown_seconds();
 
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
@@ -84,7 +85,7 @@ if ($action === 'login') {
                         'status' => 'unverified',
                         'message' => $reason_msg,
                         'registered_user' => $user['email'],
-                        'cooldown' => 1800,
+                        'cooldown' => $cooldownSeconds,
                         'local_preview' => localOtpPreviewPayload($new_otp_code, $reason_title),
                     ]);
                     exit;
@@ -97,7 +98,7 @@ if ($action === 'login') {
                         'status' => 'unverified',
                         'message' => sharedMailFailureClientMessage('Gagal mengirim email OTP dari server. Hubungi Admin.'),
                         'registered_user' => $user['email'],
-                        'cooldown' => 1800,
+                        'cooldown' => $cooldownSeconds,
                     ]);
                     exit;
                 }
@@ -106,7 +107,7 @@ if ($action === 'login') {
                     'status' => 'unverified', 
                     'message' => $reason_msg,
                     'registered_user' => $user['email'],
-                    'cooldown' => 1800
+                    'cooldown' => $cooldownSeconds
                 ]);
                 exit;
             }
@@ -125,8 +126,8 @@ if ($action === 'login') {
                 $last_request = strtotime($user['Register_Date']);
                 $time_passed = time() - $last_request;
 
-                if ($time_passed < 1800) {
-                    $cooldown_remaining = max(0, 1800 - $time_passed);
+                if ($time_passed < $cooldownSeconds) {
+                    $cooldown_remaining = max(0, $cooldownSeconds - $time_passed);
                     if (isLocalOtpPreviewMode()) {
                         $local_preview = localOtpPreviewPayload($user['Verify_Code'] ?? '', 'existing_unverified');
                     }
@@ -151,10 +152,10 @@ if ($action === 'login') {
 
                             if (!$email_sent) {
                                 $msg_to_client = sharedMailFailureClientMessage('Akun belum terverifikasi dan email OTP gagal dikirim. Hubungi Admin.');
-                                $cooldown_remaining = 1800;
+                                $cooldown_remaining = $cooldownSeconds;
                             } else {
                                 $msg_to_client = 'Akun belum terverifikasi! Sistem baru saja MENGIRIM KODE OTP BARU secara otomatis ke Email Anda.';
-                                $cooldown_remaining = 1800;
+                                $cooldown_remaining = $cooldownSeconds;
                             }
                         }
                     }

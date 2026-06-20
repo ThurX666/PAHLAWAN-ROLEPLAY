@@ -65,6 +65,22 @@ app_config_test_assert(
 );
 putenv('APP_CONFIG_CONTRACT_VALUE');
 
+putenv('APP_ENV=local');
+putenv('UCP_LOCAL_MAIL_MODE=preview');
+putenv('UCP_LOCAL_OTP_RESEND_COOLDOWN_SECONDS=0');
+app_config_test_assert(
+    app_otp_resend_cooldown_seconds() === 0,
+    'Local preview cooldown override should allow zero-second resend cooldown for authorized smoke tests.'
+);
+putenv('APP_ENV=production');
+app_config_test_assert(
+    app_otp_resend_cooldown_seconds() === 1800,
+    'Non-local environments must ignore the resend cooldown override.'
+);
+putenv('APP_ENV');
+putenv('UCP_LOCAL_MAIL_MODE');
+putenv('UCP_LOCAL_OTP_RESEND_COOLDOWN_SECONDS');
+
 $diagnostics = app_config_diagnostics();
 app_config_test_assert(
     array_keys($diagnostics) === ['env_loaded', 'env_source_path', 'runtime_root', 'bootstrap_status', 'mail_runtime'],
