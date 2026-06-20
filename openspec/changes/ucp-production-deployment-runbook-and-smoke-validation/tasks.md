@@ -7,8 +7,8 @@
 ## 2. Runtime mapping and diagnostic planning
 
 - [x] 2.1 Map repository Website paths to the approved XAMPP/htdocs runtime paths and document required post-sync checks.
-- [ ] 2.2 Inventory existing secret-safe diagnostics for API health, session/auth, email runtime, and bounded read-only validation.
-- [ ] 2.3 Identify any missing runbook-only documentation or diagnostic gaps that must be addressed before launch, without implementing runtime changes yet.
+- [x] 2.2 Inventory existing secret-safe diagnostics for API health, session/auth, email runtime, and bounded read-only validation.
+- [x] 2.3 Identify any missing runbook-only documentation or diagnostic gaps that must be addressed before launch, without implementing runtime changes yet.
 
 ## 3. Authorized smoke validation runbook
 
