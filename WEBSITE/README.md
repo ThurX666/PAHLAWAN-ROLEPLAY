@@ -15,6 +15,8 @@ Use only the example files in this directory as templates:
 
 ## Local Development
 
+Local workflow standard yang membedakan repo source-of-truth vs target runtime XAMPP didokumentasikan di [LOCAL_DEVELOPMENT_WORKFLOW.md](./LOCAL_DEVELOPMENT_WORKFLOW.md).
+
 Prerequisites:
 - Node.js and npm
 - PHP available on your shell path
