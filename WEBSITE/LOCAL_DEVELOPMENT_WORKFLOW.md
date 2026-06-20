@@ -246,3 +246,66 @@ Setelah sync/copy ke XAMPP, lakukan check minimum berikut:
 - hanya untuk validasi deployed-style setelah copy/sync
 - bukan tempat coding utama
 
+## 8. Artifact alignment summary
+
+Alignment change `local-development-workflow-and-runtime-sync` saat ini:
+
+- `proposal.md` selaras dengan tujuan standardisasi workflow local development PC
+- `design.md` selaras dengan boundary repo vs XAMPP dan pemisahan dev/build/runtime mode
+- spec `ucp-local-development-workflow` selaras dengan requirement source-of-truth, env handling, sync/reset, dan mode-aware testing
+- `tasks.md` selaras dengan pekerjaan planning/documentation yang sudah selesai
+- dokumen ini menjadi runbook kerja lokal yang menurunkan isi proposal/design/spec ke instruksi operasional
+
+Tidak ada artifact yang memperluas scope ke:
+
+- VPS production bootstrap
+- BOT runtime
+- Pawn/gamemode
+- database schema/migration
+- perubahan runtime behavior
+
+## 9. Boundary confirmation
+
+Boundary yang sudah dikunci untuk change ini:
+
+- repo source of truth tetap di `C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY`
+- XAMPP runtime target tetap di `C:\xampp\htdocs\pahlawan_roleplay`
+- semua edit source wajib dilakukan di repo
+- XAMPP hanya hasil copy/sync runtime untuk validasi deployed-style
+- VPS production tetap future track terpisah dan tidak dibahas implementasinya di change ini
+
+## 10. Implementation approval handoff
+
+### Yang sudah siap
+
+- boundary repo vs XAMPP sudah terdokumentasi
+- workflow `npm run dev`, `npm run build`, PHP built-in server, dan XAMPP Apache sudah didefinisikan
+- local `.env` handling dan local preview guardrail sudah didefinisikan
+- sync/copy strategy awal sudah didefinisikan
+- rollback/reset runtime lokal yang aman sudah didefinisikan
+- minimum post-sync checks sudah didefinisikan
+
+### Yang belum boleh dieksekusi dalam change ini
+
+- perubahan runtime behavior Website/UCP/API
+- helper sync script otomatis
+- provisioning atau setup VPS production
+- perubahan BOT runtime
+- perubahan Pawn/gamemode
+- perubahan database schema/migration
+- asumsi Composer vendor readiness untuk XAMPP mail runtime sebelum dependency benar-benar tersedia
+
+### Keputusan owner yang masih perlu
+
+- apakah fase implementasi berikutnya cukup dokumentasi manual, atau perlu helper sync script terpisah
+- baseline local database setelah production launch: tetap DB dev sekarang atau dipisah ke DB local/dev baru
+- apakah helper/runtime lama di XAMPP seperti `check_db.php` dan `test_settings.php` masih perlu dipertahankan
+- kapan future change untuk VPS production dimulai
+
+### Next recommended step
+
+Lanjut ke implementasi ringan yang tetap aman dan non-runtime-changing:
+
+1. rapikan dokumentasi local testing checklist tambahan bila masih ada gap
+2. review kebutuhan helper sync manual vs script kecil terpisah
+3. jika disetujui, buat change future terpisah untuk VPS production/bootstrap
