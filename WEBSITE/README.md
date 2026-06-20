@@ -145,17 +145,24 @@ php -S 127.0.0.1:8000 -t "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\pub
 powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\tests\local_email_preview_smoke.ps1"
 ```
 
-4. Script memverifikasi `register` lalu `verify` lebih dulu agar OTP register tidak tertimpa flow lain.
+4. Secara default script memverifikasi flow `register` lalu `verify`, kemudian `forgot`, dan memisahkan target `resend` ke akun unverified lain agar tidak bentrok dengan akun yang sudah diverifikasi.
 5. Script hanya mencetak `status`, kategori hasil, dan pesan yang sudah disanitasi untuk flow `register`, `resend`, `forgot`, dan `verify`, tanpa mencetak OTP mentah.
-6. Untuk membuktikan `resend` secara penuh, sediakan akun unverified yang sudah lewat cooldown bila perlu:
+6. Untuk membuktikan `resend` secara penuh dengan akun existing yang memang sudah lewat cooldown:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\tests\local_email_preview_smoke.ps1" -ResendIdentifier "nama_akun_unverified"
 ```
 
-7. Jika `resend` dijalankan tanpa `-ResendIdentifier`, helper akan melaporkan `resend blocked by cooldown` saat akun baru memang masih cooldown. Itu bukan bug, tetapi juga belum cukup untuk menutup task `5.4`.
-8. Jika endpoint belum siap, script berhenti dengan pesan readiness yang aman.
-9. Jika `register` tidak mengembalikan `local_preview`, hentikan pengujian dan cek kembali `APP_ENV=local` serta `UCP_LOCAL_MAIL_MODE=preview`.
+7. Untuk menguji jalur resend secara terpisah tanpa flow verify, gunakan mode khusus:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\tests\local_email_preview_smoke.ps1" -ResendOnly -CreateUnverifiedResendTarget
+```
+
+8. Mode `-ResendOnly` tidak menjalankan flow `verify`, sehingga target resend tetap unverified.
+9. Jika `resend` pada target baru melaporkan `resend blocked by cooldown`, itu bukan bug, tetapi juga belum cukup untuk menutup task `5.4`.
+10. Jika endpoint belum siap, script berhenti dengan pesan readiness yang aman.
+11. Jika `register` tidak mengembalikan `local_preview`, hentikan pengujian dan cek kembali `APP_ENV=local` serta `UCP_LOCAL_MAIL_MODE=preview`.
 
 ## Story Review NVIDIA NIM
 

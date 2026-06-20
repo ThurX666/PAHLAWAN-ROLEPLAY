@@ -1,7 +1,9 @@
 param(
     [string]$BaseUrl = "http://127.0.0.1:8000/api",
     [int]$TimeoutSeconds = 20,
-    [string]$ResendIdentifier
+    [string]$ResendIdentifier,
+    [switch]$ResendOnly,
+    [switch]$CreateUnverifiedResendTarget
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,6 +42,28 @@ function Invoke-FormPost {
     )
 
     Invoke-RestMethod -Method Post -Uri $Url -Body $Body -ContentType "application/x-www-form-urlencoded"
+}
+
+function Register-PreviewAccount {
+    param(
+        [string]$Url,
+        [string]$Username,
+        [string]$Email,
+        [string]$Password
+    )
+
+    $registerResponse = Invoke-FormPost -Url "$Url/register.php" -Body @{
+        action   = "register"
+        username = $Username
+        email    = $Email
+        password = $Password
+    }
+
+    if (-not $registerResponse.local_preview) {
+        throw "Register tidak mengembalikan local_preview. Pastikan APP_ENV=local dan UCP_LOCAL_MAIL_MODE=preview."
+    }
+
+    return $registerResponse
 }
 
 function Get-SafeMessage {
@@ -125,48 +149,42 @@ $email = "codex_preview_$stamp@example.com"
 $password = "PreviewOnly123!"
 $resendProbeUsername = "cpr_$stamp"
 $resendProbeEmail = "codex_resend_$stamp@example.com"
+$register = $null
+$verify = $null
+$forgot = $null
+$registerProven = $false
+$verifyProven = $false
+$forgotProven = $false
+$flowMode = if ($ResendOnly) { "resend_only" } else { "full_preview" }
 
-$register = Invoke-FormPost -Url "$BaseUrl/register.php" -Body @{
-    action   = "register"
-    username = $username
-    email    = $email
-    password = $password
-}
+if (-not $ResendOnly) {
+    $register = Register-PreviewAccount -Url $BaseUrl -Username $username -Email $email -Password $password
+    $verifyOtp = $register.local_preview.otp_code
 
-if (-not $register.local_preview) {
-    throw "Register tidak mengembalikan local_preview. Pastikan APP_ENV=local dan UCP_LOCAL_MAIL_MODE=preview."
-}
-
-$verifyOtp = $register.local_preview.otp_code
-
-$verify = Invoke-FormPost -Url "$BaseUrl/verify.php" -Body @{
-    action   = "verify_otp"
-    username = $username
-    otp_code = $verifyOtp
-    device   = "PowerShell Preview Smoke"
-    ip       = "127.0.0.1"
-    location = "Local Preview"
-}
-
-$forgot = Invoke-FormPost -Url "$BaseUrl/forgot.php" -Body @{
-    action = "forgot_password"
-    email  = $email
-}
-
-$resendScenario = if ([string]::IsNullOrWhiteSpace($ResendIdentifier)) { "fresh_unverified_probe" } else { "existing_unverified" }
-
-if ([string]::IsNullOrWhiteSpace($ResendIdentifier)) {
-    $resendProbeRegister = Invoke-FormPost -Url "$BaseUrl/register.php" -Body @{
-        action   = "register"
-        username = $resendProbeUsername
-        email    = $resendProbeEmail
-        password = $password
+    $verify = Invoke-FormPost -Url "$BaseUrl/verify.php" -Body @{
+        action   = "verify_otp"
+        username = $username
+        otp_code = $verifyOtp
+        device   = "PowerShell Preview Smoke"
+        ip       = "127.0.0.1"
+        location = "Local Preview"
     }
 
-    if (-not $resendProbeRegister.local_preview) {
-        throw "Probe resend tidak mengembalikan local_preview. Pastikan preview lokal aktif."
+    $forgot = Invoke-FormPost -Url "$BaseUrl/forgot.php" -Body @{
+        action = "forgot_password"
+        email  = $email
     }
 
+    $registerProven = ($register.status -eq "success_verify" -and $null -ne $register.local_preview)
+    $verifyProven = ($verify.status -eq "success" -or $verify.status -eq "discord_required")
+    $forgotProven = ($forgot.status -eq "success" -and $null -ne $forgot.local_preview)
+}
+
+$shouldCreateResendTarget = $CreateUnverifiedResendTarget -or [string]::IsNullOrWhiteSpace($ResendIdentifier)
+$resendScenario = if ($shouldCreateResendTarget) { "fresh_unverified_target" } else { "existing_unverified" }
+
+if ($shouldCreateResendTarget) {
+    $resendProbeRegister = Register-PreviewAccount -Url $BaseUrl -Username $resendProbeUsername -Email $resendProbeEmail -Password $password
     $resendTarget = $resendProbeUsername
 } else {
     $resendTarget = $ResendIdentifier
@@ -177,28 +195,39 @@ $resend = Invoke-FormPost -Url "$BaseUrl/resend_otp.php" -Body @{
     username = $resendTarget
 }
 
-[bool]$registerProven = ($register.status -eq "success_verify" -and $null -ne $register.local_preview)
-[bool]$verifyProven = ($verify.status -eq "success" -or $verify.status -eq "discord_required")
-[bool]$forgotProven = ($forgot.status -eq "success" -and $null -ne $forgot.local_preview)
 [bool]$resendProven = ($resend.status -eq "success")
 [bool]$resendBlockedByCooldown = ((Get-OutcomeCategory -Response $resend) -eq "cooldown")
 [bool]$task54Ready = ($registerProven -and $verifyProven -and $forgotProven -and $resendProven)
 
 [ordered]@{
-    base_url      = $BaseUrl
+    base_url       = $BaseUrl
+    mode           = $flowMode
     task_5_4_ready = $task54Ready
-    register      = New-FlowResult -Name "register" -Response $register -Extra @{
-        has_local_preview = ($null -ne $register.local_preview)
+    register       = if ($register) {
+        New-FlowResult -Name "register" -Response $register -Extra @{
+            has_local_preview = ($null -ne $register.local_preview)
+        }
+    } else {
+        [ordered]@{ skipped = $true }
     }
-    verify        = New-FlowResult -Name "verify" -Response $verify -Extra @{
-        completed_verification = $verifyProven
+    verify         = if ($verify) {
+        New-FlowResult -Name "verify" -Response $verify -Extra @{
+            completed_verification = $verifyProven
+        }
+    } else {
+        [ordered]@{ skipped = $true }
     }
-    forgot        = New-FlowResult -Name "forgot" -Response $forgot -Extra @{
-        has_local_preview = ($null -ne $forgot.local_preview)
+    forgot         = if ($forgot) {
+        New-FlowResult -Name "forgot" -Response $forgot -Extra @{
+            has_local_preview = ($null -ne $forgot.local_preview)
+        }
+    } else {
+        [ordered]@{ skipped = $true }
     }
-    resend        = New-FlowResult -Name "resend" -Response $resend -Extra @{
+    resend         = New-FlowResult -Name "resend" -Response $resend -Extra @{
         scenario          = $resendScenario
         target_supplied   = (-not [string]::IsNullOrWhiteSpace($ResendIdentifier))
+        created_unverified_target = $shouldCreateResendTarget
         has_local_preview = ($null -ne $resend.local_preview)
         has_cooldown      = ($null -ne $resend.cooldown)
         blocked_by_cooldown = $resendBlockedByCooldown
