@@ -18,9 +18,9 @@
 
 ## 4. Rollback and launch readiness
 
-- [ ] 4.1 Define rollback triggers and the release components that must be restored for a failed deployment.
-- [ ] 4.2 Define the rollback verification checklist that confirms the previous release is healthy again.
-- [ ] 4.3 Define the final launch readiness checklist and sign-off criteria for community launch.
+- [x] 4.1 Define rollback triggers and the release components that must be restored for a failed deployment.
+- [x] 4.2 Define the rollback verification checklist that confirms the previous release is healthy again.
+- [x] 4.3 Define the final launch readiness checklist and sign-off criteria for community launch.
 
 ## 5. Final validation and handoff
 

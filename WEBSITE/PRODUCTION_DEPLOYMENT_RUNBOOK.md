@@ -457,3 +457,116 @@ Catatan:
 
 - change future ini tidak diimplementasikan sekarang
 - Pterodactyl tetap diperlakukan terpisah dari baseline Website/UCP/API/BOT launch checklist saat ini
+
+## 13. VPS purchase dan operator decision notes
+
+Keputusan operasional saat ini:
+
+- provider VPS production yang direncanakan: VibeGAMES Singapore
+- nama server yang direkomendasikan: `pahlawan-prod-sg01`
+- OS baseline yang direkomendasikan:
+  - utama: Ubuntu 24.04 LTS
+  - fallback: Ubuntu 22.04 LTS
+- Windows tidak direkomendasikan untuk production Pterodactyl/Wings
+- image Pterodactyl preinstall tidak diprioritaskan; baseline yang diinginkan adalah Ubuntu clean agar kontrol bootstrap penuh tetap ada
+- metode login yang direkomendasikan:
+  - utama: SSH key
+  - fallback awal: password sementara sampai SSH key siap
+
+Catatan boundary:
+
+- VPS production adalah target runtime production, bukan tempat utama coding
+- release package launch awal tetap dibuat dari PC repo utama
+- Website/UCP/API/BOT/database tetap punya checklist deployment tersendiri
+- game server yang nanti dikelola Pterodactyl tetap dipisahkan dari baseline runbook Website/UCP/API/BOT
+
+## 14. Rollback triggers
+
+Rollback wajib dipertimbangkan segera jika salah satu kondisi berikut terjadi setelah deploy atau saat smoke validation:
+
+1. **Package incomplete**
+   - artifact `dist`, `api`, `vendor`, `composer.json`, atau `composer.lock` tidak sesuai package checklist
+
+2. **Env / bootstrap failure**
+   - readiness config tidak sesuai production contract
+   - private `.env` salah path atau runtime bootstrap tidak ready
+
+3. **Frontend static failure**
+   - frontend publish path gagal load
+   - asset static utama tidak tersedia
+
+4. **API / runtime failure**
+   - endpoint bootstrap/admin smoke tidak reachable
+   - runtime API merespons invalid untuk check baseline
+
+5. **Auth / session failure**
+   - login akun uji terotorisasi gagal
+   - `session.php` tidak lolos continuity minimum
+
+6. **DB connectivity failure**
+   - API tidak bisa reach database
+   - bootstrap/health menunjukkan failure yang memblokir runtime utama
+
+7. **Mail readiness failure**
+   - readiness mail gagal pada flow yang wajib aktif untuk launch
+   - email-backed auth path fail closed pada jalur yang dibutuhkan saat launch
+
+Jika salah satu kategori di atas terjadi dan tidak dapat dibenahi melalui satu retry terotorisasi, launch harus di-hold atau rollback.
+
+## 15. Rollback verification checklist
+
+Setelah rollback dilakukan, operator harus memverifikasi minimal:
+
+1. previous release package berhasil dipulihkan
+2. private `.env` target tetap preserved dan tidak tertimpa env example
+3. runtime target mengarah ke release sebelumnya yang tervalidasi
+4. auth/session smoke minimum lolos:
+   - login akun uji terotorisasi
+   - `session.php` pass
+5. bounded asset smoke lolos:
+   - `api_overview.php?action=assets&type=houses`
+   - `api_overview.php?action=assets&type=businesses`
+   - `api_overview.php?action=assets&type=families`
+6. operator evidence rollback tercatat dalam format aman
+
+Rollback tidak dianggap selesai hanya karena file lama sudah dikembalikan; smoke minimum pasca-rollback wajib lolos.
+
+## 16. Final launch readiness checklist
+
+Sebelum launch komunitas dibuka, checklist minimum berikut harus `pass`:
+
+- VPS OS sudah dipilih:
+  - Ubuntu 24.04 LTS, atau
+  - fallback Ubuntu 22.04 LTS
+- metode login admin host sudah dipilih:
+  - SSH key preferred, atau
+  - password sementara yang akan diganti/harden kemudian
+- release package sudah final dan sesuai checklist
+- private `.env` production sudah siap di target runtime yang benar
+- akun admin/operator terotorisasi untuk smoke sudah siap
+- rollback package / previous release candidate sudah siap
+- smoke evidence sudah lengkap dan aman
+- tidak ada critical blocker pada package, env, frontend, API, auth/session, DB, atau mail readiness
+
+Jika salah satu butir di atas belum `pass`, launch harus tetap `hold`.
+
+## 17. Sign-off criteria
+
+Launch readiness dianggap lengkap hanya jika semua kriteria berikut terpenuhi:
+
+1. **Owner sign-off**
+   - owner/release authority menyetujui hasil smoke dan status risiko
+
+2. **Operator sign-off**
+   - operator deploy menyatakan package, env, dan bounded smoke sudah diverifikasi
+
+3. **No secret exposure**
+   - evidence dan catatan operasional tidak memuat `.env`, credential, token, session, cookie, OTP, SMTP detail, provider error, atau password VPS
+
+4. **No critical blocker**
+   - tidak ada blocker kritis pada package, runtime, auth/session, DB, frontend, atau mail readiness
+
+5. **Rollback ready**
+   - jalur rollback dan candidate previous release siap digunakan bila launch ditunda atau rollback diperlukan
+
+Tanpa owner sign-off dan operator sign-off yang jelas, release tidak boleh dinyatakan launch-ready.
