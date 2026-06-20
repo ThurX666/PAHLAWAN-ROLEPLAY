@@ -12,9 +12,9 @@
 
 ## 3. Authorized smoke validation runbook
 
-- [ ] 3.1 Define the ordered post-deploy validation sequence for frontend availability, API reachability, session/auth continuity, email runtime readiness, and bounded asset checks.
-- [ ] 3.2 Define the authorized operator inputs, preconditions, and evidence format for smoke validation without recording secrets.
-- [ ] 3.3 Define failure classification, stop conditions, and escalation guidance for smoke validation anomalies.
+- [x] 3.1 Define the ordered post-deploy validation sequence for frontend availability, API reachability, session/auth continuity, email runtime readiness, and bounded asset checks.
+- [x] 3.2 Define the authorized operator inputs, preconditions, and evidence format for smoke validation without recording secrets.
+- [x] 3.3 Define failure classification, stop conditions, and escalation guidance for smoke validation anomalies.
 
 ## 4. Rollback and launch readiness
 

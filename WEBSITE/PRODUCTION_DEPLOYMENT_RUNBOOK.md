@@ -273,3 +273,187 @@ Klasifikasi berikut hanya untuk keperluan operator/reviewer launch. Endpoint yan
   - VPS production untuk website/api/bot/database
   - node/host game server yang dikelola Pterodactyl
   - dependency antar dua domain itu saat launch komunitas
+
+## 9. Ordered authorized smoke validation runbook
+
+Bagian ini berlaku untuk baseline Website/UCP/API. BOT, database operation yang mengubah state, dan game server/Pterodactyl tetap di checklist terpisah.
+
+### 9.1 Local/dev smoke
+
+Boleh untuk development:
+
+1. pastikan local runtime memakai repo source
+2. cek `session.php` setelah login lokal
+3. cek `test_email.php` hanya di local/CLI
+4. cek bounded asset endpoint admin setelah auth
+5. gunakan helper local preview hanya jika `APP_ENV=local` dan `UCP_LOCAL_MAIL_MODE=preview`
+
+Tidak boleh dipakai sebagai bukti launch production.
+
+### 9.2 Production admin/operator smoke
+
+Urutan minimum pasca-deploy:
+
+1. **Pre-deploy hold point**
+   - release package sudah final
+   - package checklist bagian 3 sudah lolos
+   - private `.env` target sudah disiapkan
+   - operator yang berwenang sudah ditentukan
+
+2. **Package checks**
+   - frontend publish artifact tersedia
+   - `api/` runtime tersedia
+   - `vendor/autoload.php` tersedia
+   - artifact private tidak ikut package tracked
+
+3. **Env readiness checks**
+   - private `.env` berada di runtime root yang benar
+   - env example tidak dipakai sebagai live secret file
+   - mode runtime sesuai production contract
+   - diagnostic readiness yang aman dapat diakses oleh admin/operator terotorisasi
+
+4. **Post-deploy API/bootstrap checks**
+   - akses `api_admin_setup.php?action=get_discord_config_status` sebagai admin 10
+   - catat hanya `status`, readiness, bootstrap status, dan source/path metadata yang aman
+   - jangan menyalin nilai secret
+
+5. **Auth/session smoke**
+   - login dengan akun uji terotorisasi
+   - cek `session.php`
+   - refresh/navigasi satu kali untuk memastikan continuity minimum
+
+6. **Bounded feature smoke**
+   - cek `discord_check.php` bila flow Discord memang bagian dari launch path
+   - cek `api_overview.php?action=assets&type=houses`
+   - cek `api_overview.php?action=assets&type=businesses`
+   - cek `api_overview.php?action=assets&type=families`
+
+7. **Mail/runtime readiness smoke**
+   - untuk production gunakan readiness metadata dan hasil flow terotorisasi
+   - jangan gunakan `test_email.php` sebagai endpoint HTTP production
+   - jangan catat OTP, credential, provider error, atau payload sensitif
+
+8. **Operator decision point**
+   - tandai pass/fail per langkah
+   - jika ada critical fail, hentikan launch progression
+
+### 9.3 Tidak boleh dipakai untuk production smoke
+
+- `test_email.php` via HTTP production
+- `test_db_integration.php`
+- `setup_database.php`
+- `migrate.php`
+- local preview helper/output OTP
+- endpoint atau output yang membuka host game server, database detail, provider error, atau nilai env sensitif
+
+## 10. Operator inputs, preconditions, dan evidence format
+
+### Inputs minimum
+
+- release identifier atau build label
+- target environment: `local-dev` atau `production`
+- target runtime host/path
+- operator username
+- akun uji terotorisasi untuk smoke auth/session
+- keputusan package vendor: packaged-from-repo
+
+### Preconditions minimum
+
+- release package sudah dibekukan untuk sesi deploy
+- private `.env` target sudah disiapkan di luar repo
+- akses admin/operator ke UCP tersedia
+- jalur rollback kandidat release sebelumnya sudah diketahui
+- tidak ada migration/schema step yang ikut sesi ini
+
+### Evidence format
+
+Catat evidence hanya dalam format ringkas berikut:
+
+| Field | Isi |
+| --- | --- |
+| release_id | label release/build |
+| environment | local-dev / production |
+| operator | username operator |
+| runtime_target | host/path runtime |
+| check_name | nama langkah smoke |
+| result | pass / fail / blocked |
+| timestamp | waktu UTC atau WIB yang konsisten |
+| safe_notes | metadata aman tanpa secret |
+
+Contoh `safe_notes` yang boleh:
+
+- `bootstrap_status=ready`
+- `mail_loader=composer`
+- `session_check=pass`
+- `assets_houses=status_success`
+
+Contoh yang tidak boleh:
+
+- isi `.env`
+- OTP
+- cookie/session id
+- SMTP host/user/pass detail
+- provider error body
+
+## 11. Failure classification dan escalation
+
+### 11.1 Failure classification
+
+| Kategori | Contoh sinyal | Default action |
+| --- | --- | --- |
+| package failure | artifact `dist`/`api`/`vendor` tidak lengkap | stop deploy, rebuild package |
+| env/config failure | bootstrap/env readiness tidak sesuai contract | hold launch, fix env, recheck |
+| frontend build/static failure | frontend publish path gagal load | stop launch, redeploy frontend artifact |
+| API/runtime failure | endpoint bootstrap/admin smoke tidak reachable/invalid | hold launch, inspect runtime, retry terbatas |
+| auth/session failure | login/session continuity gagal | hold launch, jangan buka public access |
+| mail/SMTP failure | readiness mail gagal atau flow mail fail closed | hold launch bila flow launch bergantung email |
+| DB connectivity failure | API tidak bisa reach DB atau bootstrap status error | stop launch, inspect DB/runtime connectivity |
+
+### 11.2 Escalation path
+
+1. **Retry**
+   - hanya untuk failure yang jelas transient
+   - maksimal satu retry terotorisasi setelah penyebab awal diidentifikasi
+
+2. **Hold launch**
+   - dipakai jika failure belum jelas, berdampak auth/runtime, atau butuh koreksi env/package
+   - public launch tidak boleh dilanjutkan
+
+3. **Rollback**
+   - dipakai jika runtime production sudah berubah dan smoke critical gagal
+   - kembali ke release tervalidasi sebelumnya
+
+4. **Owner sign-off**
+   - wajib untuk membuka launch kembali setelah hold/rollback
+   - wajib juga bila operator ingin menerima risk yang tidak termasuk standard pass criteria
+
+### 11.3 Stop conditions
+
+Langsung hentikan progression launch bila terjadi salah satu:
+
+- package incomplete
+- bootstrap readiness error
+- auth/session smoke fail
+- DB connectivity fail
+- mail readiness fail pada flow yang wajib aktif saat launch
+
+## 12. Future change candidate
+
+Change berikutnya yang direkomendasikan setelah runbook ini matang:
+
+- `vps-linux-pterodactyl-production-bootstrap`
+
+Scope future change:
+
+- initial Linux VPS hardening
+- SSH user dan firewall baseline
+- Nginx / PHP-FPM / MariaDB / Node runtime setup
+- Pterodactyl Panel + Wings untuk domain game server
+- UCP deploy path di VPS production
+- BOT service management
+- backup / restore baseline
+
+Catatan:
+
+- change future ini tidak diimplementasikan sekarang
+- Pterodactyl tetap diperlakukan terpisah dari baseline Website/UCP/API/BOT launch checklist saat ini
