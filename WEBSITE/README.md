@@ -153,16 +153,23 @@ powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLE
 powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\tests\local_email_preview_smoke.ps1" -ResendIdentifier "nama_akun_unverified"
 ```
 
-7. Untuk menguji jalur resend secara terpisah tanpa flow verify, gunakan mode khusus:
+7. Untuk menyiapkan target resend unverified yang aman dipakai ulang tanpa flow verify, gunakan mode khusus:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\tests\local_email_preview_smoke.ps1" -ResendOnly -CreateUnverifiedResendTarget
 ```
 
-8. Mode `-ResendOnly` tidak menjalankan flow `verify`, sehingga target resend tetap unverified.
-9. Jika `resend` pada target baru melaporkan `resend blocked by cooldown`, itu bukan bug, tetapi juga belum cukup untuk menutup task `5.4`.
-10. Jika endpoint belum siap, script berhenti dengan pesan readiness yang aman.
-11. Jika `register` tidak mengembalikan `local_preview`, hentikan pengujian dan cek kembali `APP_ENV=local` serta `UCP_LOCAL_MAIL_MODE=preview`.
+8. Salin field `resend_target_identifier` dari output JSON. Field ini aman karena hanya identifier akun uji, bukan OTP atau secret.
+9. Tunggu cooldown resend lewat, lalu jalankan ulang:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY\WEBSITE\tests\local_email_preview_smoke.ps1" -ResendOnly -ResendIdentifier "<identifier>"
+```
+
+10. Mode `-ResendOnly` tidak menjalankan flow `verify`, sehingga target resend tetap unverified.
+11. Jika `resend` pada target baru melaporkan `resend blocked by cooldown`, itu bukan bug, tetapi juga belum cukup untuk menutup task `5.4`.
+12. Jika endpoint belum siap, script berhenti dengan pesan readiness yang aman.
+13. Jika `register` tidak mengembalikan `local_preview`, hentikan pengujian dan cek kembali `APP_ENV=local` serta `UCP_LOCAL_MAIL_MODE=preview`.
 
 ## Story Review NVIDIA NIM
 

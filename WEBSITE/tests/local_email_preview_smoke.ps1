@@ -228,6 +228,7 @@ $resend = Invoke-FormPost -Url "$BaseUrl/resend_otp.php" -Body @{
         scenario          = $resendScenario
         target_supplied   = (-not [string]::IsNullOrWhiteSpace($ResendIdentifier))
         created_unverified_target = $shouldCreateResendTarget
+        resend_target_identifier = $resendTarget
         has_local_preview = ($null -ne $resend.local_preview)
         has_cooldown      = ($null -ne $resend.cooldown)
         blocked_by_cooldown = $resendBlockedByCooldown
