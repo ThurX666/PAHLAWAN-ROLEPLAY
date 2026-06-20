@@ -43,6 +43,8 @@ Jika belum ada kanal privat yang diumumkan di repo, buka issue publik tanpa deta
 - `GAMEMODE/server.cfg`
 - `DATABASE/*`
 
+Untuk `DATABASE`, hanya schema, migration, example SQL aman, dan fixture dummy/test yang boleh ada di repo public. Lihat [docs/DATABASE_POLICY.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DATABASE_POLICY.md).
+
 ## Responsible Disclosure
 
 Maintainer berusaha meninjau laporan valid secepat mungkin, memverifikasi dampak, menyiapkan perbaikan, lalu mengumumkan secara aman bila perlu. Mohon beri waktu untuk triage dan mitigasi sebelum disclosure publik.
