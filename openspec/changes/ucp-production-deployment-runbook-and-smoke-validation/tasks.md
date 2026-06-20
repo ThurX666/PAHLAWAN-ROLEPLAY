@@ -24,6 +24,6 @@
 
 ## 5. Final validation and handoff
 
-- [ ] 5.1 Validate the OpenSpec change artifacts and ensure proposal, design, spec delta, and tasks remain aligned.
-- [ ] 5.2 Confirm the change does not require BOT runtime, Pawn/gamemode, or database schema scope.
-- [ ] 5.3 Prepare the change for implementation approval without starting runtime modifications.
+- [x] 5.1 Validate the OpenSpec change artifacts and ensure proposal, design, spec delta, and tasks remain aligned.
+- [x] 5.2 Confirm the change does not require BOT runtime, Pawn/gamemode, or database schema scope.
+- [x] 5.3 Prepare the change for implementation approval without starting runtime modifications.

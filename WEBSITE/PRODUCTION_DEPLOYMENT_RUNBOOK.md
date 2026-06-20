@@ -570,3 +570,89 @@ Launch readiness dianggap lengkap hanya jika semua kriteria berikut terpenuhi:
    - jalur rollback dan candidate previous release siap digunakan bila launch ditunda atau rollback diperlukan
 
 Tanpa owner sign-off dan operator sign-off yang jelas, release tidak boleh dinyatakan launch-ready.
+
+## 18. Scope boundary dan implementation approval handoff
+
+### Scope boundary change ini
+
+Change `ucp-production-deployment-runbook-and-smoke-validation` dibatasi hanya untuk:
+
+- runbook deployment production Website/UCP/API
+- package checklist
+- env contract
+- diagnostic inventory
+- smoke validation runbook
+- rollback checklist
+- launch readiness checklist
+- sign-off dan handoff planning
+
+Change ini TIDAK mencakup:
+
+- implementasi deploy otomatis
+- setup VPS Linux dari nol
+- instalasi atau konfigurasi Pterodactyl Panel + Wings
+- perubahan BOT runtime
+- perubahan Pawn/gamemode
+- perubahan database schema/migration
+- perubahan runtime behavior Website/UCP/API
+
+### Future scope yang sengaja dipisahkan
+
+Future change yang direkomendasikan:
+
+- `vps-linux-pterodactyl-production-bootstrap`
+
+Scope future change itu harus mencakup, minimal:
+
+- initial Linux VPS hardening
+- SSH user / SSH key / firewall baseline
+- Nginx / PHP-FPM / MariaDB / Node runtime stack
+- Pterodactyl Panel + Wings
+- game server SA-MP/open.mp lifecycle
+- BOT Node.js deployment strategy
+- Website/UCP/API deployment path di VPS production
+- shared production database baseline
+- backup / restore
+- centralized operational workflow lintas website, api, bot, db, dan game server
+
+### Yang sudah siap untuk approval implementasi
+
+- package/deployment checklist baseline
+- local vs production env contract
+- vendor/composer readiness decision
+- local Windows/XAMPP vs production Linux direction
+- diagnostic inventory dan klasifikasi pemakaian
+- ordered smoke validation runbook
+- evidence format operator yang aman
+- failure / escalation / rollback / launch readiness baseline
+- operator decision notes untuk pembelian VPS production
+
+### Yang belum boleh dieksekusi dalam change ini
+
+- provisioning VPS production
+- hardening Ubuntu
+- setup reverse proxy / PHP-FPM / MariaDB / Node service
+- setup Pterodactyl Panel + Wings
+- migrasi operasional game server ke Pterodactyl
+- deployment BOT production ke target baru
+- perubahan endpoint atau runtime demi menutup gap host production
+
+### Owner input yang masih perlu diputuskan
+
+- kapan future change `vps-linux-pterodactyl-production-bootstrap` dimulai
+- apakah BOT akan dikelola penuh lewat Pterodactyl/custom egg atau service manager host
+- strategi backup/restore production yang akan dipakai saat launch awal
+- siapa owner sign-off final untuk release production pertama
+- apakah dibutuhkan release manifest formal per candidate di luar runbook ini
+
+### Rekomendasi next change
+
+Next recommended change setelah runbook ini selesai:
+
+- `vps-linux-pterodactyl-production-bootstrap`
+
+Tujuan next change:
+
+- menyiapkan VPS production utama dari nol
+- menetapkan baseline operasional Linux production
+- memisahkan dengan jelas domain Website/UCP/API/BOT/database dari domain game server Pterodactyl
