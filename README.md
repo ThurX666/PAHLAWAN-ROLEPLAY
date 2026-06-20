@@ -1,50 +1,92 @@
 # PAHLAWAN ROLEPLAY
 
-Monorepo kerja untuk tiga bagian utama Pahlawan Roleplay:
+PAHLAWAN ROLEPLAY adalah monorepo untuk operasional dan pengembangan server roleplay yang menggabungkan gamemode Pawn/open.mp atau SA-MP, UCP web, Discord bot, dokumentasi OpenSpec, dan tooling MCP internal untuk analisis project yang aman.
 
-- `BOT` - Discord bot Node.js untuk command, ticket, staff tools, dan PHRP-AI.
-- `WEBSITE` - UCP React/Vite dengan backend PHP native di `public/api`.
-- `GAMEMODE` - SA-MP/Pawn gamemode dan runtime server.
-- `DATABASE` - Folder lokal untuk dump database utama MySQL/MariaDB. Isi dump di-ignore karena bisa berisi data penting.
+## Status
 
-## Setup Singkat
+- Status: active development
+- Founder / core maintainer: ThurX666
+- Repo publik ini sedang dirapikan untuk maintenance, code review, dokumentasi, testing, security hardening, dan workflow rilis yang lebih baik
 
-1. Import database lokal dari `DATABASE/phrp.sql` ke MySQL/MariaDB jika file dump tersedia di mesin ini.
-2. Isi `BOT/config.json` untuk token, channel, payment, server, dan database bot.
-3. Isi `BOT/PHRP-AI/config/app.json` untuk provider dan API key AI.
-4. Salin `WEBSITE/env.example` ke `WEBSITE/.env` dan sesuaikan `DB_*` agar sama dengan gamemode (`utils_defines.inc`).
-5. Salin `WEBSITE/public/api/config.php.example` ke `WEBSITE/public/api/config.php` untuk SMTP, sosial media, dan query SA-MP.
-6. Isi `GAMEMODE/server.cfg` untuk RCON/runtime server.
-7. Sesuaikan konfigurasi database gamemode di `GAMEMODE/gamemodes/utils/utils_defines.inc`.
-8. Jalankan `WEBSITE/public/api/setup_database.php` atau `test_db_integration.php` untuk verifikasi integrasi database.
+## Kenapa Repo Ini Penting
 
-## Menjalankan
+Project ini menyatukan beberapa lapisan yang biasanya terpisah:
 
-BOT:
+- `GAMEMODE` untuk source gamemode roleplay berbasis Pawn
+- `WEBSITE` untuk UCP React/TypeScript dan backend PHP
+- `BOT` untuk Discord bot komunitas dan tooling operasional
+- `openspec` untuk requirement, change history, dan spec maintenance
+- `tools/mcp-pahlawan` untuk context, diagnostics, dan workflow support lokal
 
-```bash
-cd BOT
-npm install
-npm start
-```
+Tujuannya bukan hanya menjalankan server, tetapi juga menjaga codebase campuran legacy dan modern tetap bisa dipelihara dengan disiplin spec, review, dan guardrail secret.
 
-WEBSITE:
+## Stack Teknologi
 
-```bash
-cd WEBSITE
-npm install
-npm run dev
-```
+- Pawn / open.mp / SA-MP untuk gamemode server
+- React + TypeScript + Vite untuk UCP frontend
+- PHP native untuk API UCP
+- Node.js + discord.js untuk Discord bot
+- OpenSpec untuk source of truth requirement dan change workflow
+- Pahlawan MCP untuk pencarian context, validasi, dan analisis aman
 
-GAMEMODE:
+## Struktur Repo
 
-Compile `GAMEMODE/gamemodes/main.pwn` dengan compiler Pawn/Pawno yang sesuai, lalu jalankan server dari folder `GAMEMODE`.
+- `GAMEMODE` - source gamemode, include, runtime server, plugins, compile output
+- `WEBSITE` - frontend UCP, backend PHP, test kontrak, dan dokumen workflow
+- `BOT` - Discord bot, command handler, event handler, dan modul PHRP-AI
+- `DATABASE` - dump lokal privat, tidak untuk dipublish
+- `openspec` - spec utama dan archive change
+- `tools/mcp-pahlawan` - MCP lokal untuk analisis project terbatas dan compact
+- `docs` - ringkasan project dan workflow pengembangan
 
-## Catatan Repo
+## Local Development Ringkas
 
-File credential dan runtime tidak dimasukkan ke Git. Jangan commit `config.json`, `.env`, token bot, API key, database password, log, binary server, atau hasil compile `.amx`.
+1. Siapkan database lokal privat. Jangan publish dump berisi data player, akun, inventory, IP, atau kredensial.
+2. Isi konfigurasi privat lokal untuk bot, website, dan gamemode.
+3. Jalankan website UCP dari folder `WEBSITE`.
+4. Jalankan Discord bot dari folder `BOT`.
+5. Compile gamemode dari `GAMEMODE/gamemodes/main.pwn`.
+6. Gunakan OpenSpec sebelum perubahan fitur menengah/besar.
+7. Gunakan Pahlawan MCP compact mode untuk context, trace, validasi, dan review terarah.
 
-## Dokumentasi
+Dokumen pendukung:
 
-- `docs/PROJECT_OVERVIEW.md` - ringkasan isi project.
-- `docs/DEVELOPMENT.md` - workflow lokal, MCP, dan checklist sebelum commit.
+- [docs/PROJECT_OVERVIEW.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/PROJECT_OVERVIEW.md)
+- [docs/DEVELOPMENT.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DEVELOPMENT.md)
+- [WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md)
+- [openspec/specs/ucp-local-development-workflow/spec.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/openspec/specs/ucp-local-development-workflow/spec.md)
+
+## Security Warning
+
+- Jangan commit `.env`, token, API key, credential database, SMTP secret, Discord secret, cookie, session, OTP, dump database, atau runtime log.
+- `DATABASE` bersifat privat dan hanya untuk penggunaan lokal yang terkontrol.
+- File runtime lokal seperti `BOT/config.json`, `BOT/PHRP-AI/config/app.json`, `WEBSITE/.env`, dan `GAMEMODE/server.cfg` tidak boleh dipublish.
+- Jika menemukan potensi secret leak atau celah keamanan, ikuti panduan di `SECURITY.md`.
+
+## Kontribusi
+
+Kontribusi kecil dan terarah lebih diutamakan daripada perubahan besar sekaligus.
+
+- Baca `CONTRIBUTING.md` sebelum membuka PR
+- Cek OpenSpec aktif lebih dulu
+- Hindari perubahan di luar scope
+- Validasi diff dan pastikan tidak ada file sensitif ikut staged
+
+## Roadmap Singkat
+
+- Alpha: rapikan repo publik, secret guardrail, dan local development workflow
+- Beta: stabilkan auth UCP, integrasi database, testing kontrak, dan smoke validation
+- RC: perkuat review workflow, release checklist, dan dokumentasi operasional
+- Launch: publikasi repo yang aman, terdokumentasi, dan siap menerima kontribusi bertahap
+
+Detail milestone ada di `ROADMAP.md`.
+
+## Codex, OpenSpec, dan Maintenance
+
+Repo ini dipublikasikan dengan fokus maintenance modern untuk codebase campuran:
+
+- Codex dipakai untuk code review, dokumentasi, validasi perubahan, testing assistance, dan release workflow
+- OpenSpec dipakai untuk menjaga scope requirement tetap jelas sebelum coding
+- Pahlawan MCP dipakai untuk context gathering, trace feature, schema overview, dan validasi aman dengan compact mode
+
+Pendekatan ini membantu mengurangi perubahan liar, mempercepat review, dan menjaga repo publik tetap aman untuk komunitas serta maintainer.
