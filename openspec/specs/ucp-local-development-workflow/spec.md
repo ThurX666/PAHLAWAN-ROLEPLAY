@@ -1,7 +1,7 @@
 # ucp-local-development-workflow Specification
 
 ## Purpose
-TBD - created by archiving change local-development-workflow-and-runtime-sync. Update Purpose after archive.
+Define the approved local UCP development workflow so repository-based development, build validation, environment handling, and optional XAMPP runtime sync stay consistent without changing application behavior.
 ## Requirements
 ### Requirement: Repository remains the only local source of truth
 The local Website/UCP workflow SHALL keep `C:\\Users\\guyub\\Documents\\PAHLAWAN ROLEPLAY` as the only source of truth for tracked code, and SHALL treat `C:\\xampp\\htdocs\\pahlawan_roleplay` only as a local runtime target for sync or copy operations.
@@ -48,4 +48,3 @@ The local workflow SHALL define a testing checklist that distinguishes repo-base
 #### Scenario: Developer chooses a local test path
 - **WHEN** the developer decides whether to run repo-based development checks or flattened runtime validation
 - **THEN** the workflow identifies the correct commands, runtime mode, and smoke checks for that local objective
-
