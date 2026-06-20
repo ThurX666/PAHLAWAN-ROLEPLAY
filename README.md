@@ -53,6 +53,7 @@ Dokumen pendukung:
 
 - [docs/PROJECT_OVERVIEW.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/PROJECT_OVERVIEW.md)
 - [docs/DEVELOPMENT.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DEVELOPMENT.md)
+- [docs/LOCAL_VALIDATION_MATRIX.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/LOCAL_VALIDATION_MATRIX.md)
 - [WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md)
 - [openspec/specs/ucp-local-development-workflow/spec.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/openspec/specs/ucp-local-development-workflow/spec.md)
 

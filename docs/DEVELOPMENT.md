@@ -114,3 +114,13 @@ Untuk perubahan kecil langsung di `main` masih bisa, tapi untuk edit besar seper
 - Cek `git status --ignored` kalau ragu ada file rahasia.
 - Pastikan tidak ada `.env`, config, token, dump database, log, binary, atau `.amx` ikut staged.
 - Baca ulang diff dengan `git diff --cached`.
+
+## Validation Matrix
+
+Ringkasan validasi lokal minimum lintas `GAMEMODE`, `WEBSITE`, dan `BOT` ada di [docs/LOCAL_VALIDATION_MATRIX.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/LOCAL_VALIDATION_MATRIX.md).
+
+Gunakan matrix tersebut untuk membedakan check yang:
+
+- wajib
+- opsional
+- hanya dijalankan jika environment privat lokal memang tersedia

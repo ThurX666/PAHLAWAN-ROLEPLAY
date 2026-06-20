@@ -1,0 +1,78 @@
+# RTK - Rust Token Killer (Cline)
+
+**Usage**: Token-optimized CLI proxy for shell commands.
+
+## Rule
+
+Always prefix shell commands with `rtk` to minimize token consumption.
+
+## Examples
+
+```bash
+rtk git status
+rtk git diff
+rtk ls src/
+rtk grep "pattern" src/
+rtk find "*.rs" .
+rtk read file.pwn
+rtk docker ps
+rtk gh pr list
+```
+
+## Instruction Overrides
+
+- Always use `rtk` prefix for shell commands when possible (e.g., `rtk ls .`, `rtk read file.pwn`, `rtk grep "pattern" .`)
+- Use `rtk git status` instead of `git status`
+- Use `rtk git diff` instead of `git diff`
+- Use `rtk read <file>` instead of `cat <file>` or reading raw files
+- This reduces token consumption by 60-90%
+
+## Meta Commands
+
+```bash
+rtk gain              # Show token savings
+rtk gain --history    # Command history with savings
+rtk discover          # Find missed RTK opportunities
+rtk proxy <cmd>       # Run raw (no filtering, for debugging)
+```
+
+## Why
+
+RTK filters and compresses command output before it reaches the LLM context, saving 60-90% tokens on common operations. Always use `rtk <cmd>` instead of raw commands.
+
+# PAHLAWAN MCP - Automatic Discovery & Analysis
+
+## Auto-Execute on New Task
+
+**Step 0 — Always check OpenSpec active changes first.**
+- Use `mcp-pahlawan` tool `openspec_overview` to check for ongoing changes
+- If an active change exists, read it with `openspec_read_change` and continue that work
+- Do NOT start a new unrelated task while a change is in progress
+- Only proceed below if no active change exists
+
+Before writing any code, always execute these in order:
+1. Use `mcp-pahlawan` tool `project_overview` to detect project structure
+2. Use `mcp-pahlawan` tool `generate_task_context` to get related files, functions, and DB hints
+3. Use `mcp-pahlawan` tool `gamemode_overview` if task involves gamemode
+4. Use `mcp-pahlawan` tool `ucp_overview` if task involves website/UCP
+5. Use `mcp-pahlawan` tool `bot_overview` if task involves Discord bot
+6. Use `mcp-pahlawan` tool `db_schema_overview` if task involves database
+
+## Analysis Rules
+
+- Never scan the entire project by default
+- Never dump full files, database schema, or logs by default
+- Work feature-by-feature in compact mode
+- Prefer summaries, paths, symbols, line numbers, and small snippets
+- Ask before reading large files or applying patches
+- Paginate large results and stay under MCP_MAX_OUTPUT_CHARS
+
+## OpenSpec Workflow
+
+- Check active OpenSpec changes before coding
+- If related change exists, read it first and implement only approved scope
+- Do not create competing plan when OpenSpec already exists
+- Propose OpenSpec change for medium/high-risk work if none exists
+- Use `/opsx:propose` for new features
+- Use `/opsx:apply` for implementation
+- Use `/opsx:archive` when complete

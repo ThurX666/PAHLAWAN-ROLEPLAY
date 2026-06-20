@@ -1,0 +1,20 @@
+schema: spec-driven
+project:
+  name: PAHLAWAN-ROLEPLAY
+  tech_stack:
+    gamemode_samp:
+      language: Pawn
+      compiler: pawncc 3.10
+      conventions: "Gunakan YSI Library (y_inline, y_commands, y_groups) jika memungkinkan. Deklarasikan variabel pemain di dalam enum PlayerData."
+    ucp_website:
+      language: TypeScript
+      framework: "Laravel 11 / React"
+      styling: "Tailwind CSS"
+      architecture: "Repository Pattern with Controller Isolation"
+    discord_bot:
+      runtime: "Node.js (v20+)"
+      library: "Discord.js v14"
+      architecture: "Event-driven Handler with Slash Commands"
+  database:
+    dialect: MySQL
+    primary_key: "UUID (UCP) / Auto-Increment ID (SAMP Players Table)"
