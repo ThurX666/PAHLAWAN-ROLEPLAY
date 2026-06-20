@@ -30,6 +30,7 @@ Terima kasih. Repo ini menerima kontribusi yang kecil, jelas, dan aman.
 - Simpan credential website di `WEBSITE/.env`, bukan di file tracked
 - Gunakan placeholder pada file tracked
 - Untuk `DATABASE`, ikuti [docs/DATABASE_POLICY.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DATABASE_POLICY.md) dan jangan commit dump, backup, export data nyata, atau file credential
+- Jika ada indikasi secret exposure, laporkan hanya `path`, jenis indikasi, `risk level`, dan rekomendasi. Jangan tulis nilai secret. Ikuti [docs/SECRET_ROTATION_PLAYBOOK.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/SECRET_ROTATION_PLAYBOOK.md)
 - Pertahankan perubahan tetap sempit
 - Untuk gamemode Pawn, cek include, callback, dan flow yang sudah ada sebelum menambah kode
 - Untuk bot Discord, hormati flow `deferReply`, `reply`, dan `editReply`

@@ -61,7 +61,7 @@ Dokumen pendukung:
 - Jangan commit `.env`, token, API key, credential database, SMTP secret, Discord secret, cookie, session, OTP, dump database, atau runtime log.
 - File dump dan backup `DATABASE` bersifat privat. Hanya schema, migration, example SQL aman, dan fixture dummy/test yang boleh ada di repo public sesuai [docs/DATABASE_POLICY.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DATABASE_POLICY.md).
 - File runtime lokal seperti `BOT/config.json`, `BOT/PHRP-AI/config/app.json`, `WEBSITE/.env`, dan `GAMEMODE/server.cfg` tidak boleh dipublish.
-- Jika menemukan potensi secret leak atau celah keamanan, ikuti panduan di `SECURITY.md`.
+- Jika menemukan potensi secret leak atau celah keamanan, ikuti `SECURITY.md` dan [docs/SECRET_ROTATION_PLAYBOOK.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/SECRET_ROTATION_PLAYBOOK.md).
 
 ## Kontribusi
 

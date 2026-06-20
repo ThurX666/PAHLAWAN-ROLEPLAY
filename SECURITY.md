@@ -21,6 +21,8 @@ Untuk laporan security:
 
 Jika belum ada kanal privat yang diumumkan di repo, buka issue publik tanpa detail eksploit dan minta kontak disclosure privat.
 
+Untuk indikasi secret exposure dan rotasi preventif, ikuti [docs/SECRET_ROTATION_PLAYBOOK.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/SECRET_ROTATION_PLAYBOOK.md).
+
 ## Yang Tidak Boleh Dipublish
 
 - `.env`
@@ -44,6 +46,20 @@ Jika belum ada kanal privat yang diumumkan di repo, buka issue publik tanpa deta
 - `DATABASE/*`
 
 Untuk `DATABASE`, hanya schema, migration, example SQL aman, dan fixture dummy/test yang boleh ada di repo public. Lihat [docs/DATABASE_POLICY.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DATABASE_POLICY.md).
+
+## Secret Rotation
+
+Secret high priority yang harus mendapat perhatian tercepat:
+
+- token Discord bot
+- OpenAI, NVIDIA, atau provider API key lain
+- credential database
+- SMTP credential
+- session atau cookie secret
+- webhook secret
+- file `.env` privat dan isi setaranya
+
+Jika ada indikasi exposure atau keraguan terhadap riwayat penggunaan secret, lakukan triage dan rotasi preventif sesuai [docs/SECRET_ROTATION_PLAYBOOK.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/SECRET_ROTATION_PLAYBOOK.md).
 
 ## Responsible Disclosure
 
