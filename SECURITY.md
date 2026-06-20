@@ -31,6 +31,7 @@ Jika belum ada kanal privat yang diumumkan di repo, buka issue publik tanpa deta
 - cookie, session, OTP
 - dump database privat
 - log yang berisi data sensitif
+- nilai live di file example atau config tracked
 
 ## Ruang Lingkup Sensitif
 
@@ -38,6 +39,7 @@ Jika belum ada kanal privat yang diumumkan di repo, buka issue publik tanpa deta
 - `BOT/PHRP-AI/config/*.json`
 - `WEBSITE/.env`
 - `WEBSITE/public/api/config.php`
+- `WEBSITE/public/api/config.php.example` harus tetap placeholder-only
 - `GAMEMODE/server.cfg`
 - `DATABASE/*`
 

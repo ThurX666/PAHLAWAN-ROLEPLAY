@@ -27,6 +27,7 @@ Terima kasih. Repo ini menerima kontribusi yang kecil, jelas, dan aman.
 ## Style Aman
 
 - Jangan expose nilai private di contoh config
+- Simpan credential website di `WEBSITE/.env`, bukan di file tracked
 - Gunakan placeholder pada file tracked
 - Pertahankan perubahan tetap sempit
 - Untuk gamemode Pawn, cek include, callback, dan flow yang sudah ada sebelum menambah kode

@@ -20,7 +20,7 @@
     "openmp",
     "pawn"
   ],
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "diff": "^9.0.0",

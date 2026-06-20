@@ -1,14 +1,36 @@
 <?php
+/**
+ * Example-only bootstrap for the tracked UCP API config layer.
+ *
+ * IMPORTANT:
+ * - Keep this file free of real secrets.
+ * - Real credentials must come from WEBSITE/.env or server environment variables.
+ * - The tracked runtime config.php should stay env-first and must not be edited
+ *   with live SMTP, database, Discord, cookie, session, OTP, or API secret values.
+ */
+
 require_once __DIR__ . '/security.php';
 require_once __DIR__ . '/db_env.php';
+require_once __DIR__ . '/auth_session.php';
 require_once __DIR__ . '/database_integrate.php';
 
-header("Access-Control-Allow-Origin: *");
+$requestOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = array_filter(array_map('trim', explode(',', app_env(
+    'UCP_ALLOWED_ORIGINS',
+    'http://127.0.0.1:5173,http://localhost:5173'
+))));
+
+if ($requestOrigin !== '' && in_array($requestOrigin, $allowedOrigins, true)) {
+    header("Access-Control-Allow-Origin: {$requestOrigin}");
+    header('Vary: Origin');
+}
+
+header('Access-Control-Allow-Credentials: true');
 header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
 header("Content-Type: application/json");
 
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit(0);
 }
@@ -22,17 +44,14 @@ $db_user = $dbConfig['user'];
 $db_pass = $dbConfig['pass'];
 $db_name = $dbConfig['name'];
 
-// Harus sama dengan GAMEMODE/gamemodes/utils/utils_defines.inc:
-// DATABASE_ADDRESS, DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_NAME
+$smtp_user = app_env('SMTP_USER');
+$smtp_pass = app_env('SMTP_PASS');
 
-$smtp_user = "your-email@gmail.com";
-$smtp_pass = "your-app-password";
+$social_discord = "https://example.com/discord";
+$social_tiktok = "https://example.com/tiktok";
 
-$social_discord = "https://bit.ly/pahlawan-rp";
-$social_tiktok = "https://www.tiktok.com/@pahlawanroleplay";
-
-$samp_server_ip = "127.0.0.1";
-$samp_server_port = 7777;
+$samp_server_ip = app_env('SAMP_SERVER_IP', '127.0.0.1');
+$samp_server_port = (int)app_env('SAMP_SERVER_PORT', '7777');
 
 try {
     $conn = new PDO(
@@ -45,14 +64,21 @@ try {
 
     $pdo = $conn;
 
-    phrp_integrate_database($conn);
+    if (filter_var(app_env('UCP_AUTO_MIGRATE', 'false'), FILTER_VALIDATE_BOOLEAN)) {
+        phrp_integrate_database($conn);
+    }
 } catch (PDOException $e) {
-    echo json_encode([
+    $response = [
         'status' => 'error',
         'message' => 'Database connection failed.',
-        'error_detail' => $e->getMessage(),
         'hint' => 'Pastikan DB_NAME di WEBSITE/.env sama dengan DATABASE_NAME di utils_defines.inc (default: ariena).',
-    ]);
+    ];
+
+    if (filter_var(app_env('UCP_DEBUG', 'false'), FILTER_VALIDATE_BOOLEAN)) {
+        $response['error_detail'] = $e->getMessage();
+    }
+
+    echo json_encode($response);
     exit;
 }
 ?>
