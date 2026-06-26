@@ -1,31 +1,26 @@
-## Ringkasan
+## Summary
 
-Jelaskan perubahan ini secara singkat.
+- 
 
 ## Scope
 
-- [ ] GAMEMODE
-- [ ] WEBSITE
-- [ ] BOT
-- [ ] OpenSpec / docs
-- [ ] MCP tooling
+- [ ] Small, focused change
+- [ ] OpenSpec checked first
+- [ ] No unrelated files changed
 
-## Validasi
+## Validation
 
-- [ ] Saya menjalankan validasi yang relevan
-- [ ] Saya membaca ulang diff
-- [ ] Saya memastikan tidak ada perubahan di luar scope
+- [ ] Relevant checks from `docs/LOCAL_VALIDATION_MATRIX.md` were run
+- [ ] Skipped checks are listed with a reason
+- [ ] OpenSpec validation was run when specs/docs workflow changed
 
-## Secret Safety
+## Safety
 
-- [ ] Tidak ada `.env`, token, credential, cookie, session, OTP, atau data sensitif lain yang ikut commit
-- [ ] Saya tidak menempel secret di deskripsi PR
+- [ ] No `.env`, tokens, credentials, cookies, OTPs, database dumps, runtime logs, or private config files are included
+- [ ] Database changes are read-only, migration-only, or explicitly approved
+- [ ] XAMPP/runtime output is not treated as source of truth
 
-## Runtime Impact
+## Notes
 
-- [ ] Tidak ada perubahan runtime behavior
-- [ ] Ada perubahan runtime behavior dan sudah dijelaskan jelas
-
-## Catatan Tambahan
-
-Sebutkan spec OpenSpec, issue, atau risiko yang perlu reviewer perhatikan.
+Skipped checks / risks:
+- 
