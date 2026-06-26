@@ -6,6 +6,7 @@ Thumbs.db
 *.bak
 *.local
 .git-nested-backups/
+.hermes/
 
 # Environment and secrets
 .env
