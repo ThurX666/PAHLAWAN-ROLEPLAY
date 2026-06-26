@@ -185,12 +185,15 @@
 
 ## 6. Repository Deploy ke VPS
 
-- [ ] 6.1 SSH ke VPS, buat deploy key atau personal access token untuk git clone.
-- [ ] 6.2 Clone repo:
+- [ ] 6.1 SSH ke VPS, siapkan folder target `/opt/pahlawan-roleplay`, lalu pilih metode deploy source:
+    - GitHub deploy key untuk `git clone` / `git pull`, atau
+    - Upload folder lokal dari laptop via `rsync`, `tar + scp`, atau SFTP.
+- [ ] 6.2 Isi `/opt/pahlawan-roleplay` dengan project repo:
     ```bash
     mkdir -p /opt/pahlawan-roleplay
     cd /opt/pahlawan-roleplay
-    git clone <repo_url> .
+    # Opsi A: git clone <repo_url> .
+    # Opsi B/C: upload folder lokal ke /opt/pahlawan-roleplay
     ```
 - [ ] 6.3 Setup environment files:
     - `WEBSITE/.env` — isi dengan DB_HOST=172.17.0.1, DB_NAME=arivena, dll.

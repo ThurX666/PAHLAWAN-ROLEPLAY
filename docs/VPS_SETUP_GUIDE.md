@@ -139,7 +139,7 @@ Jika cuma ingat beberapa hal, ingat ini:
 6. **Install Pterodactyl Panel + Wings** di VPS yang sama, dengan Node resource limit 3584 MB.
 7. **Setup Cloudflare DNS** dengan A record untuk `panel`, `ucp`, `samp` (samp DNS-only).
 8. **Setup Cloudflare Origin SSL Certificate** di Nginx untuk HTTPS.
-9. **Clone repo** ke `/opt/pahlawan-roleplay/` di VPS.
+9. **Clone repo atau upload folder lokal** ke `/opt/pahlawan-roleplay/` di VPS (git clone, rsync, tar+scp, atau SFTP).
 10. **Import 3 egg JSON** dari `docs/eggs/` untuk SA-MP, UCP, dan Discord bot.
 11. **Copy/sync file repo ke Pterodactyl volumes** memakai `rsync` sesuai guide lengkap.
 12. **Set env var sensitive via Panel UI** (Discord token, DB password), **JANGAN** commit ke repo.

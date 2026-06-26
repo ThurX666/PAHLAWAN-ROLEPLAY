@@ -95,7 +95,11 @@ sudo docker logs -f <container_name>
 
 ## 4. Deploy Update Code
 
-### 4.1. Update dari Git Repository
+### 4.1. Update Source di `/opt/pahlawan-roleplay`
+
+Ada dua cara update source sebelum di-sync ke Pterodactyl volumes.
+
+#### Opsi A — Update dari GitHub (paling rapi)
 
 ```bash
 # SSH ke VPS
@@ -111,6 +115,26 @@ git pull origin main
 git log --oneline -10
 git diff --stat HEAD~1
 ```
+
+#### Opsi B — Upload ulang folder lokal dari laptop (kalau tidak pakai git pull)
+
+Jalankan dari laptop lokal:
+
+```bash
+cd "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY"
+
+rsync -avz --delete \
+  --exclude ".git/" \
+  --exclude ".hermes/" \
+  --exclude "node_modules/" \
+  --exclude "WEBSITE/node_modules/" \
+  --exclude "BOT/node_modules/" \
+  --exclude "GAMEMODE/logs/" \
+  --exclude "DATABASE/*.sql" \
+  ./ pahlawan@<VPS_IP>:/opt/pahlawan-roleplay/
+```
+
+Setelah source di `/opt/pahlawan-roleplay` terbaru, lanjut ke section service terkait di bawah untuk `rsync` ke volume Pterodactyl dan restart dari Panel.
 
 ### 4.2. SA-MP Server Update
 

@@ -37,7 +37,7 @@
 7. [Setup Wings (Node Agent)](#7-setup-wings-node-agent) `[Task 4.1 – 4.6]`
 8. [Setup Domain, DNS, dan Reverse Proxy Nginx](#8-setup-domain-dns-dan-reverse-proxy-nginx)
 9. [Setup SSL / Let's Encrypt](#9-setup-ssl--lets-encrypt)
-10. [Setup Repository di VPS](#10-setup-repository-di-vps) `[Task 6.1 – 6.6]`
+10. [Setup Repository / Upload Project ke VPS](#10-setup-repository--upload-project-ke-vps) `[Task 6.1 – 6.6]`
 11. [Setup 3 Custom Pterodactyl Eggs](#11-setup-3-custom-pterodactyl-eggs) `[Task 5.1.1 – 5.3.4]`
 12. [Environment Variable per Service](#12-environment-variable-per-service)
 13. [Smoke Test End-to-End](#13-smoke-test-end-to-end) `[Task 7.1 – 7.6]`
@@ -1386,7 +1386,64 @@ sudo systemctl reload nginx
 
 ---
 
-## 10. Setup Repository di VPS
+## 10. Setup Repository / Upload Project ke VPS
+
+Bagian ini menjawab pertanyaan paling penting: **bagaimana cara memindahkan folder project PAHLAWAN ROLEPLAY dari laptop ke VPS lalu dipakai oleh Pterodactyl**.
+
+Target akhir bagian ini:
+
+```txt
+/opt/pahlawan-roleplay/
+├── GAMEMODE/
+├── WEBSITE/
+├── BOT/
+├── DATABASE/
+├── docs/
+├── openspec/
+└── ...file repo lain
+```
+
+Setelah folder ini ada di VPS, file service akan di-copy/sync ke volume Pterodactyl:
+
+```txt
+/var/lib/pterodactyl/volumes/<samp_server_id>/  <- isi GAMEMODE/
+/var/lib/pterodactyl/volumes/<ucp_server_id>/   <- isi WEBSITE/
+/var/lib/pterodactyl/volumes/<bot_server_id>/   <- isi BOT/
+```
+
+### 10.0. Pilih Metode Upload Project
+
+| Metode | Cocok Untuk | Kelebihan | Kekurangan |
+|---|---|---|---|
+| **Metode A — Git clone** | Repo sudah ada di GitHub dan akses deploy key siap | Paling rapi untuk update jangka panjang (`git pull`) | Butuh setup deploy key GitHub |
+| **Metode B — rsync dari laptop** | Mau upload folder lokal langsung dan punya Git Bash/WSL/Linux/macOS | Bisa exclude file besar/rahasia, update berikutnya cepat | Windows native PowerShell tidak selalu punya rsync |
+| **Metode C — tar/zip + scp** | Pemula Windows yang ingin cara paling jelas | Mudah dipahami: compress → upload → extract | Upload ulang bisa besar/lama |
+
+**Rekomendasi untuk Anda:**
+
+- Untuk setup pertama kalau masih awam: **Metode C (tar/zip + scp)**.
+- Untuk update berikutnya: **Metode A (git pull)** kalau repo sudah private/aman, atau **Metode B (rsync)** kalau masih pakai folder lokal.
+
+> **PENTING sebelum upload:** Jangan upload file rahasia/berat yang tidak dibutuhkan runtime, seperti `.git/`, `.hermes/`, `node_modules/`, log, cache, database dump private, dan token production. Daftar exclude ada di bawah.
+
+### 10.0.1. Buat Folder Target di VPS
+
+Jalankan di VPS:
+
+```bash
+ssh pahlawan@<VPS_IP>
+
+sudo mkdir -p /opt/pahlawan-roleplay
+sudo chown -R pahlawan:pahlawan /opt/pahlawan-roleplay
+```
+
+**Expected result:** folder `/opt/pahlawan-roleplay` ada dan user `pahlawan` bisa menulis ke folder itu.
+
+---
+
+### 10.0.2. Metode A — Git Clone dari GitHub (Paling Rapi untuk Update)
+
+Gunakan metode ini kalau repo sudah ada di GitHub dan deploy key sudah di-setup.
 
 ### 10.1. Generate Deploy Key `[Task 6.1]`
 
@@ -1443,6 +1500,138 @@ git clone git@github.com:<ORG_OR_USER>/<REPO_NAME>.git .
 ls -la
 # Harus ada: AGENTS.md, GAMEMODE/, WEBSITE/, BOT/, DATABASE/, tools/, openspec/
 ```
+
+### 10.2.1. Metode B — Upload Folder Lokal Pakai rsync
+
+Gunakan metode ini jika laptop Anda punya **Git Bash**, **WSL**, **Linux**, atau **macOS**.
+
+Jalankan dari laptop lokal (bukan dari VPS):
+
+```bash
+cd "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY"
+
+rsync -avz --delete \
+  --exclude ".git/" \
+  --exclude ".hermes/" \
+  --exclude "node_modules/" \
+  --exclude "WEBSITE/node_modules/" \
+  --exclude "WEBSITE/dist/" \
+  --exclude "BOT/node_modules/" \
+  --exclude "BOT/.cache/" \
+  --exclude "GAMEMODE/logs/" \
+  --exclude "*.log" \
+  --exclude "*.tmp" \
+  --exclude "*.bak" \
+  --exclude "DATABASE/*.sql" \
+  ./ pahlawan@<VPS_IP>:/opt/pahlawan-roleplay/
+```
+
+**Penjelasan pemula:**
+
+- `./` = isi folder project lokal yang sedang dibuka.
+- `/opt/pahlawan-roleplay/` = folder tujuan di VPS.
+- `--exclude` = file/folder yang tidak ikut upload.
+- `--delete` = file di VPS yang sudah tidak ada di lokal akan dihapus juga. Ini bagus untuk sync, tapi pastikan path tujuan benar.
+
+**Expected result:** command selesai tanpa error dan di VPS ada folder `GAMEMODE`, `WEBSITE`, `BOT`:
+
+```bash
+ssh pahlawan@<VPS_IP>
+ls -la /opt/pahlawan-roleplay
+```
+
+---
+
+### 10.2.2. Metode C — Upload Folder Lokal Pakai tar + scp (Paling Mudah untuk Pemula Windows)
+
+Gunakan metode ini jika Anda ingin cara sederhana: compress folder → upload → extract.
+
+#### Step 1 — Buat archive dari laptop lokal
+
+Jalankan di **Git Bash / WSL / Linux / macOS** dari folder project:
+
+```bash
+cd "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY"
+
+tar \
+  --exclude='.git' \
+  --exclude='.hermes' \
+  --exclude='node_modules' \
+  --exclude='WEBSITE/node_modules' \
+  --exclude='WEBSITE/dist' \
+  --exclude='BOT/node_modules' \
+  --exclude='BOT/.cache' \
+  --exclude='GAMEMODE/logs' \
+  --exclude='*.log' \
+  --exclude='*.tmp' \
+  --exclude='*.bak' \
+  --exclude='DATABASE/*.sql' \
+  -czf pahlawan-roleplay-upload.tar.gz .
+```
+
+Jika memakai PowerShell dan tidak punya `tar` GNU, gunakan 7-Zip/WinRAR untuk membuat `.zip`, tetapi pastikan exclude folder berat/rahasia di atas.
+
+#### Step 2 — Upload archive ke VPS
+
+```bash
+scp pahlawan-roleplay-upload.tar.gz pahlawan@<VPS_IP>:/tmp/
+```
+
+#### Step 3 — Extract di VPS
+
+```bash
+ssh pahlawan@<VPS_IP>
+
+sudo mkdir -p /opt/pahlawan-roleplay
+sudo chown -R pahlawan:pahlawan /opt/pahlawan-roleplay
+
+tar -xzf /tmp/pahlawan-roleplay-upload.tar.gz -C /opt/pahlawan-roleplay
+rm /tmp/pahlawan-roleplay-upload.tar.gz
+```
+
+#### Step 4 — Verifikasi struktur folder di VPS
+
+```bash
+ls -la /opt/pahlawan-roleplay
+
+# Harus ada minimal:
+ls -la /opt/pahlawan-roleplay/GAMEMODE
+ls -la /opt/pahlawan-roleplay/WEBSITE
+ls -la /opt/pahlawan-roleplay/BOT
+```
+
+**Expected result:** tiga folder service ada di VPS. Jika tidak ada, kemungkinan archive dibuat dari folder yang salah.
+
+---
+
+### 10.2.3. Metode D — Upload Manual via SFTP (Alternatif GUI)
+
+Jika Anda lebih nyaman GUI:
+
+1. Install **WinSCP** atau **FileZilla**.
+2. Connect:
+   - Host: `<VPS_IP>`
+   - User: `pahlawan`
+   - Auth: SSH key / password sementara
+3. Buka folder remote: `/opt/pahlawan-roleplay/`.
+4. Upload folder:
+   - `GAMEMODE/`
+   - `WEBSITE/`
+   - `BOT/`
+   - `docs/`
+   - `openspec/`
+   - file root penting seperti `README.md`, `ROADMAP.md`, `AGENTS.md`
+5. Jangan upload:
+   - `.git/`
+   - `.hermes/`
+   - `node_modules/`
+   - log/cache
+   - dump database private
+   - token/password production
+
+Metode GUI ini boleh untuk awal, tapi untuk update berikutnya lebih baik pakai `git pull` atau `rsync`.
+
+---
 
 ### 10.3. Setup Environment Files `[Task 6.3]`
 
