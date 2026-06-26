@@ -62,7 +62,7 @@ Kalau ini pertama kali setup VPS, urutan baca yang paling gampang:
 | 3306/tcp | MySQL 8.0 | Localhost + Docker bridge |
 | 7777/tcp+udp | SA-MP Server | Publik |
 | 9999/tcp | SA-MP secondary | Publik |
-| 8080-8090/tcp | Pterodactyl allocation range | Publik (saat pakai IP) |
+| 8081/tcp | UCP container (Nginx reverse-proxy internal) | Lokal (host Nginx ke 127.0.0.1:8081) |
 
 ## Stack Singkat
 
@@ -133,7 +133,7 @@ Jika cuma ingat beberapa hal, ingat ini:
 
 1. **Beli VPS** dengan spek 2 vCPU / 4 GB / 50 GB NVMe di region terdekat, OS Ubuntu 22.04. Jika memakai VibeGames, pastikan **Anti DDoS Protection** aktif di paket.
 2. **Setup user non-root + SSH key**, disable password login di SSH.
-3. **Setup firewall UFW** hanya untuk port yang dipakai (22, 80, 443, 3306-local, 7777, 8080-8090).
+3. **Setup firewall UFW** hanya untuk port yang dipakai (22, 80, 443, 7777, 9999). Port 8081 (UCP container) dan 3306 (MySQL) hanya bind ke 127.0.0.1 / Docker bridge, tidak dibuka ke publik.
 4. **Aktifkan advanced firewall & DDoS hardening** terutama jika memakai VibeGames vServer: SSH allowlist/rate-limit, MySQL hanya dari Docker bridge, sysctl hardening, iptables rate-limit untuk port SA-MP/open.mp, dan Nginx rate-limit.
 5. **Install MySQL 8.0 di host** (bukan container) dengan bind-address 0.0.0.0.
 6. **Install Pterodactyl Panel + Wings** di VPS yang sama, dengan Node resource limit 3584 MB.
