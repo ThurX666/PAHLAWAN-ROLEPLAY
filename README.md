@@ -69,7 +69,7 @@ Dokumen pendukung:
 
 Kontribusi kecil dan terarah lebih diutamakan daripada perubahan besar sekaligus.
 
-- Baca `CONTRIBUTING.md` sebelum membuka PR
+- Baca `CONTRIBUTING.md` dan `CODE_OF_CONDUCT.md` sebelum membuka PR
 - Cek OpenSpec aktif lebih dulu
 - Hindari perubahan di luar scope
 - Validasi diff dan pastikan tidak ada file sensitif ikut staged
