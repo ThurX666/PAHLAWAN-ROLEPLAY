@@ -58,6 +58,10 @@ Dokumen pendukung:
 - [WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md](WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md)
 - [openspec/specs/ucp-local-development-workflow/spec.md](openspec/specs/ucp-local-development-workflow/spec.md)
 
+## License
+
+Belum ada lisensi open-source resmi. Baca [LICENSE_NOTICE.md](LICENSE_NOTICE.md) sebelum reuse, redistribusi, atau packaging eksternal.
+
 ## Security Warning
 
 - Jangan commit `.env`, token, API key, credential database, SMTP secret, Discord secret, cookie, session, OTP, dump database, atau runtime log.
