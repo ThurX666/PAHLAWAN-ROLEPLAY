@@ -307,7 +307,188 @@ sudo ufw status verbose
 >   sudo ufw allow 8080:8090/tcp comment "Pterodactyl server allocations"
 >   ```
 
-### 3.6. Fail2Ban (Anti-Brute-Force)
+### 3.6. Advanced Firewall & DDoS Hardening (Direkomendasikan untuk VibeGames)
+
+> VibeGames vServer sudah menyediakan **Anti DDoS Protection**, tetapi firewall host tetap wajib. Provider-level Anti-DDoS membantu menyaring flood besar sebelum masuk VPS; firewall host membantu membatasi service yang benar-benar boleh diakses, rate-limit koneksi, dan mengurangi efek scan/bruteforce.
+
+#### 3.6.1. Prinsip Port Exposure
+
+| Port | Public? | Catatan |
+|---|---:|---|
+| `22/tcp` | Ya, tapi dibatasi | SSH key-only; jika sudah punya IP rumah/kantor statis, batasi hanya IP tersebut. |
+| `80/tcp` | Ya | Redirect HTTP → HTTPS untuk web/panel. |
+| `443/tcp` | Ya | HTTPS untuk panel/UCP. |
+| `7777/tcp+udp` | Ya | SA-MP/open.mp game port. |
+| `9999/tcp+udp` | Opsional | Query/secondary; buka hanya jika gamemode memang butuh. |
+| `3306/tcp` | Tidak public | MySQL hanya host + Docker bridge; jangan expose internet. |
+| `8080/tcp` | Sementara | Hanya sebelum domain/SSL; tutup setelah panel pakai `https://panel.<domain>`. |
+| `8080-8090/tcp` | Opsional | Pterodactyl allocation range; buka hanya range yang benar-benar dipakai. |
+
+#### 3.6.2. Batasi SSH ke IP Tertentu (Jika Memungkinkan)
+
+Jika IP internet operator stabil, ganti rule SSH public dengan allowlist:
+
+```bash
+# Cek IP publik laptop/operator
+curl -4 ifconfig.me
+
+# Hapus rule SSH public lama jika ada
+sudo ufw delete allow 22/tcp || true
+
+# Allow SSH hanya dari IP operator
+sudo ufw allow from <YOUR_PUBLIC_IP>/32 to any port 22 proto tcp comment "SSH admin only"
+sudo ufw status numbered
+```
+
+Jika IP operator dinamis, tetap buka 22/tcp tetapi gunakan:
+- SSH key-only.
+- `PermitRootLogin no`.
+- Fail2Ban.
+- Password panjang untuk user sudo.
+
+#### 3.6.3. Jangan Expose MySQL ke Internet
+
+Walaupun `bind-address = 0.0.0.0` diperlukan agar Docker container bisa akses MySQL host, firewall harus membatasi port 3306 hanya dari Docker bridge:
+
+```bash
+# Pastikan tidak ada allow 3306 public
+sudo ufw delete allow 3306/tcp || true
+
+# Allow dari Docker default bridge subnet saja
+sudo ufw allow from 172.17.0.0/16 to any port 3306 proto tcp comment "MySQL from Docker bridge only"
+
+# Optional jika Docker network custom digunakan, cek subnet:
+docker network inspect bridge | grep Subnet
+```
+
+#### 3.6.4. Rate-Limit SSH dan Web Burst
+
+```bash
+# UFW built-in rate limit untuk SSH
+sudo ufw limit 22/tcp comment "Rate-limit SSH"
+
+# Kernel sysctl hardening dasar
+sudo tee /etc/sysctl.d/99-pahlawan-network-hardening.conf >/dev/null <<'EOF'
+# Basic network hardening for VPS game server
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_max_syn_backlog = 4096
+net.ipv4.tcp_synack_retries = 3
+net.ipv4.tcp_syn_retries = 3
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+EOF
+sudo sysctl --system
+```
+
+#### 3.6.5. iptables Rate-Limit untuk SA-MP/open.mp Port
+
+> **Catatan:** Rule ini mitigasi query/connection spam kecil-menengah. Flood besar tetap harus ditangani Anti-DDoS provider. Jangan terlalu agresif karena bisa memutus player legit.
+
+```bash
+# Allow established traffic
+sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Drop invalid packets
+sudo iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
+
+# Rate-limit new TCP connection ke SA-MP port 7777 per IP
+sudo iptables -A INPUT -p tcp --dport 7777 -m conntrack --ctstate NEW \
+  -m recent --set --name SAMP_TCP --rsource
+sudo iptables -A INPUT -p tcp --dport 7777 -m conntrack --ctstate NEW \
+  -m recent --update --seconds 10 --hitcount 20 --name SAMP_TCP --rsource \
+  -j DROP
+
+# Rate-limit UDP burst ke SA-MP port 7777
+sudo iptables -A INPUT -p udp --dport 7777 -m hashlimit \
+  --hashlimit-name SAMP_UDP --hashlimit-above 60/second --hashlimit-burst 120 \
+  --hashlimit-mode srcip --hashlimit-srcmask 32 -j DROP
+
+# Simpan iptables agar survive reboot
+sudo apt install -y iptables-persistent
+sudo netfilter-persistent save
+```
+
+Rollback jika rule terlalu agresif:
+
+```bash
+sudo iptables -D INPUT -p tcp --dport 7777 -m conntrack --ctstate NEW -m recent --set --name SAMP_TCP --rsource || true
+sudo iptables -D INPUT -p tcp --dport 7777 -m conntrack --ctstate NEW -m recent --update --seconds 10 --hitcount 20 --name SAMP_TCP --rsource -j DROP || true
+sudo iptables -D INPUT -p udp --dport 7777 -m hashlimit --hashlimit-name SAMP_UDP --hashlimit-above 60/second --hashlimit-burst 120 --hashlimit-mode srcip --hashlimit-srcmask 32 -j DROP || true
+sudo netfilter-persistent save
+```
+
+#### 3.6.6. Nginx Rate Limit untuk Panel/UCP
+
+Tambahkan di `/etc/nginx/nginx.conf` dalam block `http { ... }`:
+
+```nginx
+limit_req_zone $binary_remote_addr zone=login_limit:10m rate=5r/s;
+limit_req_zone $binary_remote_addr zone=api_limit:10m rate=20r/s;
+limit_conn_zone $binary_remote_addr zone=conn_limit:10m;
+```
+
+Lalu di server block panel/UCP:
+
+```nginx
+# Limit koneksi per IP
+limit_conn conn_limit 30;
+
+# General API limit
+location /api/ {
+    limit_req zone=api_limit burst=40 nodelay;
+    try_files $uri $uri/ /index.php?$query_string;
+}
+
+# Login/auth endpoint lebih ketat (sesuaikan path aktual UCP)
+location ~* /(login|register|otp|auth) {
+    limit_req zone=login_limit burst=10 nodelay;
+    try_files $uri $uri/ /index.php?$query_string;
+}
+```
+
+Test dan reload:
+
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+#### 3.6.7. Monitoring Saat Diserang
+
+```bash
+# Koneksi aktif terbanyak per IP
+sudo ss -tun state established | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr | head
+
+# UDP/TCP listen
+sudo ss -tulpen
+
+# Log UFW
+sudo tail -f /var/log/ufw.log
+
+# Docker stats
+sudo docker stats
+
+# Nginx top IP
+sudo awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -nr | head
+```
+
+Jika ada IP abusive kecil-menengah:
+
+```bash
+sudo ufw deny from <ABUSIVE_IP> comment "temporary block abusive IP"
+```
+
+Untuk flood besar, buka ticket ke VibeGames dan minta mereka cek/aktifkan mitigation profile untuk game UDP/TCP port `7777`.
+
+### 3.7. Fail2Ban (Anti-Brute-Force)
 
 ```bash
 sudo systemctl enable --now fail2ban
@@ -334,7 +515,7 @@ sudo systemctl restart fail2ban
 sudo fail2ban-client status sshd
 ```
 
-### 3.7. Reboot Test
+### 3.8. Reboot Test
 
 ```bash
 sudo reboot
@@ -355,7 +536,7 @@ df -h         # storage OK
 free -h       # RAM OK
 ```
 
-### 3.8. Pra-install Helper (Opsional)
+### 3.9. Pra-install Helper (Opsional)
 
 Sebelum lanjut, opsional jalankan helper pre-flight dari `docs/scripts/bootstrap-vps.sh`:
 

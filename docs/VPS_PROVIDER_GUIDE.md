@@ -24,11 +24,43 @@
 
 ## 1. Opsi Provider (urut prioritas)
 
-### 1.1. Tier 1 — Rekomendasi (Singapore + spek pas)
+### 1.1. Tier 1 — Rekomendasi
 
-#### A. **Hetzner Cloud** — CPX11 (€14.40/mo diskon)
+#### A. **VibeGames vServer** — pilihan utama jika ingin Anti-DDoS bawaan
 
-> **Spek persis sama dengan screenshot-mu.** Ryzen 9 7900, 4GB DDR5, 50GB NVMe, 10 Gbit/s.
+> User memilih kandidat provider: https://vibegames.com/vserver karena ada **Anti DDoS Protection**. Ini cocok untuk game server publik karena trafik SA-MP/open.mp rentan kena flood, query spam, dan attack ke port game.
+
+- **Website:** https://vibegames.com/vserver
+- **DDoS:** Anti-DDoS Protection tersedia di halaman produk. Tetap cek detail paket sebelum checkout: kapasitas mitigation, lokasi scrubbing, apakah UDP game traffic dilindungi, dan apakah ada filtering panel.
+- **OS yang harus dipilih:** **Ubuntu 22.04 LTS x86_64**.
+- **Spek minimum:** 2 vCPU, 4 GB RAM, 50 GB NVMe/SSD, IPv4 dedicated.
+- **Region:** pilih region paling dekat ke player Indonesia jika tersedia. Jika region Eropa saja, latency lebih tinggi tapi masih bisa untuk roleplay.
+- **Catatan:** Anti-DDoS provider tidak menggantikan firewall host. Tetap pakai UFW/iptables hardening di [`VPS_SETUP_GUIDE.md`](./VPS_SETUP_GUIDE.md) dan setup lengkap di [`SETUP_GUIDE.md`](../openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md).
+
+**Order flow VibeGames:**
+1. Buka https://vibegames.com/vserver.
+2. Pilih paket vServer dengan minimal **2 vCPU / 4 GB RAM / 50 GB storage**.
+3. Pastikan fitur **Anti DDoS Protection** tercantum di paket/checkout.
+4. Pilih OS: **Ubuntu 22.04 LTS**.
+5. Pilih region terdekat ke Indonesia jika tersedia.
+6. Tambahkan SSH public key jika panel mendukung. Jika tidak, pakai initial root password sementara lalu harden SSH setelah login pertama.
+7. Checkout dan bayar.
+8. Catat data berikut di password manager:
+   ```txt
+   VPS_PROVIDER        = VibeGames
+   VPS_PRODUCT_URL     = https://vibegames.com/vserver
+   VPS_PLAN            = <nama paket>
+   VPS_REGION          = <region>
+   VPS_IPV4            = <IP publik>
+   DDOS_PROTECTION     = included/enabled
+   VPS_ORDER_DATE      = <tanggal>
+   VPS_RENEWAL_DATE    = <tanggal>
+   ```
+9. Setelah VPS aktif, lanjut ke [`VPS_SETUP_GUIDE.md`](./VPS_SETUP_GUIDE.md) dan jalankan hardening firewall tingkat lanjut.
+
+#### B. **Hetzner Cloud** — CPX11 (€14.40/mo diskon)
+
+> Spek kuat dan murah, tapi region Eropa/US sehingga latency ke Indonesia lebih tinggi daripada SG/ID provider.
 
 - **Region tersedia:** Falkenstein (DE), Nuremberg (DE), Ashburn (US), Hillsboro (US). **TIDAK ADA Singapore.**
 - **Latency ke Jakarta dari DE:** ~200-250ms (playable untuk roleplay, agak laggy untuk combat).
@@ -51,7 +83,7 @@
 10. Klik **Create & Buy Now**.
 11. Setelah beberapa detik → server provisioned, IP muncul di dashboard.
 
-#### B. **Vultr** — Cloud Compute ($24/mo)
+#### C. **Vultr** — Cloud Compute ($24/mo)
 
 - **Region Singapore:** ✅ Tersedia (`sgp1`).
 - **Spek setara:** 2 vCPU / 4GB RAM / 80GB NVMe / 1 Gbit/s.
@@ -117,25 +149,26 @@
 
 ## 2. Decision Matrix
 
-| Kriteria | Hetzner CPX11 | Vultr Singapore | DO Singapore | Linode SG | Contabo SG |
-|---|---|---|---|---|---|
-| **Harga** | ⭐⭐⭐⭐⭐ €14.40 | ⭐⭐⭐ $24 | ⭐⭐⭐ $24 | ⭐⭐⭐ $24 | ⭐⭐⭐⭐⭐ €8.99 |
-| **Latency ke ID** | ⭐⭐ 200-250ms | ⭐⭐⭐⭐⭐ 30-50ms | ⭐⭐⭐⭐ 40-60ms | ⭐⭐⭐⭐⭐ 30-50ms | ⭐⭐⭐⭐ 50-80ms |
-| **CPU quality** | ⭐⭐⭐⭐⭐ Ryzen 9 7900 | ⭐⭐⭐ shared | ⭐⭐⭐ shared | ⭐⭐⭐⭐ dedicated | ⭐⭐ shared |
-| **DDoS** | ⭐⭐⭐⭐⭐ included | ⭐⭐ add-on $10 | ⭐⭐ none | ⭐⭐⭐ basic | ⭐⭐ none |
-| **Support 24/7** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Billing** | Per jam | Per jam | Per jam | Per jam | Per bulan |
-| **Best for** | Budget player <10 | Latency-sensitive | Brand trust | Dedicated CPU | Absolute cheapest |
+| Kriteria | VibeGames vServer | Hetzner CPX11 | Vultr Singapore | DO Singapore | Linode SG | Contabo SG |
+|---|---|---|---|---|---|---|
+| **Harga** | Cek paket aktif | ⭐⭐⭐⭐⭐ €14.40 | ⭐⭐⭐ $24 | ⭐⭐⭐ $24 | ⭐⭐⭐ $24 | ⭐⭐⭐⭐⭐ €8.99 |
+| **Latency ke ID** | Tergantung region | ⭐⭐ 200-250ms | ⭐⭐⭐⭐⭐ 30-50ms | ⭐⭐⭐⭐ 40-60ms | ⭐⭐⭐⭐⭐ 30-50ms | ⭐⭐⭐⭐ 50-80ms |
+| **CPU quality** | Cek paket aktif | ⭐⭐⭐⭐⭐ Ryzen 9 7900 | ⭐⭐⭐ shared | ⭐⭐⭐ shared | ⭐⭐⭐⭐ dedicated | ⭐⭐ shared |
+| **DDoS** | ⭐⭐⭐⭐⭐ Anti-DDoS included | ⭐⭐⭐⭐⭐ included | ⭐⭐ add-on $10 | ⭐⭐ none | ⭐⭐⭐ basic | ⭐⭐ none |
+| **Support 24/7** | Cek SLA/support | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Billing** | Cek checkout | Per jam | Per jam | Per jam | Per jam | Per bulan |
+| **Best for** | Game server publik yang perlu Anti-DDoS bawaan | Budget player <10 | Latency-sensitive | Brand trust | Dedicated CPU | Absolute cheapest |
 
 **Rekomendasi:**
 
 | Situasi | Pilihan |
 |---|---|
+| Mau game server lebih aman dari flood/DDoS dan provider sudah punya Anti-DDoS | **VibeGames vServer** |
 | Spek persis kayak screenshot + budget ketat, latency bukan prioritas | **Hetzner CPX11** |
 | Mau latency bagus ke player ID, budget $24 OK | **Vultr Singapore** |
-| Trial / dev dulu, baru production nanti | **Oracle Cloud Free Tier** (selama free) → Vultr/Hetzner untuk prod |
+| Trial / dev dulu, baru production nanti | **Oracle Cloud Free Tier** (selama free) → VibeGames/Vultr/Hetzner untuk prod |
 | Spek tinggi dengan harga paling murah | **Contabo Cloud VPS 4** |
-| Player Indonesia, latency #1 priority | Vultr SG / Linode SG |
+| Player Indonesia, latency #1 priority | VibeGames region terdekat / Vultr SG / Linode SG |
 
 ---
 
@@ -213,18 +246,24 @@ Hetzner: EUR / USD via kartu / PayPal. Vultr: USD via kartu / PayPal / crypto. D
 
 Untuk **Alpha Test** (5-10 players internal, deadline 1 Agustus 2026):
 
-**Opsi A (rekomendasi utama):** **Vultr Singapore 2v/4G/80G ($24/mo)**
+**Opsi A (rekomendasi utama jika prioritas keamanan game server):** **VibeGames vServer**
+- Sudah ada **Anti DDoS Protection** di halaman produk.
+- Cocok untuk server game publik yang membuka port SA-MP/open.mp.
+- Tetap wajib hardening firewall host karena Anti-DDoS provider hanya satu lapisan proteksi.
+- Sebelum checkout, pastikan paket memenuhi minimal 2 vCPU / 4GB RAM / 50GB storage / Ubuntu 22.04.
+
+**Opsi B (latency terbaik ke Indonesia):** **Vultr Singapore 2v/4G/80G ($24/mo)**
 - Latency terbaik ke player ID (~30-50ms).
 - Spek cukup.
 - Billing per jam, bisa destroy kapan saja.
 - Bisa upgrade ke plan lebih tinggi sebelum Beta.
 
-**Opsi B (budget):** **Hetzner CPX11 €14.40/mo**
+**Opsi C (budget):** **Hetzner CPX11 €14.40/mo**
 - Spek persis seperti screenshot, harga paling murah.
 - Latency 200-250ms (masih playable tapi laggy).
 - Pilih kalau budget super ketat dan latency bukan prioritas.
 
-**Opsi C (premium):** **Linode Singapore 2v/4G/80G dedicated ($24/mo)**
+**Opsi D (premium):** **Linode Singapore 2v/4G/80G dedicated ($24/mo)**
 - CPU dedicated (bukan shared).
 - Cocok untuk Beta / RC saat player count naik.
 

@@ -112,20 +112,21 @@
 
 ---
 
-## 10 Langkah Paling Penting (Urutan Kritis)
+## 11 Langkah Paling Penting (Urutan Kritis)
 
-Jika cuma ingat 10 hal, ingat ini:
+Jika cuma ingat beberapa hal, ingat ini:
 
-1. **Beli VPS** dengan spek 2 vCPU / 4 GB / 50 GB NVMe di region Singapore, OS Ubuntu 22.04.
+1. **Beli VPS** dengan spek 2 vCPU / 4 GB / 50 GB NVMe di region terdekat, OS Ubuntu 22.04. Jika memakai VibeGames, pastikan **Anti DDoS Protection** aktif di paket.
 2. **Setup user non-root + SSH key**, disable password login di SSH.
 3. **Setup firewall UFW** hanya untuk port yang dipakai (22, 80, 443, 3306-local, 7777, 8080-8090).
-4. **Install MySQL 8.0 di host** (bukan container) dengan bind-address 0.0.0.0.
-5. **Install Pterodactyl Panel + Wings** di VPS yang sama, dengan Node resource limit 3584 MB.
-6. **Setup Cloudflare DNS** dengan A record untuk `panel`, `ucp`, `samp` (samp DNS-only).
-7. **Setup Cloudflare Origin SSL Certificate** di Nginx untuk HTTPS.
-8. **Clone repo** ke `/opt/pahlawan-roleplay/` di VPS.
-9. **Buat 3 custom Docker images** (`pahlawan/samp`, `pahlawan/ucp`, `pahlawan/bot`) dan **import 3 eggs**.
-10. **Set env var sensitive via Panel UI** (Discord token, DB password), **JANGAN** commit ke repo.
+4. **Aktifkan advanced firewall & DDoS hardening** terutama jika memakai VibeGames vServer: SSH allowlist/rate-limit, MySQL hanya dari Docker bridge, sysctl hardening, iptables rate-limit untuk port SA-MP/open.mp, dan Nginx rate-limit.
+5. **Install MySQL 8.0 di host** (bukan container) dengan bind-address 0.0.0.0.
+6. **Install Pterodactyl Panel + Wings** di VPS yang sama, dengan Node resource limit 3584 MB.
+7. **Setup Cloudflare DNS** dengan A record untuk `panel`, `ucp`, `samp` (samp DNS-only).
+8. **Setup Cloudflare Origin SSL Certificate** di Nginx untuk HTTPS.
+9. **Clone repo** ke `/opt/pahlawan-roleplay/` di VPS.
+10. **Import 3 egg JSON** dari `docs/eggs/` untuk SA-MP, UCP, dan Discord bot.
+11. **Set env var sensitive via Panel UI** (Discord token, DB password), **JANGAN** commit ke repo.
 
 ---
 
