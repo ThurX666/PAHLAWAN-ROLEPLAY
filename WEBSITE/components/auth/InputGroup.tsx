@@ -15,39 +15,48 @@ export const InputGroup: React.FC<InputGroupProps> = ({ icon: Icon, error, type,
     return (
         <div className="relative group">
             <div className="relative">
-                <Icon className={`absolute left-4 top-1/2 transform -translate-y-1/2 transition-colors ${error ? 'text-red-500' : 'text-gray-500 group-focus-within:text-red-500'}`} size={20} />
-                <input 
+                <Icon
+                    className={`absolute left-3.5 top-1/2 transform -translate-y-1/2 transition-colors duration-200 z-10 ${
+                        error
+                            ? 'text-ph-crimson-700'
+                            : 'text-gray-400 group-focus-within:text-ph-crimson-700'
+                    }`}
+                    size={17}
+                />
+                <input
                     type={inputType}
-                    className={`w-full bg-white dark:bg-black/40 border rounded-xl pl-12 pr-12 py-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none transition-all text-base md:text-sm font-medium
-                        ${error 
-                            ? 'border-red-500 focus:bg-gray-50 dark:focus:bg-black/60 placeholder-red-500/50' 
-                            : 'border-gray-200 dark:border-white/10 focus:border-red-500/50 focus:bg-gray-50 dark:focus:bg-black/60'
+                    className={`ph-input-focus w-full bg-[#fbfaf8] border rounded-lg pl-11 pr-11 py-3.5 text-gray-900 placeholder-gray-400 transition-all duration-200 text-sm font-medium shadow-sm
+                        ${error
+                            ? 'border-ph-crimson-600/60 bg-ph-crimson-600/[0.04] shadow-[0_0_0_3px_rgba(215,25,32,0.08)]'
+                            : 'border-gray-200 hover:border-gray-300'
                         }
                     `}
                     {...props}
                 />
-                
+
                 {/* Password Toggle */}
                 {isPassword && (
-                    <button 
+                    <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-white transition-colors"
+                        className="absolute right-2 top-1/2 flex h-10 w-10 transform -translate-y-1/2 items-center justify-center text-gray-400 hover:text-ph-crimson-700 transition-colors duration-200 rounded-md hover:bg-ph-crimson-600/[0.06] z-10"
+                        tabIndex={-1}
+                        aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
                     >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                     </button>
                 )}
-                
+
                 {/* Error Icon (if not password) */}
                 {error && !isPassword && (
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-red-500">
-                        <AlertCircle size={20} />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-ph-crimson-700 z-10">
+                        <AlertCircle size={17} />
                     </div>
                 )}
             </div>
             {error && (
-                <p className="text-[10px] text-red-400 mt-1.5 ml-1 font-bold animate-[slideInDown_0.2s_ease-out] flex items-center gap-1">
-                    <span className="w-1 h-1 bg-red-400 rounded-full inline-block"></span>
+                <p className="text-[11px] text-ph-crimson-700 mt-1.5 ml-1 font-semibold animate-auth-slide-down flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-ph-crimson-700 rounded-full inline-block shrink-0"></span>
                     {error}
                 </p>
             )}

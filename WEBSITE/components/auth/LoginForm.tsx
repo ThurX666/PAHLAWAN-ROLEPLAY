@@ -18,8 +18,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
         const newErrors = { identifier: '', password: '' };
         let isValid = true;
 
-        if(!identifier.trim()) { newErrors.identifier = 'Username/Email required'; isValid = false; }
-        if(!password.trim()) { newErrors.password = 'Password required'; isValid = false; }
+        if(!identifier.trim()) { newErrors.identifier = 'Username atau email wajib diisi'; isValid = false; }
+        if(!password.trim()) { newErrors.password = 'Password wajib diisi'; isValid = false; }
 
         setErrors(newErrors);
         return isValid;
@@ -33,33 +33,34 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
     };
 
     return (
-        <div className="animate-[fadeIn_0.3s_ease-out]">
-            <div className="text-center mb-8">
-               <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2 uppercase italic tracking-tighter">
-                 Welcome Back
-               </h2>
-               <p className="text-gray-500 text-xs uppercase tracking-widest font-bold">
-                 User Control Panel Access
-               </p>
+        <div className="animate-auth-slide-up">
+            <div className="text-center mb-5">
+               <span className="ph-eyebrow mb-3">Roleplay Identity</span>
+                <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">
+                  Selamat Datang
+                </h2>
+               <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed">
+                  Masuk ke UCP Pahlawan Roleplay<br className="hidden md:block"/> untuk mengelola akses akun Anda.
+                </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-                <InputGroup 
-                    icon={User} 
-                    type="text" 
-                    placeholder="Username / Email" 
+            <form onSubmit={handleSubmit} className="space-y-3" noValidate>
+                <InputGroup
+                    icon={User}
+                    type="text"
+                    placeholder="Username atau Email"
                     autoComplete="username"
-                    value={identifier} 
+                    value={identifier}
                     onChange={e => {
                         setIdentifier(e.target.value);
                         if(errors.identifier) setErrors(prev => ({...prev, identifier: ''}));
                     }}
                     error={errors.identifier}
                 />
-                
-                <InputGroup 
-                    icon={Lock} 
-                    type="password" 
+
+                <InputGroup
+                    icon={Lock}
+                    type="password"
                     placeholder="Password"
                     autoComplete="current-password"
                     value={password}
@@ -70,39 +71,44 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
                     error={errors.password}
                 />
 
-                <div className="flex justify-end mt-2 mb-6">
-                    <button 
-                        type="button" 
-                        onClick={() => setView('forgot')} 
-                        className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors font-medium"
+                <div className="flex justify-end mt-0.5 mb-2">
+                    <button
+                        type="button"
+                        onClick={() => setView('forgot')}
+                        className="inline-flex min-h-11 items-center gap-1 rounded-md px-1 text-xs text-gray-500 hover:text-ph-crimson-700 transition-colors font-semibold"
                     >
-                        Forgot Password?
+                        Lupa Password?
                     </button>
                 </div>
 
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center group"
+                    className="ph-btn-primary w-full py-3.5 mt-1 flex items-center justify-center group"
                 >
                     {loading ? <Loader2 className="animate-spin" size={20} /> : (
-                        <span className="flex items-center text-sm uppercase tracking-widest">
-                            Login to UCP 
-                            <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                        <span className="flex items-center text-sm font-bold tracking-wide">
+                            Masuk ke Akun
+                            <ArrowRight size={17} className="ml-2 group-hover:translate-x-1 transition-transform" />
                         </span>
                     )}
                 </button>
             </form>
 
-            <div className="mt-8 text-center">
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    New to the city?{' '}
-                    <button 
-                        onClick={() => setView('register')} 
+            <div className="mt-5 text-center">
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200"></div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Atau</span>
+                    <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200"></div>
+                </div>
+                <p className="text-gray-500 text-xs md:text-[13px]">
+                    Belum punya akun?{' '}
+                    <button
+                        onClick={() => setView('register')}
                         type="button"
-                        className="text-gray-900 dark:text-white font-bold hover:text-red-600 dark:hover:text-red-500 transition-colors"
+                        className="inline-flex min-h-11 items-center rounded-md px-1 text-ph-crimson-700 font-bold hover:text-ph-crimson-800 transition-colors"
                     >
-                        Create Account
+                        Daftar Sekarang
                     </button>
                 </p>
             </div>

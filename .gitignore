@@ -46,6 +46,7 @@ WEBSITE/node_modules/
 WEBSITE/dist/
 WEBSITE/dist-ssr/
 WEBSITE/.runtime-logs/
+WEBSITE/.playwright-cli/
 WEBSITE/public/uploads/
 WEBSITE/public/api/.migrated_*
 

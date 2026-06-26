@@ -7,6 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# CLI browser tool runtime artifacts
+.playwright-cli/
+
 node_modules
 dist
 dist-ssr

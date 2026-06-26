@@ -5,6 +5,19 @@ import { InputGroup } from './InputGroup';
 
 import { isPreviewEnv, API_URL } from '../../config';
 
+const translatePreviewMsg = (msg: string): string => {
+    if (msg.toLowerCase().includes('local-only otp preview')) {
+        return 'Pratinjau OTP lokal aktif untuk lingkungan ini. Fitur ini dinonaktifkan di produksi.';
+    }
+    return msg;
+};
+
+const canUseLocalAuthPreview = () => {
+    if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+    const host = window.location.hostname;
+    return host === 'localhost' || host === '::1' || host.startsWith('127.');
+};
+
 interface ForgotPasswordFormProps {
     onSubmit: (email?: string) => void;
     setView: (view: 'login' | 'register' | 'forgot') => void;
@@ -23,6 +36,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
     const [localLoading, setLocalLoading] = useState(false);
 
     const isLoading = initialLoading || localLoading;
+    const localAuthPreview = canUseLocalAuthPreview();
 
     const handleSendOTP = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,10 +50,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
 
         setLocalLoading(true);
 
-        if (isPreviewEnv()) {
+        if (isPreviewEnv() || localAuthPreview) {
             setTimeout(() => {
                 setLocalLoading(false);
-                if (email !== 'admin@admin.com' && email !== 'player@player.com') {
+                if (!localAuthPreview && email !== 'admin@admin.com' && email !== 'player@player.com') {
                     const msg = 'Email tidak terdaftar di sistem kami.';
                     setError(msg);
                     if (onError) onError(msg);
@@ -65,10 +79,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
             setLocalLoading(false);
 
             if (data.status === 'success') {
-                setSuccessMsg(data.message);
+                setSuccessMsg(translatePreviewMsg(data.message));
                 setStep(2);
             } else {
-                setError(data.message || 'Gagal mengirim email verifikasi.');
+                setError(translatePreviewMsg(data.message || 'Gagal mengirim email verifikasi.'));
                 if (onError) onError(data.message || 'Gagal mengirim email verifikasi.');
             }
         } catch (err) {
@@ -101,14 +115,14 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
 
         setLocalLoading(true);
 
-        if (isPreviewEnv()) {
+        if (isPreviewEnv() || localAuthPreview) {
             setTimeout(() => {
                 setLocalLoading(false);
                 if (otp !== '123456') {
                     setError('Kode OTP salah! (Gunakan 123456 untuk simulasi)');
                 } else {
-                    alert('Kata sandi berhasil diubah! Silakan masuk dengan sandi baru Anda.');
-                    setView('login');
+                    setSuccessMsg('Kata sandi berhasil diubah! Mengalihkan ke halaman login...');
+                    setTimeout(() => setView('login'), 2500);
                 }
             }, 1000);
             return;
@@ -130,10 +144,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
             setLocalLoading(false);
 
             if (data.status === 'success') {
-                alert(data.message);
-                setView('login');
+                setSuccessMsg(translatePreviewMsg(data.message || 'Kata sandi berhasil diubah!'));
+                setTimeout(() => setView('login'), 2500);
             } else {
-                setError(data.message || 'Gagal mereset kata sandi.');
+                setError(translatePreviewMsg(data.message || 'Gagal mereset kata sandi.'));
                 if (onError) onError(data.message || 'Gagal mereset kata sandi.');
             }
         } catch (err) {
@@ -145,28 +159,40 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
     };
 
     return (
-        <div className="animate-[fadeIn_0.3s_ease-out]">
-            <div className="text-center mb-8">
-               <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2 uppercase italic tracking-tighter">
-                 Reset Password
+        <div className="animate-auth-slide-up">
+            <div className="text-center mb-4">
+               <span className="ph-eyebrow mb-3">Account Recovery</span>
+               <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">
+                 Atur Ulang Sandi
                </h2>
-               <p className="text-gray-500 text-xs uppercase tracking-widest font-bold">
-                 {step === 1 ? 'Recover Account' : 'Set New Password'}
+               <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed">
+                 {step === 1 ? 'Masukkan email untuk menerima kode OTP' : 'Masukkan kode OTP dan sandi baru'}
                </p>
             </div>
 
+            <div className="mb-4 rounded-lg border border-gray-200 bg-gray-50/80 px-3.5 py-2.5">
+                <div className="flex items-center justify-center gap-2.5">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${step === 1 ? 'text-ph-crimson-700' : 'text-gray-400'}`}>01 Email</span>
+                    <div className="relative flex items-center">
+                        <div className={`h-px w-10 rounded-full transition-colors ${step >= 2 ? 'bg-gradient-to-r from-ph-gold-600 to-ph-crimson-600' : 'bg-gray-200'}`} />
+                        {step >= 2 && <span className="absolute right-0 w-1.5 h-1.5 rounded-full bg-ph-crimson-600"></span>}
+                    </div>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${step === 2 ? 'text-ph-crimson-700' : 'text-gray-400'}`}>02 Reset Sandi</span>
+                </div>
+            </div>
+
             {successMsg && (
-                <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-400 text-sm font-medium text-center">
-                    {successMsg}
+                <div className="ph-alert ph-alert-success mb-4">
+                    <span className="font-semibold">{successMsg}</span>
                 </div>
             )}
 
             {step === 1 ? (
-                <form onSubmit={handleSendOTP} className="space-y-4" noValidate>
-                    <InputGroup 
-                        icon={Mail} 
-                        type="email" 
-                        placeholder="Email Address" 
+                <form onSubmit={handleSendOTP} className="space-y-3" noValidate>
+                    <InputGroup
+                        icon={Mail}
+                        type="email"
+                        placeholder="Alamat Email"
                         autoComplete="email"
                         value={email}
                         onChange={e => {
@@ -176,25 +202,42 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                         error={error}
                     />
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={isLoading}
-                        className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center group"
+                        className="ph-btn-primary w-full py-3.5 mt-1 flex items-center justify-center group"
                     >
                         {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
-                            <span className="flex items-center text-sm uppercase tracking-widest">
-                                Send Reset Link
-                                <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                            <span className="flex items-center text-sm font-bold tracking-wide">
+                                Kirim Kode OTP
+                                <ArrowRight size={17} className="ml-2 group-hover:translate-x-1 transition-transform" />
                             </span>
                         )}
                     </button>
+
+                    {localAuthPreview && (
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setEmail('preview@pahlawan-rp.local');
+                                setOtp('123456');
+                                setNewPassword('preview123');
+                                setConfirmPassword('preview123');
+                                setSuccessMsg('Mode preview lokal: state reset sandi disiapkan.');
+                                setStep(2);
+                            }}
+                            className="w-full rounded-lg border border-gray-200 bg-gray-50 py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
+                        >
+                            Preview Reset Step
+                        </button>
+                    )}
                 </form>
             ) : (
-                <form onSubmit={handleResetPassword} className="space-y-4" noValidate>
-                    <InputGroup 
-                        icon={KeyRound} 
-                        type="text" 
-                        placeholder="Kode OTP (6 Digit)" 
+                <form onSubmit={handleResetPassword} className="space-y-2.5" noValidate>
+                    <InputGroup
+                        icon={KeyRound}
+                        type="text"
+                        placeholder="Kode OTP (6 Digit)"
                         value={otp}
                         onChange={e => {
                             setOtp(e.target.value.replace(/\D/g, '').slice(0, 6));
@@ -202,11 +245,11 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                         }}
                         error={error}
                     />
-                    
-                    <InputGroup 
-                        icon={Lock} 
-                        type="password" 
-                        placeholder="Sandi Baru" 
+
+                    <InputGroup
+                        icon={Lock}
+                        type="password"
+                        placeholder="Sandi Baru"
                         value={newPassword}
                         onChange={e => {
                             setNewPassword(e.target.value);
@@ -214,10 +257,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                         }}
                     />
 
-                    <InputGroup 
-                        icon={Lock} 
-                        type="password" 
-                        placeholder="Konfirmasi Sandi Baru" 
+                    <InputGroup
+                        icon={Lock}
+                        type="password"
+                        placeholder="Konfirmasi Sandi Baru"
                         value={confirmPassword}
                         onChange={e => {
                             setConfirmPassword(e.target.value);
@@ -225,24 +268,24 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                         }}
                     />
 
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         disabled={isLoading}
-                        className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center group"
+                        className="ph-btn-primary w-full py-3.5 mt-2 flex items-center justify-center group"
                     >
                         {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
-                            <span className="flex items-center text-sm uppercase tracking-widest">
+                            <span className="flex items-center text-sm font-bold tracking-wide">
                                 Ubah Sandi
-                                <Lock size={16} className="ml-2 group-hover:translate-y-[2px] transition-transform" />
+                                <Lock size={16} className="ml-2 group-hover:scale-110 transition-transform" />
                             </span>
                         )}
                     </button>
                 </form>
             )}
 
-            <div className="mt-8 text-center">
-                 <button onClick={() => setView('login')} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-xs flex items-center justify-center w-full transition-colors uppercase font-bold tracking-wider py-4">
-                    <ChevronLeft size={14} className="mr-1" /> Back to Login
+            <div className="mt-4 text-center">
+                  <button onClick={() => setView('login')} className="text-gray-500 hover:text-ph-crimson-700 text-xs flex min-h-11 items-center justify-center w-full transition-colors font-semibold tracking-wide py-2 group">
+                    <ChevronLeft size={14} className="mr-1 group-hover:-translate-x-0.5 transition-transform" /> Kembali ke Login
                  </button>
             </div>
         </div>

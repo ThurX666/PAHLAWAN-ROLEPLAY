@@ -19,11 +19,14 @@ const AdminPanel = lazy(() => import('./components/admin/AdminPanel').then(modul
 const Requests = lazy(() => import('./components/requests/RequestsPage').then(module => ({ default: module.Requests })));
 
 const ScreenFallback: React.FC = () => (
-  <div className="flex min-h-[280px] items-center justify-center rounded-2xl border border-gray-200 bg-white/80 px-6 py-12 text-center shadow-sm dark:border-white/10 dark:bg-[#121212]/80">
-    <div>
-      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
-      <p className="text-sm font-bold uppercase tracking-[0.3em] text-gray-600 dark:text-gray-300">
-        Memuat Halaman...
+  <div className="flex min-h-screen w-full items-center justify-center bg-[#050505] relative overflow-hidden">
+    <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-ph-crimson-700/[0.15] blur-[160px] animate-pulse-slow"></div>
+    <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-ph-gold-700/[0.08] blur-[120px]"></div>
+    <div className="relative z-10 flex flex-col items-center">
+      <img src={`${import.meta.env.BASE_URL}assets/images/logo1.png`} alt="Pahlawan Roleplay" className="w-48 mb-8 object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]" />
+      <div className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border-2 border-ph-crimson-500/20 border-t-ph-crimson-500 shadow-[0_0_15px_rgba(220,38,38,0.2)]" />
+      <p className="text-xs font-bold uppercase tracking-[0.3em] text-gray-300 animate-pulse">
+        Menyiapkan UCP Pahlawan Roleplay...
       </p>
     </div>
   </div>

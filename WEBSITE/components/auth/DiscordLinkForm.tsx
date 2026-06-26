@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
-import { ArrowRight, Loader2, ShieldCheck, UserCheck } from 'lucide-react';
+import { ArrowRight, Loader2, ShieldCheck, UserCheck, ChevronLeft } from 'lucide-react';
 import { API_URL, isPreviewEnv } from '../../config';
+
+const canUseLocalAuthPreview = () => {
+    if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+    const host = window.location.hostname;
+    return host === 'localhost' || host === '::1' || host.startsWith('127.');
+};
 
 interface DiscordLinkFormProps {
   username: string;
@@ -13,11 +19,12 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [authData, setAuthData] = useState<{username: string, adminLevel: number, gold?: number, roleSuccess?: boolean} | null>(null);
+  const localAuthPreview = canUseLocalAuthPreview();
 
   const handleLinkDiscord = async () => {
     setLoading(true);
 
-    if (isPreviewEnv()) {
+    if (isPreviewEnv() || localAuthPreview) {
         setTimeout(() => {
             setLoading(false);
             setAuthData({ username, adminLevel: 0, gold: 0, roleSuccess: true });
@@ -59,72 +66,82 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
 
   if (showSuccess) {
       return (
-          <div className="animate-[slideInUp_0.4s_ease-out] w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10 text-center">
-              <div className="absolute top-0 w-full h-full bg-[#5865F2]/10 blur-3xl -z-10 rounded-full opacity-50" />
-              
-              <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center border border-green-500/30 mb-6 drop-shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                  <ShieldCheck size={40} className="text-green-500 dark:text-green-400" />
+          <div className="animate-auth-slide-up w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10 text-center">
+
+              <div className="text-center mb-3 w-full">
+                <span className="ph-eyebrow mb-3">Tautan Berhasil</span>
               </div>
-              
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Tautan Berhasil!</h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-8 leading-relaxed max-w-[280px]">
-                  {authData?.roleSuccess === false 
+
+              <div className="relative w-14 h-14 mb-4">
+                <div className="w-full h-full bg-gradient-to-br from-green-500/15 to-green-600/5 rounded-xl flex items-center justify-center border border-green-500/20 shadow-md">
+                  <ShieldCheck size={28} className="text-green-600" />
+                </div>
+              </div>
+
+              <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">Tautan Berhasil!</h2>
+              <p className="text-gray-500 text-[12px] md:text-[13px] mb-5 leading-relaxed max-w-[300px]">
+                  {authData?.roleSuccess === false
                     ? "Akun Discord Anda telah terhubung. Namun limitasi role (Admin/Owner) mencegah sistem mengatur nickname/role secara otomatis."
                     : "Akun Discord Anda telah terhubung. Anda kini memiliki role Warga di server komunitas kami. Selamat bermain!"}
               </p>
-              
+
               <button
                   onClick={() => {
                       if (authData) onLinkSuccess(authData.username, authData.adminLevel, authData.gold);
                   }}
-                  className="w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-bold py-3.5 px-6 rounded-2xl transition-all shadow-[0_0_20px_rgba(88,101,242,0.3)] hover:shadow-[0_0_25px_rgba(88,101,242,0.5)] transform active:scale-[0.98]"
+                  className="ph-btn-primary w-full py-3.5 px-6 flex items-center justify-center group"
               >
-                  Lanjut ke Dashboard
+                  <span className="flex items-center text-sm font-bold tracking-wide">
+                    Lanjut ke Dashboard
+                    <ArrowRight size={17} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  </span>
               </button>
           </div>
       );
   }
 
   return (
-    <div className="animate-[slideInUp_0.4s_ease-out] w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10">
-      <div className="absolute top-0 w-full h-full bg-[#5865F2]/10 blur-3xl -z-10 rounded-full opacity-50" />
+    <div className="animate-auth-slide-up w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10">
 
-      <div className="mb-8 flex justify-center w-full relative">
-        <div className="absolute inset-0 bg-[#5865F2] blur-xl opacity-20 rounded-full animate-pulse" />
-        <div className="w-24 h-24 bg-gradient-to-tr from-[#5865F2]/20 to-[#5865F2]/5 rounded-3xl flex items-center justify-center border border-[#5865F2]/30 shadow-[0_0_30px_rgba(88,101,242,0.2)] backdrop-blur-xl relative z-10">
-          <div className="text-[#5865F2] drop-shadow-[0_0_15px_rgba(88,101,242,0.5)]">
-            <IconDiscord size={48} />
-          </div>
+      <div className="text-center mb-3 w-full">
+        <span className="ph-eyebrow mb-3">Komunitas PHRP</span>
+      </div>
+
+      <div className="mb-3 flex justify-center w-full">
+        <div className="w-16 h-16 bg-gradient-to-br from-[#5865F2]/10 to-[#5865F2]/5 rounded-xl flex items-center justify-center border border-[#5865F2]/18 shadow-sm">
+            <div className="text-[#5865F2]">
+              <IconDiscord size={34} />
+            </div>
         </div>
       </div>
-      
-      <div className="text-center mb-10 px-4">
-        <h2 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 uppercase tracking-tight mb-4">
+
+      <div className="text-center mb-4 px-2">
+        <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 tracking-tight mb-1.5 leading-tight">
           Hubungkan Discord
         </h2>
-        <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-[280px] mx-auto">
-          Selamat <b className="text-gray-900 dark:text-white font-bold">{username}</b>!<br />
-          Satu langkah lagi untuk bergabung ke komunitas, tautkan Discord Anda sekarang.
+        <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed max-w-[300px] mx-auto">
+          Selamat <b className="text-gray-950 font-bold">{username}</b>!<br />
+          Satu langkah terakhir untuk mengaktifkan akses komunitas PHRP Anda.
         </p>
       </div>
 
-      <div className="space-y-3 w-full mb-10">
-        <div className="flex items-start gap-4 p-4 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05] rounded-2xl hover:bg-gray-200 dark:hover:bg-white/[0.05] transition-all duration-300 group">
-           <div className="bg-[#5865F2]/10 dark:bg-[#5865F2]/20 p-2 rounded-xl group-hover:bg-[#5865F2]/20 dark:group-hover:bg-[#5865F2]/30 transition-colors mt-0.5">
-             <UserCheck size={18} className="text-[#5865F2] shrink-0"/>
+      <div className="space-y-2.5 w-full mb-4">
+        <div className="flex items-start gap-3 p-3 bg-gray-50/80 border border-gray-200 rounded-lg hover:bg-white transition-all duration-200 group">
+           <div className="bg-gradient-to-br from-[#5865F2]/12 to-[#5865F2]/5 p-2 rounded-lg group-hover:from-[#5865F2]/18 group-hover:to-[#5865F2]/10 transition-colors mt-0.5 shrink-0">
+             <UserCheck size={16} className="text-[#5865F2] shrink-0"/>
            </div>
-           <div>
-             <p className="text-sm text-gray-900 dark:text-white font-bold mb-0.5">Otomatisasi Nickname</p>
-             <p className="text-xs text-gray-500 dark:text-gray-400">Nickname server mengikuti identitas UCP Anda.</p>
+           <div className="min-w-0">
+             <p className="text-sm text-gray-950 font-semibold mb-0.5">Otomatisasi Nickname</p>
+               <p className="text-xs text-gray-500 leading-relaxed">Nickname server mengikuti identitas UCP Anda.</p>
            </div>
         </div>
-        <div className="flex items-start gap-4 p-4 bg-gray-100 dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05] rounded-2xl hover:bg-gray-200 dark:hover:bg-white/[0.05] transition-all duration-300 group">
-           <div className="bg-[#5865F2]/10 dark:bg-[#5865F2]/20 p-2 rounded-xl group-hover:bg-[#5865F2]/20 dark:group-hover:bg-[#5865F2]/30 transition-colors mt-0.5">
-             <ShieldCheck size={18} className="text-[#5865F2] shrink-0"/>
+        <div className="flex items-start gap-3 p-3 bg-gray-50/80 border border-gray-200 rounded-lg hover:bg-white transition-all duration-200 group">
+           <div className="bg-gradient-to-br from-[#5865F2]/12 to-[#5865F2]/5 p-2 rounded-lg group-hover:from-[#5865F2]/18 group-hover:to-[#5865F2]/10 transition-colors mt-0.5 shrink-0">
+             <ShieldCheck size={16} className="text-[#5865F2] shrink-0"/>
            </div>
-           <div>
-             <p className="text-sm text-gray-900 dark:text-white font-bold mb-0.5">Akses Role Warga</p>
-             <p className="text-xs text-gray-500 dark:text-gray-400">Dapatkan akses ke channel khusus warga di Discord.</p>
+           <div className="min-w-0">
+              <p className="text-sm text-gray-950 font-semibold mb-0.5">Akses Role Warga</p>
+               <p className="text-xs text-gray-500 leading-relaxed">Dapatkan akses ke channel warga resmi PHRP.</p>
            </div>
         </div>
       </div>
@@ -132,33 +149,43 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
       <button
         onClick={handleLinkDiscord}
         disabled={loading}
-        className="relative w-full overflow-hidden rounded-2xl group mb-4 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98] transition-all"
+        className="relative w-full overflow-hidden rounded-xl group mb-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98] transition-all shadow-md hover:shadow-lg"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-[#5865F2] to-[#4752C4] transition-transform duration-300 group-hover:scale-[1.05] origin-center" />
-        <div className="relative py-4 px-6 flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#5865F2] to-[#4752C4] transition-transform duration-300 group-hover:scale-[1.04] origin-center" />
+        <div className="relative py-3.5 px-6 flex items-center justify-center">
           {loading ? (
-            <Loader2 className="animate-spin text-white" size={24} />
+            <Loader2 className="animate-spin text-white" size={22} />
           ) : (
             <>
-              <span className="text-white font-bold text-base mr-3">Tautkan Sekarang</span>
-              <ArrowRight size={20} className="text-white group-hover:translate-x-1.5 transition-transform" />
+              <span className="text-white font-bold text-sm mr-2.5 tracking-wide">Tautkan Sekarang</span>
+              <ArrowRight size={18} className="text-white group-hover:translate-x-1.5 transition-transform" />
             </>
           )}
         </div>
       </button>
 
-      {isPreviewEnv() && (
+      {localAuthPreview && (
           <button
             onClick={() => onLinkSuccess(username, 0, 0)}
             disabled={loading}
-            className="w-full bg-transparent hover:bg-gray-100 dark:hover:bg-white/5 text-gray-500 hover:text-gray-900 dark:hover:text-gray-300 font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-center border border-transparent hover:border-gray-200 dark:hover:border-white/10 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+            className="w-full bg-transparent hover:bg-ph-crimson-600/[0.05] text-gray-500 hover:text-ph-crimson-700 font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-center border border-transparent hover:border-ph-crimson-600/10 disabled:opacity-50 disabled:cursor-not-allowed text-xs"
           >
-            Lewati Proses (Mode Preview)
+            Lewati Proses (Mode Pratinjau)
           </button>
       )}
 
-      <div className="text-center pt-6 pb-2 px-6">
-          <p className="text-[11px] text-gray-600 leading-relaxed font-medium">
+      <div className="text-center pt-2">
+          <button
+              type="button"
+              onClick={() => setView('login')}
+              className="text-gray-500 hover:text-ph-crimson-700 text-xs flex min-h-11 items-center justify-center w-full transition-colors font-semibold tracking-wide py-2 group"
+          >
+              <ChevronLeft size={14} className="mr-1 group-hover:-translate-x-0.5 transition-transform" /> Kembali ke Login
+          </button>
+      </div>
+
+      <div className="text-center pt-1 pb-1 px-4">
+            <p className="text-[11px] text-gray-500 leading-relaxed">
             Dengan menghubungkan akun, Anda menyetujui<br/>aturan komunitas server Discord kami.
           </p>
       </div>

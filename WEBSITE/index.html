@@ -21,8 +21,34 @@
                 redDark: '#991b1b',
                 gold: '#d97706',
                 goldLight: '#fbbf24',
-                dark: '#0a0a0a',     // Darker black
-                panel: '#121212',    // Smooth dark gray
+                dark: '#0a0a0a',
+                panel: '#121212',
+                // Auth design tokens
+                crimson: {
+                  950: '#3f060a',
+                  900: '#760c14',
+                  800: '#9f121f',
+                  700: '#b91422',
+                  600: '#d71920',
+                  500: '#ef2a2a',
+                  400: '#ff5a5f',
+                },
+                gold: {
+                  900: '#78350f',
+                  800: '#92400e',
+                  700: '#b45309',
+                  600: '#d88912',
+                  500: '#f59e0b',
+                  400: '#fbbf24',
+                },
+                surface: {
+                  deep: '#0a0a0f',
+                  base: '#0e0e14',
+                  card: '#121218',
+                  panel: '#1a1a24',
+                  elevated: '#22222e',
+                  input: '#16161e',
+                },
               }
             },
             spacing: {
@@ -31,16 +57,39 @@
             backgroundImage: {
               'grid-pattern': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.05)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e\")",
               'grid-pattern-light': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(0 0 0 / 0.05)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e\")",
+              'dot-pattern': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24' fill='none'%3e%3ccircle cx='1' cy='1' r='1' fill='rgb(220 38 38 / 0.18)'/%3e%3c/svg%3e\")",
+              'dot-pattern-light': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24' fill='none'%3e%3ccircle cx='1' cy='1' r='1' fill='rgb(153 27 27 / 0.12)'/%3e%3c/svg%3e\")",
+              'diagonal-stripes': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' width='8' height='8'%3e%3cpath d='M0 8L8 0' stroke='rgb(220 38 38 / 0.05)' stroke-width='1'/%3e%3c/svg%3e\")",
             },
             animation: {
               'float': 'float 6s ease-in-out infinite',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'auth-fade-in': 'authFadeIn 0.4s ease-out',
+              'auth-slide-up': 'authSlideUp 0.4s ease-out',
+              'auth-slide-down': 'authSlideDown 0.25s ease-out',
+              'auth-scale-in': 'authScaleIn 0.3s ease-out',
             },
             keyframes: {
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-10px)' },
-              }
+              },
+              authFadeIn: {
+                from: { opacity: '0' },
+                to: { opacity: '1' },
+              },
+              authSlideUp: {
+                from: { opacity: '0', transform: 'translateY(12px)' },
+                to: { opacity: '1', transform: 'translateY(0)' },
+              },
+              authSlideDown: {
+                from: { opacity: '0', transform: 'translateY(-8px)' },
+                to: { opacity: '1', transform: 'translateY(0)' },
+              },
+              authScaleIn: {
+                from: { opacity: '0', transform: 'scale(0.95)' },
+                to: { opacity: '1', transform: 'scale(1)' },
+              },
             }
           },
         },
@@ -58,30 +107,190 @@
 }
 </script>
 <style>
-  /* Custom Scrollbar */
+  /* ===== PHRP Design Tokens ===== */
+  :root {
+    --ph-red-base: #d71920;
+    --ph-red-dark: #9f121f;
+    --ph-red-soft: #fff1f1;
+    --ph-gold-accent: #d88912;
+    --ph-crimson-600: var(--ph-red-base);
+    --ph-crimson-700: #b91422;
+    --ph-crimson-800: var(--ph-red-dark);
+    --ph-gold-600: var(--ph-gold-accent);
+    --ph-gold-400: #f2a51a;
+    --ph-surface-deep: #0a0a0f;
+    --ph-surface-base: #0e0e14;
+    --ph-surface-card: #121218;
+    --ph-surface-panel: #1a1a24;
+    --ph-surface-input: #16161e;
+    --ph-border-subtle: rgba(15, 23, 42, 0.08);
+    --ph-border-default: rgba(15, 23, 42, 0.12);
+    --ph-border-focus: rgba(215, 25, 32, 0.34);
+    --ph-text-primary: #161616;
+    --ph-text-secondary: #55565b;
+    --ph-text-muted: #7a7c83;
+    --ph-radius-input: 10px;
+    --ph-radius-card: 12px;
+    --ph-radius-btn: 10px;
+    --ph-shadow-card: 0 18px 48px rgba(22, 23, 29, 0.10);
+    --ph-shadow-glow-crimson: 0 10px 22px rgba(215, 25, 32, 0.16);
+  }
+
+  /* ===== Auth Focus Ring ===== */
+  .ph-input-focus:focus {
+    outline: none;
+    border-color: rgba(215, 25, 32, 0.46);
+    box-shadow:
+      0 0 0 3px rgba(215, 25, 32, 0.10),
+      0 1px 2px rgba(15, 23, 42, 0.06);
+    background: #ffffff;
+  }
+
+  /* ===== Auth Inline Alert ===== */
+  .ph-alert {
+    padding: 12px 16px;
+    border-radius: var(--ph-radius-input);
+    font-size: 13px;
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    animation: authSlideDown 0.3s ease-out;
+  }
+  .ph-alert-error {
+    background: rgba(255, 241, 241, 0.95);
+    border: 1px solid rgba(215, 25, 32, 0.18);
+    color: #9f121f;
+  }
+  .ph-alert-success {
+    background: rgba(240, 253, 244, 0.95);
+    border: 1px solid rgba(22, 163, 74, 0.18);
+    color: #166534;
+  }
+  .ph-alert-warning {
+    background: rgba(255, 251, 235, 0.95);
+    border: 1px solid rgba(216, 137, 18, 0.22);
+    color: #92400e;
+  }
+
+  /* ===== Custom Scrollbar (subtle) ===== */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 4px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #525252;
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #dc2626;
+    background: rgba(220, 38, 38, 0.4);
   }
-  
-  /* Selection Color */
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.10);
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: rgba(220, 38, 38, 0.5);
+  }
+
+  /* ===== Selection Color ===== */
   ::selection {
-    background-color: #dc2626;
+    background-color: var(--ph-red-base);
     color: white;
+  }
+
+  /* ===== Auth Client Area Surface (Phase 4.15: light hosting x roleplay direction) ===== */
+  .ph-auth-surface {
+    background:
+      radial-gradient(ellipse 70% 50% at 100% 0%, rgba(215, 25, 32, 0.08) 0%, transparent 58%),
+      linear-gradient(180deg, #ffffff 0%, #fbf8f5 100%);
+  }
+  .ph-auth-accent-line {
+    background: linear-gradient(90deg, rgba(215, 25, 32, 0.95) 0%, rgba(215, 25, 32, 0.95) 74%, rgba(216, 137, 18, 0.8) 100%);
+  }
+
+  /* ===== Inner Card Content Section (right panel) ===== */
+  .ph-auth-panel-inner {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow:
+      0 18px 44px rgba(22, 23, 29, 0.09),
+      0 1px 2px rgba(22, 23, 29, 0.05);
+  }
+
+  /* ===== Eyebrow (kicker label) ===== */
+  .ph-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ph-red-dark);
+    line-height: 1;
+  }
+
+  /* ===== Primary CTA ===== */
+  .ph-btn-primary {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ef2a2a 0%, var(--ph-red-base) 52%, var(--ph-red-dark) 100%);
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 9px;
+    transition: all 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.28) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.20) inset,
+      0 10px 18px rgba(159, 18, 31, 0.18);
+  }
+  .ph-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 100%);
+    pointer-events: none;
+  }
+  .ph-btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ff5a5f 0%, #d71920 48%, #b91422 100%);
+    transform: translateY(-1px);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.18) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.18) inset,
+      0 12px 24px rgba(159, 18, 31, 0.22);
+  }
+  .ph-btn-primary:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* ===== Status Pill ===== */
+  .ph-status-pill {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow:
+      0 10px 28px rgba(22, 23, 29, 0.06),
+      0 1px 2px rgba(22, 23, 29, 0.04);
+  }
+
+  /* ===== Vignette backdrop for page ===== */
+  .ph-page-vignette {
+    background:
+      radial-gradient(ellipse 80% 55% at 50% -10%, rgba(215, 25, 32, 0.07) 0%, transparent 62%),
+      linear-gradient(180deg, #fbf8f5 0%, #f5f0ea 100%);
+  }
+
+  /* ===== Thin Scrollbar for Form Area (neutral) ===== */
+  .ph-scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
   }
 </style>
 </head>
-  <body class="bg-gray-50 dark:bg-[#050505] text-gray-900 dark:text-gray-100 antialiased transition-colors duration-300 selection:bg-red-500 selection:text-white">
+  <body class="bg-[#fbf8f5] text-gray-900 antialiased transition-colors duration-300 selection:bg-red-500 selection:text-white">
     <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

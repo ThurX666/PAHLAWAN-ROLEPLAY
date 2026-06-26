@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { Hexagon, Star, Shield, AlertCircle, X, Smartphone, Map, Mic, Globe, TrendingUp, Users, Wifi, Radio } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Shield, Mic, Globe, TrendingUp, Users, Wifi, X, XCircle } from 'lucide-react';
 import { LoginForm } from './auth/LoginForm';
 import { RegisterForm } from './auth/RegisterForm';
 import { ForgotPasswordForm } from './auth/ForgotPasswordForm';
@@ -8,6 +8,7 @@ import { VerifyForm } from './auth/VerifyForm';
 import { DiscordLinkForm } from './auth/DiscordLinkForm';
 import { isPreviewEnv, API_URL } from '../config';
 import { ServerStats } from '../types';
+import { UCP_VERSION } from '../version';
 
 interface AuthProps {
   onLogin: (username: string, adminLevel?: number, password?: string) => void;
@@ -15,6 +16,18 @@ interface AuthProps {
 }
 
 type AuthView = 'login' | 'register' | 'forgot' | 'verify' | 'discord';
+
+const AUTH_FLOW_STEPS = [
+  { view: 'register', label: 'Daftar' },
+  { view: 'verify', label: 'Verifikasi' },
+  { view: 'discord', label: 'Discord' },
+] as const;
+
+const canUseLocalAuthPreview = () => {
+  if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+  const host = window.location.hostname;
+  return host === 'localhost' || host === '::1' || host.startsWith('127.');
+};
 
 // Updated Professional Slideshow Data (5 Slides, Visual Heavy, Indonesian Descriptions)
 const SLIDES = [
@@ -68,6 +81,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   const [verifyUser, setVerifyUser] = useState<string | null>(null);
   const [initialCooldown, setInitialCooldown] = useState<number>(0);
   const [deviceInfo, setDeviceInfo] = useState({ device: '', ip: '', location: '' });
+  const formScrollRef = useRef<HTMLDivElement | null>(null);
 
   const clearPendingAuthState = () => {
     localStorage.removeItem('pending_discord_username');
@@ -152,17 +166,29 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   // Clear error when switching views
   useEffect(() => {
       setError(null);
+      window.scrollTo(0, 0);
+      formScrollRef.current?.scrollTo({ top: 0 });
   }, [view]);
 
   // Handler for Login Logic
   const handleLoginSubmit = async (usernameInput: string, passwordInput?: string) => {
     setLoading(true);
     setError(null);
+    const normalizedUser = usernameInput.toLowerCase().trim();
 
-    if (isPreviewEnv()) {
+    if (localAuthPreview && normalizedUser === 'preview') {
+        setTimeout(() => {
+            setLoading(false);
+            if (passwordInput === 'preview123') {
+                clearPendingAuthState();
+                onLogin('PreviewPlayer', 0, undefined, true, true);
+            } else {
+                setError("Kredensial Login tidak valid. Gunakan akun preview / preview123 untuk mode QA lokal.");
+            }
+        }, 500);
+    } else if (isPreviewEnv()) {
         // MODE PREVIEW (DUMMY)
         setTimeout(() => {
-            const normalizedUser = usernameInput.toLowerCase().trim();
             // SIMULATION VALIDATION LOGIC
             if (normalizedUser === 'admin' || normalizedUser === 'player') {
                 setLoading(false);
@@ -245,110 +271,111 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   };
 
   const activeSlide = SLIDES[currentSlide];
-  const SlideIcon = activeSlide.icon;
+  const activeFlowIndex = AUTH_FLOW_STEPS.findIndex(step => step.view === view);
+  const localAuthPreview = canUseLocalAuthPreview();
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-gray-50 dark:bg-[#050505]">
-      
-      {/* POPUP NOTIFICATION (Modal) */}
-      {error && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.3s_ease-out]">
-            <div className="bg-white dark:bg-[#1a1a1a] border border-red-500/30 max-w-md w-full rounded-2xl shadow-2xl relative overflow-hidden animate-[slideInUp_0.3s_ease-out]">
-                {/* Decorative */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
-                <div className="absolute -left-10 -top-10 w-32 h-32 bg-red-600/20 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div className="p-6 relative z-10">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="bg-red-500/20 p-3 rounded-full text-red-500 shrink-0">
-                            <AlertCircle size={32} />
-                        </div>
-                        <div>
-                           <h4 className="font-black text-xl text-gray-900 dark:text-white uppercase tracking-wider">Akses Ditolak</h4>
-                           <p className="text-sm text-red-500 font-medium">Terjadi Kesalahan</p>
-                        </div>
-                    </div>
-                    
-                    <div className="bg-gray-100 dark:bg-black/40 p-4 rounded-xl border border-gray-200 dark:border-white/5 mb-6">
-                        <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
-                            {error}
-                        </p>
-                    </div>
+    <div className="min-h-[100dvh] flex items-center justify-center relative overflow-x-hidden overflow-y-auto font-sans bg-[#fbf8f5] ph-page-vignette p-3 sm:p-5 md:p-6 lg:p-8">
 
-                    <button 
-                        onClick={() => setError(null)} 
-                        className="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/20 flex items-center justify-center gap-2 uppercase tracking-wider text-sm"
-                    >
-                        <X size={18} /> Tutup Pesan
-                    </button>
-                </div>
-            </div>
-        </div>
-      )}
-
-      {/* Dynamic Background */}
+      {/* Phase 4.15: light premium hosting x roleplay backdrop */}
       <div className="absolute inset-0 z-0">
-         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-red-600/20 blur-[150px] animate-pulse-slow"></div>
-         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-amber-600/10 blur-[150px] animate-pulse-slow" style={{animationDelay: '1s'}}></div>
-         <div className="absolute inset-0 bg-grid-pattern-light dark:bg-grid-pattern opacity-[0.05]"></div>
+         <div className="absolute top-[-22%] left-[-12%] w-[54%] h-[54%] rounded-full bg-ph-crimson-600/[0.08] blur-[140px]"></div>
+         <div className="absolute bottom-[-28%] right-[-18%] w-[48%] h-[48%] rounded-full bg-ph-gold-600/[0.07] blur-[150px]"></div>
+         <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.18]"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl h-[100dvh] md:h-[650px] flex md:rounded-3xl overflow-hidden shadow-2xl dark:shadow-black/80 border-0 md:border border-gray-200 dark:border-white/10 bg-white/90 md:bg-white/90 dark:bg-[#121212]/80 dark:md:bg-[#121212]/80 backdrop-blur-xl animate-[fadeIn_0.5s_ease-out]">
-        
-        {/* LEFT SIDE: Showcase Slideshow (Hidden on mobile) */}
-        <div className="hidden md:flex w-1/2 relative bg-black flex-col justify-between p-12 overflow-hidden">
+      <div className="relative z-10 grid w-full max-w-[1180px] md:h-[min(720px,calc(100dvh-48px))] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
+
+        {/* LEFT SIDE: Roleplay highlight panel */}
+        <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-9 lg:p-10 overflow-hidden">
+             <div className="absolute inset-0 bg-gradient-to-t from-black/[0.72] via-black/[0.18] to-black/[0.10] z-[6] pointer-events-none"></div>
+
              {SLIDES.map((slide, index) => (
-                 <div 
+                 <div
                     key={slide.id}
                     className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
                  >
-                    {/* Darker overlay for text readability */}
-                    <div className="absolute inset-0 bg-black/20 z-10"></div>
-                    <img 
-                        src={slide.image} 
-                        className={`w-full h-full object-cover transition-transform duration-[10000ms] ease-linear ${index === currentSlide ? 'scale-110' : 'scale-100'}`}
+                    <img
+                        src={slide.image}
+                        className={`w-full h-full object-cover transition-transform duration-[10000ms] ease-linear ${index === currentSlide ? 'scale-[1.08]' : 'scale-100'}`}
                         alt={slide.title}
                     />
                  </div>
              ))}
-             
-             {/* Gradient Overlay bottom */}
-             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
-             
-             <div className="relative z-20 mt-auto mb-10">
-                 <div key={activeSlide.id} className="animate-[fadeIn_0.5s_ease-out]">
-                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg bg-gradient-to-br ${activeSlide.color} backdrop-blur-md border border-white/20`}>
-                        <SlideIcon className="text-white" fill="currentColor" size={28} />
-                     </div>
-                     <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none mb-3 drop-shadow-lg">
-                        {activeSlide.title}
+
+             <div className="relative z-20 flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.12] border border-white/[0.18] text-sm font-black tracking-tight text-white">
+                      PH
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/[0.72]">PHRP</p>
+                      <p className="mt-1 text-xs font-semibold text-white">Est. 2020</p>
+                    </div>
+                </div>
+                <span className="rounded-md border border-white/[0.16] bg-white/[0.10] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/[0.78] font-mono">
+                  {String(currentSlide + 1).padStart(2, '0')} <span className="text-white/[0.30] mx-1">/</span> {String(SLIDES.length).padStart(2, '0')}
+                </span>
+             </div>
+
+             <div className="relative z-20 mt-auto max-w-[470px]">
+                 <div key={activeSlide.id} className="animate-auth-fade-in">
+                     <p className="mb-3 inline-flex rounded-full border border-white/[0.18] bg-white/[0.10] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.20em] text-white/[0.82]">Live Server Access</p>
+                     <h1 className="text-[30px] md:text-[34px] font-extrabold text-white tracking-tight leading-tight mb-3">
+                        Pahlawan Roleplay UCP
                      </h1>
-                     <p className="text-gray-300 text-sm max-w-sm leading-relaxed drop-shadow-md border-l-4 border-white/30 pl-4 py-1 bg-black/20 rounded-r-lg backdrop-blur-sm">
-                        {activeSlide.subtitle}
+                     <p className="text-white/[0.82] text-[13px] md:text-sm max-w-md leading-relaxed">
+                        Kelola identitas roleplay Anda, verifikasi akun, dan masuk ke ekosistem komunitas Pahlawan Roleplay dari satu client-area yang rapi.
+                     </p>
+                     <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-2.5">
+                        {['Kelola karakter', 'Verifikasi akun', 'Hubungkan Discord'].map(item => (
+                          <div key={item} className="rounded-lg border border-white/[0.14] bg-white/[0.10] px-3 py-2 text-[11px] font-semibold text-white/[0.88]">
+                            {item}
+                          </div>
+                        ))}
+                     </div>
+                     <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/[0.60]">
+                        {activeSlide.title}
                      </p>
                  </div>
              </div>
-             
-             {/* Indicators */}
-             <div className="relative z-20 flex space-x-2">
+
+             {/* Minimal slide indicators */}
+             <div className="relative z-20 flex items-center gap-1.5 mt-5">
                  {SLIDES.map((slide, index) => (
-                     <button 
+                     <button
                         key={slide.id}
                         onClick={() => setCurrentSlide(index)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${index === currentSlide ? 'w-12 bg-white' : 'w-2 bg-white/20 hover:bg-white/40'}`}
-                     />
-                 ))}
-             </div>
-        </div>
+                        className="group flex h-10 w-10 items-center justify-start"
+                        aria-label={`Slide ${index + 1}`}
+                     >
+                         <div className={`h-1.5 rounded-full transition-all duration-500 ${index === currentSlide ? 'w-9 bg-white' : 'w-2 bg-white/[0.32] hover:bg-white/[0.55]'}`}></div>
+                      </button>
+                  ))}
+              </div>
+         </div>
 
         {/* RIGHT SIDE: Auth Form Container */}
-        <div className="w-full md:w-1/2 flex flex-col bg-white/5 backdrop-blur-sm relative h-full overflow-y-auto">
-          
-          {/* Top Center Decoration - UNIFIED Server Status Bar (CENTERED) */}
-          <div className="absolute top-0 left-0 w-full p-4 md:p-6 z-20 flex justify-center pointer-events-none">
-              <div className="flex items-center gap-2 md:gap-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-3 py-1.5 md:px-4 md:py-2 pointer-events-auto">
+        <div className="w-full flex flex-col relative h-full ph-auth-surface overflow-hidden">
+
+          {/* Top Accent Line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] ph-auth-accent-line z-20"></div>
+
+          <div className="shrink-0 flex min-h-[76px] items-center justify-between gap-4 px-5 md:px-8 pt-6 md:pt-8 pb-4">
+              <div>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">Account Access</span>
+                  <p className="mt-1 text-xs font-semibold text-gray-700">Secure UCP gateway</p>
+              </div>
+              <span className="self-center rounded-md border border-ph-gold-600/20 bg-ph-gold-600/[0.08] px-2.5 py-1.5 text-[10px] leading-none font-mono font-semibold tracking-[0.15em] text-ph-gold-700 whitespace-nowrap">{UCP_VERSION}</span>
+          </div>
+
+          {/* Server Status Bar */}
+          <div className="shrink-0 px-5 md:px-8 pb-4">
+              <div className="grid grid-cols-[0.78fr_0.82fr_1.4fr] ph-status-pill rounded-xl overflow-hidden">
                   {/* Status */}
-                  <div className="flex items-center gap-1.5 md:gap-2">
+                  <div className="min-w-0 px-3 py-2.5 border-r border-gray-200">
+                    <p className="mb-1 text-[9px] font-bold uppercase tracking-[0.18em] text-gray-500">Status</p>
+                    <div className="flex items-center gap-1.5">
                       <div className="relative flex h-2 w-2">
                         {serverStats?.status === 'Online' ? (
                             <>
@@ -361,64 +388,146 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
                             </>
                         ) : (
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                         )}
                       </div>
-                      <span className={`text-[8px] md:text-[9px] font-black uppercase tracking-wider ${serverStats?.status === 'Online' ? 'text-white' : serverStats?.status === 'Loading' ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {serverStats?.status === 'Online' ? 'Online' : serverStats?.status === 'Loading' ? 'Loading' : 'Offline'}
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${serverStats?.status === 'Online' ? 'text-green-600' : serverStats?.status === 'Loading' ? 'text-yellow-600' : 'text-ph-crimson-700'}`}>
+                          {serverStats?.status === 'Online' ? 'Online' : serverStats?.status === 'Loading' ? 'Memuat...' : 'Offline'}
                       </span>
+                    </div>
                   </div>
-
-                  {/* Divider */}
-                  <div className="w-px h-3 bg-white/20"></div>
 
                   {/* Players */}
-                  <div className="flex items-center gap-1 md:gap-1.5">
-                      <Users size={10} className="text-gray-400 md:w-3 md:h-3" />
-                      <span className="text-[8px] md:text-[9px] font-bold text-white font-mono">{serverStats?.players || 0}</span>
+                  <div className="min-w-0 px-3 py-2.5 border-r border-gray-200">
+                    <p className="mb-1 text-[9px] font-bold uppercase tracking-[0.18em] text-gray-500">Players</p>
+                    <div className="flex items-center gap-1.5">
+                      <Users size={13} className="text-gray-500" />
+                      <span className="text-[11px] font-bold text-gray-900 font-mono whitespace-nowrap">
+                          {serverStats?.players ?? 0}<span className="font-sans font-semibold text-gray-500 ml-1">pemain</span>
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Divider */}
-                  <div className="w-px h-3 bg-white/20"></div>
-
                   {/* IP */}
-                  <div className="flex items-center gap-1 md:gap-1.5">
-                      <Wifi size={10} className="text-amber-500 md:w-3 md:h-3" />
-                      <span className="text-[8px] md:text-[9px] font-bold text-gray-300 font-mono tracking-wide">{serverStats?.ip_address || "pahlawan-rp.com:7777"}</span>
+                  <div className="min-w-0 px-3 py-2.5">
+                    <p className="mb-1 text-[9px] font-bold uppercase tracking-[0.18em] text-gray-500">Server IP</p>
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <Wifi size={13} className="text-gray-500 shrink-0" />
+                      <span className="truncate text-[10px] sm:text-[11px] font-semibold text-gray-800 font-mono tracking-wide">{serverStats?.ip_address || "pahlawan-rp.com:7777"}</span>
+                    </div>
                   </div>
               </div>
           </div>
 
-          {/* Top Spacer to prevent overlap with absolute status bar */}
-          <div className="shrink-0 h-[100px] md:h-[120px] pb-0 -mb-9"></div>
+          {/* Scrollable Form Area */}
+          <div ref={formScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 pb-6 pt-1 ph-scroll-thin">
+           <div className="ph-auth-panel-inner max-w-[430px] mx-auto w-full rounded-2xl px-5 md:px-7 py-6 md:py-7 my-1">
 
-          <div className="max-w-sm mx-auto w-full shrink-0 px-6 md:px-8 py-2">
-            
-            {/* Logo */}
-            <div className="flex justify-center mb-8 mt-0">
-                {/* https://i.ibb.co.com/d4zTLfM6/logo1.png */}
-                <img 
-                    src={`${import.meta.env.BASE_URL}assets/images/logo1.png`} 
-                    alt="Pahlawan Roleplay" 
-                    className="w-56 md:w-64 max-h-28 md:max-h-32 object-contain hover:scale-105 transition-transform duration-500" 
-                />
+             {/* Logo + sub-brand */}
+            <div className="flex flex-col items-center mb-6 mt-1">
+                <div className="relative">
+                    <img
+                        src={`${import.meta.env.BASE_URL}assets/images/logo1.png`}
+                        alt="Pahlawan Roleplay"
+                        className="w-32 md:w-36 max-h-14 md:max-h-16 object-contain hover:scale-[1.02] transition-transform duration-500 relative z-10"
+                    />
+                </div>
             </div>
+
+            {activeFlowIndex >= 0 && (
+                <div className="mb-5 rounded-xl border border-gray-200 bg-gray-50/70 p-2.5">
+                    <div className="flex items-center justify-between gap-1.5">
+                        {AUTH_FLOW_STEPS.map((step, index) => {
+                            const isActive = index === activeFlowIndex;
+                            const isDone = index < activeFlowIndex;
+                            const stepCircleClass = isActive
+                                ? 'border-ph-crimson-600/35 bg-ph-crimson-600/10 text-ph-crimson-700'
+                                : isDone
+                                    ? 'border-ph-crimson-600/30 bg-ph-crimson-600/[0.08] text-ph-crimson-700'
+                                    : 'border-gray-200 bg-white text-gray-500';
+                            const stepLabelClass = isActive
+                                ? 'text-gray-900'
+                                : isDone
+                                    ? 'text-gray-700'
+                                    : 'text-gray-500';
+                            const connectorClass = index < activeFlowIndex ? 'bg-ph-crimson-600/45' : 'bg-gray-200';
+                            return (
+                                <React.Fragment key={step.view}>
+                                    <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                                        <div className={`flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-black transition-all ${stepCircleClass}`}>
+                                            {index + 1}
+                                        </div>
+                                        <span className={`truncate text-[9px] font-bold tracking-wide ${stepLabelClass}`}>
+                                            {step.label}
+                                        </span>
+                                    </div>
+                                    {index < AUTH_FLOW_STEPS.length - 1 && (
+                                        <div className={`mb-4 h-px w-4 shrink-0 ${connectorClass}`} />
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Inline Error Alert */}
+            {error && (
+                <div className="ph-alert ph-alert-error mb-4">
+                    <XCircle size={18} className="shrink-0 mt-0.5 text-ph-crimson-700" />
+                    <div className="flex-1">
+                        <p className="font-semibold text-ph-crimson-800 text-[13px] mb-0.5">Terjadi Kesalahan</p>
+                        <p className="text-[12px] leading-relaxed opacity-90">{error}</p>
+                    </div>
+                    <button
+                        onClick={() => setError(null)}
+                        className="shrink-0 text-gray-500 hover:text-gray-900 transition-colors p-0.5"
+                        aria-label="Tutup pesan error"
+                    >
+                        <X size={14} />
+                    </button>
+                </div>
+            )}
 
             {/* MODULAR FORMS */}
             {view === 'login' && (
                 <>
                     <LoginForm onSubmit={handleLoginSubmit} setView={setView} loading={loading} />
-                    {isPreviewEnv() && (
-                        <button 
-                            onClick={() => { setVerifyUser("PreviewPlayer"); setView('discord'); }} 
-                            className="mt-4 w-full bg-white/5 border border-white/10 text-white rounded-lg py-2 text-xs opacity-75 hover:opacity-100 transition-all font-mono hover:bg-white/10"
-                        >
-                            👁️ Preview Tampilan Wajib Discord
-                        </button>
+                    {localAuthPreview && (
+                        <div className="mt-3 grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-gray-50/70 p-2">
+                            <button
+                                onClick={() => handleLoginSubmit('preview', 'preview123')}
+                                className="w-full rounded-lg border border-gray-200 bg-white py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
+                            >
+                                Preview Login Dashboard
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setVerifyUser("preview@pahlawan-rp.local");
+                                    setInitialCooldown(1800);
+                                    setView('verify');
+                                }}
+                                className="w-full rounded-lg border border-gray-200 bg-white py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
+                            >
+                                Preview OTP Verify
+                            </button>
+                            <button
+                                onClick={() => { setVerifyUser("PreviewPlayer"); setView('discord'); }}
+                                className="w-full rounded-lg border border-gray-200 bg-white py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
+                            >
+                                Preview Link Discord
+                            </button>
+                            <button
+                                onClick={() => setError(`Gagal menghubungi server. Details: Simulasi network error lokal | Pastikan API URL benar: ${API_URL}`)}
+                                className="w-full rounded-lg border border-gray-200 bg-white py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
+                            >
+                                Preview Network Error
+                            </button>
+                        </div>
                     )}
                 </>
             )}
-            
+
             {view === 'register' && (
                 <RegisterForm onSubmit={handleRegisterSuccess} setView={setView} loading={loading} onError={setError} />
             )}
@@ -428,27 +537,25 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
             )}
 
             {view === 'verify' && verifyUser && (
-                <VerifyForm 
-                   username={verifyUser} 
+                <VerifyForm
+                   username={verifyUser}
                    initialCooldown={initialCooldown}
                    deviceInfo={deviceInfo}
                    onVerifySuccess={(username, adminLvl, gold, isDiscordLinked) => {
                        clearPendingAuthState();
-                       // Bypass layar login, langsung hubungkan ke state App.js
                        onLogin(username, adminLvl, undefined, true, isDiscordLinked);
                    }}
                    onDiscordRequired={(actualUsername) => {
-                       // Update verifyUser to actual username so Discord workflow runs correctly
                        setVerifyUser(actualUsername);
                        setView('discord');
                    }}
-                   setView={setView} 
+                   setView={setView}
                    onError={setError}
                 />
             )}
 
             {view === 'discord' && verifyUser && (
-                <DiscordLinkForm 
+                <DiscordLinkForm
                     username={verifyUser}
                     onLinkSuccess={(username, adminLvl, gold) => {
                         clearPendingAuthState();
@@ -459,10 +566,8 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                 />
             )}
 
+           </div>
           </div>
-
-          {/* Bottom Spacer */}
-          <div className="flex-1 min-h-[80px] shrink-0"></div>
         </div>
       </div>
     </div>

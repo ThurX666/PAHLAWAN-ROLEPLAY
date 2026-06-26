@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Hexagon, Star, Shield, AlertCircle, X, Smartphone, Map, Mic, Globe, TrendingUp, Users, Wifi, Radio } from 'lucide-react';
+import { Hexagon, Star, Shield, AlertCircle, X, Smartphone, Map, Mic, Globe, TrendingUp, Users, Wifi, Radio, XCircle } from 'lucide-react';
 import { LoginForm } from './auth/LoginForm';
 import { RegisterForm } from './auth/RegisterForm';
 import { ForgotPasswordForm } from './auth/ForgotPasswordForm';
@@ -15,6 +15,12 @@ interface AuthProps {
 }
 
 type AuthView = 'login' | 'register' | 'forgot' | 'verify' | 'discord';
+
+const AUTH_FLOW_STEPS = [
+  { view: 'register', label: 'Daftar' },
+  { view: 'verify', label: 'Verifikasi' },
+  { view: 'discord', label: 'Discord' },
+] as const;
 
 // Updated Professional Slideshow Data (5 Slides, Visual Heavy, Indonesian Descriptions)
 const SLIDES = [
@@ -246,64 +252,41 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
 
   const activeSlide = SLIDES[currentSlide];
   const SlideIcon = activeSlide.icon;
+  const activeFlowIndex = AUTH_FLOW_STEPS.findIndex(step => step.view === view);
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-gray-50 dark:bg-[#050505]">
-      
-      {/* POPUP NOTIFICATION (Modal) */}
-      {error && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-[fadeIn_0.3s_ease-out]">
-            <div className="bg-white dark:bg-[#1a1a1a] border border-red-500/30 max-w-md w-full rounded-2xl shadow-2xl relative overflow-hidden animate-[slideInUp_0.3s_ease-out]">
-                {/* Decorative */}
-                <div className="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
-                <div className="absolute -left-10 -top-10 w-32 h-32 bg-red-600/20 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div className="p-6 relative z-10">
-                    <div className="flex items-center gap-4 mb-4">
-                        <div className="bg-red-500/20 p-3 rounded-full text-red-500 shrink-0">
-                            <AlertCircle size={32} />
-                        </div>
-                        <div>
-                           <h4 className="font-black text-xl text-gray-900 dark:text-white uppercase tracking-wider">Akses Ditolak</h4>
-                           <p className="text-sm text-red-500 font-medium">Terjadi Kesalahan</p>
-                        </div>
-                    </div>
-                    
-                    <div className="bg-gray-100 dark:bg-black/40 p-4 rounded-xl border border-gray-200 dark:border-white/5 mb-6">
-                        <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
-                            {error}
-                        </p>
-                    </div>
+    <div className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-ph-surface-deep ph-page-vignette">
 
-                    <button 
-                        onClick={() => setError(null)} 
-                        className="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/20 flex items-center justify-center gap-2 uppercase tracking-wider text-sm"
-                    >
-                        <X size={18} /> Tutup Pesan
-                    </button>
-                </div>
-            </div>
-        </div>
-      )}
-
-      {/* Dynamic Background */}
+      {/* Dynamic Background — strong PHRP identity */}
       <div className="absolute inset-0 z-0">
-         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-red-600/20 blur-[150px] animate-pulse-slow"></div>
-         <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-amber-600/10 blur-[150px] animate-pulse-slow" style={{animationDelay: '1s'}}></div>
-         <div className="absolute inset-0 bg-grid-pattern-light dark:bg-grid-pattern opacity-[0.05]"></div>
+         <div className="absolute top-[-25%] left-[-15%] w-[70%] h-[70%] rounded-full bg-ph-crimson-700/[0.20] blur-[180px] animate-pulse-slow"></div>
+         <div className="absolute bottom-[-15%] right-[-10%] w-[55%] h-[55%] rounded-full bg-ph-gold-600/[0.12] blur-[160px] animate-pulse-slow" style={{animationDelay: '1.5s'}}></div>
+         <div className="absolute top-[20%] right-[10%] w-[35%] h-[35%] rounded-full bg-ph-crimson-600/[0.10] blur-[140px] animate-pulse-slow" style={{animationDelay: '3s'}}></div>
+         <div className="absolute inset-0 bg-dot-pattern-light dark:bg-dot-pattern opacity-70"></div>
+         <div className="absolute inset-0 bg-grid-pattern-light dark:bg-grid-pattern opacity-40"></div>
+         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-ph-gold-600/40 to-transparent"></div>
+         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-ph-crimson-700/40 to-transparent"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-5xl h-[100dvh] md:h-[650px] flex md:rounded-3xl overflow-hidden shadow-2xl dark:shadow-black/80 border-0 md:border border-gray-200 dark:border-white/10 bg-white/90 md:bg-white/90 dark:bg-[#121212]/80 dark:md:bg-[#121212]/80 backdrop-blur-xl animate-[fadeIn_0.5s_ease-out]">
+      <div className="relative z-10 w-full max-w-6xl h-[100dvh] md:h-[720px] flex md:rounded-[24px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.25),0_10px_30px_rgba(127,29,29,0.18)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.65),0_15px_40px_rgba(127,29,29,0.30)] border-0 md:border border-ph-gold-600/30 dark:border-ph-crimson-900/40 bg-white dark:bg-[#121218] animate-auth-fade-in">
+        
+        {/* Cinematic corner accents on the card */}
+        <span className="ph-card-corner tl"></span>
+        <span className="ph-card-corner tr"></span>
+        <span className="ph-card-corner bl"></span>
+        <span className="ph-card-corner br"></span>
         
         {/* LEFT SIDE: Showcase Slideshow (Hidden on mobile) */}
         <div className="hidden md:flex w-1/2 relative bg-black flex-col justify-between p-12 overflow-hidden">
+             {/* Layered overlays for cinematic feel */}
+             <div className="absolute inset-0 bg-gradient-to-br from-ph-crimson-950/30 via-transparent to-ph-gold-900/20 z-[5] mix-blend-overlay pointer-events-none"></div>
+             <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent z-[6] pointer-events-none"></div>
+             
              {SLIDES.map((slide, index) => (
                  <div 
                     key={slide.id}
                     className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
                  >
-                    {/* Darker overlay for text readability */}
-                    <div className="absolute inset-0 bg-black/20 z-10"></div>
                     <img 
                         src={slide.image} 
                         className={`w-full h-full object-cover transition-transform duration-[10000ms] ease-linear ${index === currentSlide ? 'scale-110' : 'scale-100'}`}
@@ -312,43 +295,82 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                  </div>
              ))}
              
-             {/* Gradient Overlay bottom */}
-             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent z-10"></div>
+             {/* Cinematic gradient overlay */}
+             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/10 z-10"></div>
+             <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black via-black/70 to-transparent z-10"></div>
              
-             <div className="relative z-20 mt-auto mb-10">
-                 <div key={activeSlide.id} className="animate-[fadeIn_0.5s_ease-out]">
-                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg bg-gradient-to-br ${activeSlide.color} backdrop-blur-md border border-white/20`}>
-                        <SlideIcon className="text-white" fill="currentColor" size={28} />
+             {/* Top brand bar on slideshow */}
+             <div className="relative z-20 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-ph-gold-400 to-ph-gold-600 flex items-center justify-center shadow-lg border border-white/20">
+                        <Star size={16} className="text-white" fill="currentColor" />
+                    </div>
+                    <div>
+                        <p className="text-white text-[11px] font-black uppercase tracking-[0.2em] leading-none drop-shadow">PHRP</p>
+                        <p className="text-ph-gold-400/90 text-[9px] font-bold uppercase tracking-[0.18em] mt-1 leading-none">Est. 2020</p>
+                    </div>
+                </div>
+                <div className="px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/15">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-white/90">{String(currentSlide + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}</span>
+                </div>
+             </div>
+             
+             <div className="relative z-20 mt-auto">
+                 <div key={activeSlide.id} className="animate-auth-fade-in">
+                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 shadow-2xl bg-gradient-to-br ${activeSlide.color} border border-white/25 ring-1 ring-black/20`}>
+                        <SlideIcon className="text-white" fill="currentColor" size={26} />
                      </div>
-                     <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none mb-3 drop-shadow-lg">
+                     <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-ph-gold-500/20 border border-ph-gold-400/30 backdrop-blur-sm mb-3">
+                        <span className="w-1.5 h-1.5 rounded-full bg-ph-gold-400 animate-pulse"></span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-ph-gold-400">Feature Highlight</span>
+                     </div>
+                     <h1 className="text-4xl font-black text-white uppercase italic tracking-tight leading-[0.95] mb-4 drop-shadow-2xl">
                         {activeSlide.title}
                      </h1>
-                     <p className="text-gray-300 text-sm max-w-sm leading-relaxed drop-shadow-md border-l-4 border-white/30 pl-4 py-1 bg-black/20 rounded-r-lg backdrop-blur-sm">
+                     <p className="text-gray-200/95 text-[13px] max-w-sm leading-relaxed drop-shadow-lg border-l-[3px] border-ph-gold-500 pl-4 py-1">
                         {activeSlide.subtitle}
                      </p>
                  </div>
              </div>
              
-             {/* Indicators */}
-             <div className="relative z-20 flex space-x-2">
+             {/* Premium slide indicators */}
+             <div className="relative z-20 flex items-center gap-2 mt-7">
                  {SLIDES.map((slide, index) => (
                      <button 
                         key={slide.id}
                         onClick={() => setCurrentSlide(index)}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${index === currentSlide ? 'w-12 bg-white' : 'w-2 bg-white/20 hover:bg-white/40'}`}
-                     />
+                        className="group relative"
+                        aria-label={`Slide ${index + 1}`}
+                     >
+                        <div className={`h-1 rounded-full transition-all duration-500 ${index === currentSlide ? 'w-12 bg-gradient-to-r from-ph-gold-400 to-ph-crimson-500' : 'w-3 bg-white/25 hover:bg-white/45 group-hover:w-6'}`}></div>
+                        {index === currentSlide && (
+                            <span className="absolute -top-1 left-0 right-0 h-0.5 bg-ph-gold-400/60 blur-[2px]"></span>
+                        )}
+                     </button>
                  ))}
+                 <div className="ml-auto text-[10px] font-mono font-bold text-white/50 tracking-widest">
+                    AUTO
+                 </div>
              </div>
         </div>
 
         {/* RIGHT SIDE: Auth Form Container */}
-        <div className="w-full md:w-1/2 flex flex-col bg-white/5 backdrop-blur-sm relative h-full overflow-y-auto">
+        <div className="w-full md:w-1/2 flex flex-col relative h-full ph-auth-surface overflow-hidden">
           
-          {/* Top Center Decoration - UNIFIED Server Status Bar (CENTERED) */}
-          <div className="absolute top-0 left-0 w-full p-4 md:p-6 z-20 flex justify-center pointer-events-none">
-              <div className="flex items-center gap-2 md:gap-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-3 py-1.5 md:px-4 md:py-2 pointer-events-auto">
+          {/* Top Accent Line */}
+          <div className="absolute top-0 left-0 right-0 h-[3px] ph-auth-accent-line z-20 shadow-[0_1px_6px_rgba(220,38,38,0.35)]"></div>
+          
+          {/* Eyebrow micro text (left of status) */}
+          <div className="shrink-0 flex items-center justify-between px-5 md:px-7 pt-5 md:pt-6 pb-1.5">
+              <span className="ph-eyebrow text-[9px] md:text-[10px]">User Control Panel</span>
+              <span className="text-[9px] font-mono font-bold tracking-widest text-gray-400 dark:text-gray-500 uppercase">v1.0</span>
+          </div>
+          
+          {/* Server Status Bar — premium */}
+          <div className="shrink-0 flex justify-center pt-1 pb-2.5 px-4">
+              <div className="flex items-center gap-2 md:gap-2.5 ph-status-pill rounded-full px-3.5 py-1.5">
                   {/* Status */}
-                  <div className="flex items-center gap-1.5 md:gap-2">
+                  <div className="flex items-center gap-1.5">
                       <div className="relative flex h-2 w-2">
                         {serverStats?.status === 'Online' ? (
                             <>
@@ -364,45 +386,101 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                         )}
                       </div>
-                      <span className={`text-[8px] md:text-[9px] font-black uppercase tracking-wider ${serverStats?.status === 'Online' ? 'text-white' : serverStats?.status === 'Loading' ? 'text-yellow-400' : 'text-red-400'}`}>
-                          {serverStats?.status === 'Online' ? 'Online' : serverStats?.status === 'Loading' ? 'Loading' : 'Offline'}
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${serverStats?.status === 'Online' ? 'text-green-600 dark:text-green-400' : serverStats?.status === 'Loading' ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'}`}>
+                          {serverStats?.status === 'Online' ? 'Online' : serverStats?.status === 'Loading' ? 'Memuat...' : 'Offline'}
                       </span>
                   </div>
 
                   {/* Divider */}
-                  <div className="w-px h-3 bg-white/20"></div>
+                  <div className="w-px h-3 bg-gray-300 dark:bg-white/10"></div>
 
                   {/* Players */}
-                  <div className="flex items-center gap-1 md:gap-1.5">
-                      <Users size={10} className="text-gray-400 md:w-3 md:h-3" />
-                      <span className="text-[8px] md:text-[9px] font-bold text-white font-mono">{serverStats?.players || 0}</span>
+                  <div className="flex items-center gap-1.5">
+                      <Users size={11} className="text-gray-500 dark:text-gray-400" />
+                      <span className="text-[10px] font-bold text-gray-700 dark:text-white font-mono">{serverStats?.players || 0}</span>
                   </div>
 
                   {/* Divider */}
-                  <div className="w-px h-3 bg-white/20"></div>
+                  <div className="w-px h-3 bg-gray-300 dark:bg-white/10"></div>
 
                   {/* IP */}
-                  <div className="flex items-center gap-1 md:gap-1.5">
-                      <Wifi size={10} className="text-amber-500 md:w-3 md:h-3" />
-                      <span className="text-[8px] md:text-[9px] font-bold text-gray-300 font-mono tracking-wide">{serverStats?.ip_address || "pahlawan-rp.com:7777"}</span>
+                  <div className="flex items-center gap-1.5">
+                      <Wifi size={11} className="text-ph-gold-600 dark:text-ph-gold-500" />
+                      <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300 font-mono tracking-wide">{serverStats?.ip_address || "pahlawan-rp.com:7777"}</span>
                   </div>
               </div>
           </div>
 
-          {/* Top Spacer to prevent overlap with absolute status bar */}
-          <div className="shrink-0 h-[100px] md:h-[120px] pb-0 -mb-9"></div>
-
-          <div className="max-w-sm mx-auto w-full shrink-0 px-6 md:px-8 py-2">
+          {/* Scrollable Form Area — wrapped in inner card section for premium feel */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 md:px-5 pb-5 pt-1 ph-scroll-thin">
+           <div className="ph-auth-panel-inner max-w-[420px] mx-auto w-full rounded-2xl px-5 md:px-7 py-5 md:py-6 my-2">
             
-            {/* Logo */}
-            <div className="flex justify-center mb-8 mt-0">
-                {/* https://i.ibb.co.com/d4zTLfM6/logo1.png */}
-                <img 
-                    src={`${import.meta.env.BASE_URL}assets/images/logo1.png`} 
-                    alt="Pahlawan Roleplay" 
-                    className="w-56 md:w-64 max-h-28 md:max-h-32 object-contain hover:scale-105 transition-transform duration-500" 
-                />
+            {/* Logo + sub-brand */}
+            <div className="flex flex-col items-center mb-5 mt-1">
+                <div className="relative">
+                    <img 
+                        src={`${import.meta.env.BASE_URL}assets/images/logo1.png`} 
+                        alt="Pahlawan Roleplay" 
+                        className="w-36 md:w-40 max-h-16 md:max-h-20 object-contain hover:scale-[1.04] transition-transform duration-500 relative z-10" 
+                    />
+                    <div className="absolute inset-0 bg-ph-gold-400/20 blur-2xl -z-10"></div>
+                </div>
             </div>
+
+            {activeFlowIndex >= 0 && (
+                <div className="mb-4 rounded-xl border border-gray-200/80 dark:border-white/10 bg-white/80 dark:bg-[#16161e] p-2.5 shadow-sm dark:shadow-none">
+                    <div className="flex items-center justify-between gap-1.5">
+                        {AUTH_FLOW_STEPS.map((step, index) => {
+                            const isActive = index === activeFlowIndex;
+                            const isDone = index < activeFlowIndex;
+                            const stepCircleClass = isActive
+                                ? 'border-ph-gold-500/50 bg-ph-gold-500/15 text-ph-gold-600 dark:text-ph-gold-400'
+                                : isDone
+                                    ? 'border-ph-crimson-500/40 bg-ph-crimson-600/10 text-ph-crimson-600 dark:text-ph-crimson-400'
+                                    : 'border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#1a1a24] text-gray-400';
+                            const stepLabelClass = isActive
+                                ? 'text-gray-900 dark:text-white'
+                                : isDone
+                                    ? 'text-gray-500 dark:text-gray-300'
+                                    : 'text-gray-400 dark:text-gray-500';
+                            const connectorClass = index < activeFlowIndex ? 'bg-ph-crimson-500/50' : 'bg-gray-200 dark:bg-white/10';
+                            return (
+                                <React.Fragment key={step.view}>
+                                    <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
+                                        <div className={`flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-black transition-all ${stepCircleClass}`}>
+                                            {index + 1}
+                                        </div>
+                                        <span className={`truncate text-[9px] font-bold tracking-wide ${stepLabelClass}`}>
+                                            {step.label}
+                                        </span>
+                                    </div>
+                                    {index < AUTH_FLOW_STEPS.length - 1 && (
+                                        <div className={`mb-4 h-px w-4 shrink-0 ${connectorClass}`} />
+                                    )}
+                                </React.Fragment>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Inline Error Alert */}
+            {error && (
+                <div className="ph-alert ph-alert-error mb-4">
+                    <XCircle size={18} className="shrink-0 mt-0.5 text-ph-crimson-600 dark:text-ph-crimson-400" />
+                    <div className="flex-1">
+                        <p className="font-semibold text-ph-crimson-700 dark:text-ph-crimson-400 text-[13px] mb-0.5">Terjadi Kesalahan</p>
+                        <p className="text-[12px] leading-relaxed opacity-90">{error}</p>
+                    </div>
+                    <button 
+                        onClick={() => setError(null)}
+                        className="shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors p-0.5"
+                        aria-label="Tutup pesan error"
+                    >
+                        <X size={14} />
+                    </button>
+                </div>
+            )}
 
             {/* MODULAR FORMS */}
             {view === 'login' && (
@@ -411,9 +489,9 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                     {isPreviewEnv() && (
                         <button 
                             onClick={() => { setVerifyUser("PreviewPlayer"); setView('discord'); }} 
-                            className="mt-4 w-full bg-white/5 border border-white/10 text-white rounded-lg py-2 text-xs opacity-75 hover:opacity-100 transition-all font-mono hover:bg-white/10"
+                            className="mt-3 w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/[0.08] text-gray-600 dark:text-gray-300 rounded-lg py-2 text-xs opacity-70 hover:opacity-100 transition-all font-mono hover:bg-gray-100 dark:hover:bg-white/10"
                         >
-                            👁️ Preview Tampilan Wajib Discord
+                            Pratinjau Tampilan Wajib Discord
                         </button>
                     )}
                 </>
@@ -455,10 +533,8 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                 />
             )}
 
+           </div>
           </div>
-
-          {/* Bottom Spacer */}
-          <div className="flex-1 min-h-[80px] shrink-0"></div>
         </div>
       </div>
     </div>

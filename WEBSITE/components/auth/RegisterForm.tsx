@@ -4,6 +4,12 @@ import { User, Lock, Mail, ArrowRight, Loader2, ChevronLeft } from 'lucide-react
 import { InputGroup } from './InputGroup';
 import { isPreviewEnv, API_URL } from '../../config';
 
+const canUseLocalAuthPreview = () => {
+    if (!import.meta.env.DEV || typeof window === 'undefined') return false;
+    const host = window.location.hostname;
+    return host === 'localhost' || host === '::1' || host.startsWith('127.');
+};
+
 interface RegisterFormProps {
     onSubmit: (username: string, password?: string) => void;
     setView: (view: 'login' | 'register' | 'forgot') => void;
@@ -16,6 +22,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
     const [errors, setErrors] = useState({ username: '', email: '', password: '', confirm: '' });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const localAuthPreview = canUseLocalAuthPreview();
 
     const handleChange = (field: string, value: string) => {
         setFormData(prev => ({ ...prev, [field]: value }));
@@ -33,31 +40,31 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if(!formData.username.trim()) { 
-            newErrors.username = 'Username required'; 
+            newErrors.username = 'Username wajib diisi'; 
             isValid = false; 
         } else if(!usernameRegex.test(formData.username)) {
-            newErrors.username = '4-24 characters, only letters, numbers, and underscore';
+            newErrors.username = '4-24 karakter, hanya huruf, angka, dan underscore';
             isValid = false;
         }
 
         if(!formData.email.trim()) { 
-            newErrors.email = 'Email required'; 
+            newErrors.email = 'Email wajib diisi'; 
             isValid = false; 
         } else if(!emailRegex.test(formData.email)) {
-            newErrors.email = 'Invalid email format (e.g. name@domain.com)';
+            newErrors.email = 'Format email tidak valid';
             isValid = false;
         }
 
         if(!formData.password) { 
-            newErrors.password = 'Password required'; 
+            newErrors.password = 'Password wajib diisi'; 
             isValid = false; 
         } else if(formData.password.length < 4 || formData.password.length > 32) {
-            newErrors.password = 'Password must be 4-32 characters';
+            newErrors.password = 'Password harus 4-32 karakter';
             isValid = false;
         }
 
         if(formData.password !== formData.confirm) { 
-            newErrors.confirm = 'Passwords do not match'; 
+            newErrors.confirm = 'Password tidak cocok'; 
             isValid = false; 
         }
 
@@ -70,13 +77,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
         if(validate()) {
             setIsSubmitting(true);
             try {
-                if (isPreviewEnv()) {
+                if (isPreviewEnv() || localAuthPreview) {
                     setTimeout(() => {
                         setIsSubmitting(false);
                         const isTakenUsername = formData.username.toLowerCase() === 'admin' || formData.username.toLowerCase() === 'player';
                         const isTakenEmail = formData.email.toLowerCase() === 'admin@admin.com' || formData.email.toLowerCase() === 'player@player.com';
                         
-                        if (isTakenUsername || isTakenEmail) {
+                        if (!localAuthPreview && (isTakenUsername || isTakenEmail)) {
                             const msg = isTakenUsername ? 'Username sudah terdaftar.' : 'Email sudah terdaftar.';
                             if (onError) onError(msg);
                             setErrors({
@@ -147,74 +154,84 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
     };
 
     return (
-        <div className="animate-[fadeIn_0.3s_ease-out]">
-            <div className="text-center mb-8">
-               <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2 uppercase italic tracking-tighter">
-                 Join the City
+        <div className="animate-auth-slide-up">
+            <div className="text-center mb-4">
+               <span className="ph-eyebrow mb-3">Account Enrollment</span>
+               <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">
+                 Buat Akun Baru
                </h2>
-               <p className="text-gray-500 text-xs uppercase tracking-widest font-bold">
-                 Start your new life
+               <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed">
+                 Mulai perjalanan roleplay Anda<br className="hidden md:block"/> di Pahlawan Roleplay.
                </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-                <InputGroup 
-                    icon={User} 
-                    type="text" 
-                    placeholder="Username" 
+            <div className="mb-3.5 rounded-lg border border-ph-gold-600/20 bg-ph-gold-600/[0.08] px-3.5 py-2.5 text-[11px] md:text-xs leading-relaxed text-gray-600">
+                <div className="flex items-start gap-2">
+                    <div className="shrink-0 mt-0.5 w-4 h-4 rounded-full bg-ph-gold-600/12 flex items-center justify-center">
+                        <span className="text-[9px] font-black text-ph-gold-700">!</span>
+                    </div>
+                    <span>Gunakan email aktif untuk menerima <b className="text-gray-950">kode OTP</b> dan menjaga keamanan akun UCP Anda.</span>
+                </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-2.5" noValidate>
+                <InputGroup
+                    icon={User}
+                    type="text"
+                    placeholder="Username"
                     autoComplete="username"
-                    value={formData.username} 
-                    onChange={e => handleChange('username', e.target.value)} 
+                    value={formData.username}
+                    onChange={e => handleChange('username', e.target.value)}
                     error={errors.username}
                 />
 
-                <InputGroup 
-                    icon={Mail} 
-                    type="email" 
-                    placeholder="Email Address" 
+                <InputGroup
+                    icon={Mail}
+                    type="email"
+                    placeholder="Alamat Email"
                     autoComplete="email"
                     value={formData.email}
                     onChange={e => handleChange('email', e.target.value)}
                     error={errors.email}
                 />
-                
-                <InputGroup 
-                    icon={Lock} 
-                    type="password" 
-                    placeholder="Password" 
+
+                <InputGroup
+                    icon={Lock}
+                    type="password"
+                    placeholder="Password"
                     autoComplete="new-password"
                     value={formData.password}
                     onChange={e => handleChange('password', e.target.value)}
                     error={errors.password}
                 />
-                
-                <InputGroup 
-                    icon={Lock} 
-                    type="password" 
-                    placeholder="Confirm Password" 
+
+                <InputGroup
+                    icon={Lock}
+                    type="password"
+                    placeholder="Konfirmasi Password"
                     autoComplete="new-password"
                     value={formData.confirm}
                     onChange={e => handleChange('confirm', e.target.value)}
                     error={errors.confirm}
                 />
 
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     disabled={loading || isSubmitting}
-                    className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-red-600/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center group mt-6"
+                    className="ph-btn-primary w-full py-3.5 mt-2 flex items-center justify-center group"
                 >
                     {loading || isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (
-                        <span className="flex items-center text-sm uppercase tracking-widest">
-                            Register Account
-                            <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                        <span className="flex items-center text-sm font-bold tracking-wide">
+                            Daftar Akun
+                            <ArrowRight size={17} className="ml-2 group-hover:translate-x-1 transition-transform" />
                         </span>
                     )}
                 </button>
             </form>
 
-            <div className="mt-8 text-center">
-                 <button onClick={() => setView('login')} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white text-xs flex items-center justify-center w-full transition-colors uppercase font-bold tracking-wider py-4">
-                    <ChevronLeft size={14} className="mr-1" /> Back to Login
+            <div className="mt-4 text-center">
+                 <button onClick={() => setView('login')} className="text-gray-500 hover:text-ph-crimson-700 text-xs flex min-h-11 items-center justify-center w-full transition-colors font-semibold tracking-wide py-2 group">
+                    <ChevronLeft size={14} className="mr-1 group-hover:-translate-x-0.5 transition-transform" /> Kembali ke Login
                  </button>
             </div>
         </div>
