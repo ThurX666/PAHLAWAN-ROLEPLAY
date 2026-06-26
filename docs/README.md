@@ -22,6 +22,7 @@ Use this index to pick the right project guide without reading every document.
 | DATABASE | [Database Policy](DATABASE_POLICY.md) | Planning DB-related work without unsafe writes |
 | Secrets | [Secret Rotation Playbook](SECRET_ROTATION_PLAYBOOK.md) | Handling possible secret exposure or rotation |
 | Public safety | [Public Repo Safety Check](PUBLIC_REPO_SAFETY_CHECK.md) | Checking ignore rules before public push |
+| Licensing | [Subproject License Policy](../SUBPROJECT_LICENSES.md) | Checking folder-level license scope and exclusions |
 
 ## Default Safe Workflow
 

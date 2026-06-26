@@ -60,7 +60,7 @@ Dokumen pendukung:
 
 ## License
 
-Repo ini menggunakan lisensi MIT. Baca [LICENSE](LICENSE) untuk detail penggunaan, distribusi, dan warranty disclaimer.
+Repo ini menggunakan lisensi MIT. Baca [LICENSE](LICENSE) untuk detail penggunaan, distribusi, dan warranty disclaimer. Kebijakan folder ada di [SUBPROJECT_LICENSES.md](SUBPROJECT_LICENSES.md).
 
 ## Security Warning
 
