@@ -51,12 +51,21 @@ Tujuannya bukan hanya menjalankan server, tetapi juga menjaga codebase campuran 
 
 Dokumen pendukung:
 
+- [ROADMAP.md](ROADMAP.md) — milestone utama dan link ke guide deployment
 - [docs/README.md](docs/README.md)
 - [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md)
 - [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
 - [docs/LOCAL_VALIDATION_MATRIX.md](docs/LOCAL_VALIDATION_MATRIX.md)
 - [WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md](WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md)
 - [openspec/specs/ucp-local-development-workflow/spec.md](openspec/specs/ucp-local-development-workflow/spec.md)
+
+Dokumen deployment VPS/Pterodactyl:
+
+- [VPS Setup Guide ringkas](docs/VPS_SETUP_GUIDE.md)
+- [VPS Provider Guide](docs/VPS_PROVIDER_GUIDE.md)
+- [Domain Provider Guide](docs/DOMAIN_PROVIDER_GUIDE.md)
+- [Pterodactyl Operations Guide](docs/PTERODACTYL_OPERATIONS.md)
+- [VPS + Pterodactyl Setup Guide lengkap](openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md)
 
 ## License
 
@@ -80,12 +89,13 @@ Kontribusi kecil dan terarah lebih diutamakan daripada perubahan besar sekaligus
 
 ## Roadmap Singkat
 
-- Alpha: rapikan repo publik, secret guardrail, dan local development workflow
-- Beta: stabilkan auth UCP, integrasi database, testing kontrak, dan smoke validation
-- RC: perkuat review workflow, release checklist, dan dokumentasi operasional
-- Launch: publikasi repo yang aman, terdokumentasi, dan siap menerima kontribusi bertahap
+- Pre-Alpha: infrastructure VPS/Pterodactyl, auth foundation, dan deploy flow awal
+- Alpha: tim internal bisa register, login UCP, buat karakter, masuk server, dan mengelola 3 service dari Pterodactyl
+- Beta: stabilkan fitur UCP, bot moderation/ticket, database sync, dan contract test
+- RC: load test, release checklist, smoke validation, dan hardening area sensitif
+- Stable: public launch, release tag, changelog, monitoring dasar, dan dokumentasi final
 
-Detail milestone ada di `ROADMAP.md`.
+Detail milestone ada di [ROADMAP.md](ROADMAP.md). Untuk deployment, mulai dari [VPS Setup Guide ringkas](docs/VPS_SETUP_GUIDE.md) atau langsung ke [VPS + Pterodactyl Setup Guide lengkap](openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md).
 
 ## Codex, OpenSpec, dan Maintenance
 
