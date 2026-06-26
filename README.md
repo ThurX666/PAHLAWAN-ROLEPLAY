@@ -41,7 +41,7 @@ Tujuannya bukan hanya menjalankan server, tetapi juga menjaga codebase campuran 
 
 ## Local Development Ringkas
 
-1. Siapkan database lokal privat. Jangan publish dump berisi data player, akun, inventory, IP, atau kredensial. Ikuti [docs/DATABASE_POLICY.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DATABASE_POLICY.md) untuk batas public vs private.
+1. Siapkan database lokal privat. Jangan publish dump berisi data player, akun, inventory, IP, atau kredensial. Ikuti [docs/DATABASE_POLICY.md](docs/DATABASE_POLICY.md) untuk batas public vs private.
 2. Isi konfigurasi privat lokal untuk bot, website, dan gamemode.
 3. Jalankan website UCP dari folder `WEBSITE`.
 4. Jalankan Discord bot dari folder `BOT`.
@@ -51,18 +51,19 @@ Tujuannya bukan hanya menjalankan server, tetapi juga menjaga codebase campuran 
 
 Dokumen pendukung:
 
-- [docs/PROJECT_OVERVIEW.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/PROJECT_OVERVIEW.md)
-- [docs/DEVELOPMENT.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DEVELOPMENT.md)
-- [docs/LOCAL_VALIDATION_MATRIX.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/LOCAL_VALIDATION_MATRIX.md)
-- [WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md)
-- [openspec/specs/ucp-local-development-workflow/spec.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/openspec/specs/ucp-local-development-workflow/spec.md)
+- [docs/README.md](docs/README.md)
+- [docs/PROJECT_OVERVIEW.md](docs/PROJECT_OVERVIEW.md)
+- [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
+- [docs/LOCAL_VALIDATION_MATRIX.md](docs/LOCAL_VALIDATION_MATRIX.md)
+- [WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md](WEBSITE/LOCAL_DEVELOPMENT_WORKFLOW.md)
+- [openspec/specs/ucp-local-development-workflow/spec.md](openspec/specs/ucp-local-development-workflow/spec.md)
 
 ## Security Warning
 
 - Jangan commit `.env`, token, API key, credential database, SMTP secret, Discord secret, cookie, session, OTP, dump database, atau runtime log.
-- File dump dan backup `DATABASE` bersifat privat. Hanya schema, migration, example SQL aman, dan fixture dummy/test yang boleh ada di repo public sesuai [docs/DATABASE_POLICY.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DATABASE_POLICY.md).
+- File dump dan backup `DATABASE` bersifat privat. Hanya schema, migration, example SQL aman, dan fixture dummy/test yang boleh ada di repo public sesuai [docs/DATABASE_POLICY.md](docs/DATABASE_POLICY.md).
 - File runtime lokal seperti `BOT/config.json`, `BOT/PHRP-AI/config/app.json`, `WEBSITE/.env`, dan `GAMEMODE/server.cfg` tidak boleh dipublish.
-- Jika menemukan potensi secret leak atau celah keamanan, ikuti `SECURITY.md` dan [docs/SECRET_ROTATION_PLAYBOOK.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/SECRET_ROTATION_PLAYBOOK.md).
+- Jika menemukan potensi secret leak atau celah keamanan, ikuti `SECURITY.md` dan [docs/SECRET_ROTATION_PLAYBOOK.md](docs/SECRET_ROTATION_PLAYBOOK.md).
 
 ## Kontribusi
 
