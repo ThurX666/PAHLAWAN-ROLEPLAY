@@ -15,6 +15,7 @@ Jelaskan kebutuhan atau ide fitur.
 - [ ] GAMEMODE
 - [ ] WEBSITE
 - [ ] BOT
+- [ ] DATABASE
 - [ ] OpenSpec / docs
 - [ ] MCP tooling
 
@@ -28,8 +29,22 @@ Jelaskan pendekatan yang diinginkan.
 
 ## Scope dan Risiko
 
-Jelaskan jika ada efek ke auth, database, runtime, atau workflow maintainer.
+- Auth/session impact:
+- Database impact:
+- Runtime/XAMPP impact:
+- Discord interaction impact:
+- Security/secret impact:
+
+## OpenSpec
+
+- [ ] Perubahan kecil dan low-risk
+- [ ] Perubahan menengah/besar yang perlu OpenSpec dulu
+- [ ] Belum yakin, perlu eksplorasi scope
+
+## Validasi Yang Disarankan
+
+Sebutkan check dari `docs/LOCAL_VALIDATION_MATRIX.md` yang kemungkinan perlu dijalankan.
 
 ## Catatan Tambahan
 
-Untuk perubahan menengah atau besar, usulkan scope yang cocok untuk OpenSpec.
+Tambahkan konteks, mockup, atau link terkait tanpa menyertakan secret/private data.

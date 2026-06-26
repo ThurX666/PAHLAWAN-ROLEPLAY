@@ -15,6 +15,7 @@ Jelaskan bug secara singkat.
 - [ ] GAMEMODE
 - [ ] WEBSITE
 - [ ] BOT
+- [ ] DATABASE
 - [ ] OpenSpec / docs
 - [ ] MCP tooling
 
@@ -32,7 +33,20 @@ Jelaskan hasil aktual.
 
 Jelaskan hasil yang diharapkan.
 
+## Validasi / Evidence Aman
+
+- Check yang sudah dicoba:
+- Result:
+- Skipped checks:
+
+Gunakan evidence dari `docs/LOCAL_VALIDATION_MATRIX.md` jika memungkinkan.
+
+## Safety
+
+- [ ] Tidak menyertakan `.env`, token, credential, cookie, session, OTP, webhook URL, API key, dump database, atau log penuh
+- [ ] Jika terkait database, evidence bersifat read-only dan bounded
+- [ ] Jika terkait security, tidak membuka detail eksploit/secret di issue publik
+
 ## Catatan Tambahan
 
-- Jangan tempel secret, token, cookie, OTP, atau credential
-- Jika ini isu keamanan, jangan pakai issue publik. Ikuti `SECURITY.md`
+Jika ini isu keamanan, jangan pakai issue publik. Ikuti `SECURITY.md`.
