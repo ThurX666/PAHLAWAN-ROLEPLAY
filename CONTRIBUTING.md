@@ -15,7 +15,7 @@ Terima kasih. Repo ini menerima kontribusi yang kecil, jelas, dan aman.
 2. Pilih scope yang kecil dan reviewable.
 3. Cek apakah ada OpenSpec change aktif atau spec utama yang relevan.
 4. Lakukan perubahan seperlunya.
-5. Jalankan validasi yang relevan.
+5. Jalankan validasi yang relevan dari [docs/README.md](docs/README.md) atau [docs/LOCAL_VALIDATION_MATRIX.md](docs/LOCAL_VALIDATION_MATRIX.md).
 6. Baca ulang diff sebelum membuka PR.
 
 ## Branch dan PR
@@ -29,8 +29,8 @@ Terima kasih. Repo ini menerima kontribusi yang kecil, jelas, dan aman.
 - Jangan expose nilai private di contoh config
 - Simpan credential website di `WEBSITE/.env`, bukan di file tracked
 - Gunakan placeholder pada file tracked
-- Untuk `DATABASE`, ikuti [docs/DATABASE_POLICY.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/DATABASE_POLICY.md) dan jangan commit dump, backup, export data nyata, atau file credential
-- Jika ada indikasi secret exposure, laporkan hanya `path`, jenis indikasi, `risk level`, dan rekomendasi. Jangan tulis nilai secret. Ikuti [docs/SECRET_ROTATION_PLAYBOOK.md](/C:/Users/guyub/Documents/PAHLAWAN%20ROLEPLAY/docs/SECRET_ROTATION_PLAYBOOK.md)
+- Untuk `DATABASE`, ikuti [docs/DATABASE_POLICY.md](docs/DATABASE_POLICY.md) dan jangan commit dump, backup, export data nyata, atau file credential
+- Jika ada indikasi secret exposure, laporkan hanya `path`, jenis indikasi, `risk level`, dan rekomendasi. Jangan tulis nilai secret. Ikuti [docs/SECRET_ROTATION_PLAYBOOK.md](docs/SECRET_ROTATION_PLAYBOOK.md)
 - Pertahankan perubahan tetap sempit
 - Untuk gamemode Pawn, cek include, callback, dan flow yang sudah ada sebelum menambah kode
 - Untuk bot Discord, hormati flow `deferReply`, `reply`, dan `editReply`
