@@ -1,0 +1,116 @@
+{
+  "_comment": "Pterodactyl Egg - SA-MP Server PAHLAWAN ROLEPLAY",
+  "meta": {
+    "version": "1.0.0",
+    "update_url": null
+  },
+  "exported_at": "2026-06-27",
+  "name": "SA-MP Server",
+  "author": "support@pahlawan-roleplay.local",
+  "description": "Custom egg untuk SA-MP/open.mp server PAHLAWAN ROLEPLAY. Bundle plugin streamer + sscanf + bcrypt, auto-connect ke MySQL shared di host.",
+  "features": [
+    "eula",
+    "pid_limit"
+  ],
+  "docker_images": {
+    "Ubuntu 22.04": "ubuntu:22.04"
+  },
+  "file_denylist": [],
+  "startup": "./samp03svr",
+  "config": {
+    "files": "{}",
+    "startup": "{\"value\": \"./samp03svr\", \"userEditable\": false, \"rules\": [\"file\", \"executable\"]}",
+    "logs": "{}",
+    "stop": "stop"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/bash\n# SA-MP Server install script untuk PAHLAWAN ROLEPLAY\nset -e\n\napt update\napt install -y wget ca-certificates lib32gcc-s1 lib32stdc++6 lib32z1 unzip mysql-client\n\nmkdir -p /mnt/server/plugins /mnt/server/scriptfiles /mnt/server/pawno /mnt/server/pawno/include\n\ncd /mnt/server\n\nSA_MP_VERSION=\"0.3.7-R3\"\nSA_MP_URL=\"https://gta-sa-mp.com/downloads/samp/${SA_MP_VERSION}/samp037svr_R3.tar.gz\"\n\nif [ ! -f samp03svr ]; then\n    echo \"[install] Downloading SA-MP server ${SA_MP_VERSION}...\"\n    wget -q --show-progress \"${SA_MP_URL}\" -O samp-server.tar.gz || {\n        echo \"[install] FAIL: download ${SA_MP_URL}\"; exit 1;\n    }\n    tar -xzf samp-server.tar.gz\n    rm samp-server.tar.gz\nfi\n\nif [ ! -f plugins/streamer.so ]; then\n    wget -q --show-progress -O plugins/streamer.so \\\n        \"https://github.com/samp-incognito/samp-streamer-plugin/releases/download/v2.9.4/streamer.so\"\nfi\n\nif [ ! -f plugins/sscanf.so ]; then\n    wget -q --show-progress -O plugins/sscanf.so \\\n        \"https://github.com/Y-Less/sscanf/releases/download/v2.13.5/sscanf-2.13.5.so\"\nfi\n\nif [ ! -f plugins/bcrypt.so ]; then\n    wget -q --show-progress -O plugins/bcrypt.so \\\n        \"https://github.com/Sreyas-Sreelal/bcrypt-samp/releases/download/v1.4.0/bcrypt.so\"\nfi\n\nchmod +x samp03svr\nchmod +x plugins/*.so 2>/dev/null || true\n\necho \"[install] SA-MP server installed.\"\n",
+      "container": "ubuntu:22.04",
+      "entrypoint": "bash"
+    }
+  },
+  "variables": [
+    {
+      "name": "Server Name",
+      "env_variable": "SERVER_NAME",
+      "default_value": "PAHLAWAN ROLEPLAY | Pre-Alpha",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|max:64",
+      "field_type": "text"
+    },
+    {
+      "name": "RCON Password",
+      "env_variable": "RCON_PASSWORD",
+      "default_value": "ChangeMe123!",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|min:8|max:64",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL Host",
+      "env_variable": "MYSQL_HOST",
+      "default_value": "172.17.0.1",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL Port",
+      "env_variable": "MYSQL_PORT",
+      "default_value": "3306",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|integer",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL Database",
+      "env_variable": "MYSQL_DATABASE",
+      "default_value": "pahlawan",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL User",
+      "env_variable": "MYSQL_USER",
+      "default_value": "pahlawan_app",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL Password",
+      "env_variable": "MYSQL_PASSWORD",
+      "default_value": "",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "required|string|min:1",
+      "field_type": "text"
+    },
+    {
+      "name": "Max Players",
+      "env_variable": "MAX_PLAYERS",
+      "default_value": "50",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|integer|min:1|max:1000",
+      "field_type": "text"
+    },
+    {
+      "name": "Gamemode filename (.amx)",
+      "env_variable": "GAMEMODE",
+      "default_value": "pahlawan",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    }
+  ]
+}

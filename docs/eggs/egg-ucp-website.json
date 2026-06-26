@@ -1,0 +1,134 @@
+{
+  "_comment": "Pterodactyl Egg - UCP Website (Nginx + PHP-FPM + Vite static). Butuh WEBSITE/ hasil build dari host.",
+  "meta": {
+    "version": "1.0.0",
+    "update_url": null
+  },
+  "exported_at": "2026-06-27",
+  "name": "UCP Website",
+  "author": "support@pahlawan-roleplay.local",
+  "description": "Custom egg untuk UCP Website PAHLAWAN ROLEPLAY. Nginx serve static Vite build + reverse-proxy ke PHP-FPM untuk API endpoint di /api/*.",
+  "features": [
+    "eula",
+    "pid_limit"
+  ],
+  "docker_images": {
+    "Nginx + PHP 8.2": "richarvey/nginx-php-fpm:8.2"
+  },
+  "file_denylist": [],
+  "startup": "/usr/sbin/nginx -c /etc/nginx/nginx.conf && /usr/sbin/php-fpm8.2 -D && tail -f /var/log/nginx/access.log",
+  "config": {
+    "files": "{}",
+    "startup": "{\"value\": \"/usr/sbin/nginx -c /etc/nginx/nginx.conf && /usr/sbin/php-fpm8.2 -D && tail -f /var/log/nginx/access.log\", \"userEditable\": false, \"rules\": [\"file\", \"executable\"]}",
+    "logs": "{}",
+    "stop": "stop"
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/bash\n# UCP Website install script\nset -e\n\n# Asumsi image richarvey/nginx-php-fpm:8.2 sudah include nginx + php-fpm\n# Yang perlu disiapkan:\n#   /mnt/server/dist/         <- output `npm run build` Vite\n#   /mnt/server/public/       <- source PHP API (copy dari repo)\n#   /mnt/server/nginx.conf    <- reverse-proxy config (lihat docs/nginx/ucp.conf)\n#   /mnt/server/.env          <- environment variables (lihat docs/env-examples/ucp.env.example)\n\ncd /mnt/server\n\nif [ ! -f nginx.conf ]; then\n    echo \"[install] WARN: nginx.conf tidak ditemukan. Copy dari docs/nginx/ucp.conf.\"\nfi\n\nif [ ! -d dist ]; then\n    echo \"[install] WARN: folder dist/ (Vite build output) tidak ditemukan.\"\n    echo \"[install] Jalankan 'npm run build' di WEBSITE/ di host, lalu mount ke container.\"\nfi\n\nif [ ! -d public ]; then\n    echo \"[install] WARN: folder public/ (PHP API source) tidak ditemukan.\"\nfi\n\nmkdir -p /var/log/nginx /run/php\necho \"[install] UCP website container ready.\"\n",
+      "container": "richarvey/nginx-php-fpm:8.2",
+      "entrypoint": "bash"
+    }
+  },
+  "variables": [
+    {
+      "name": "UCP Version Display",
+      "env_variable": "UCP_VERSION",
+      "default_value": "v1.1.0-beta.1",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string|max:32",
+      "field_type": "text"
+    },
+    {
+      "name": "Public URL",
+      "env_variable": "APP_URL",
+      "default_value": "http://localhost",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|url",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL Host",
+      "env_variable": "DB_HOST",
+      "default_value": "172.17.0.1",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL Port",
+      "env_variable": "DB_PORT",
+      "default_value": "3306",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|integer",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL Database",
+      "env_variable": "DB_DATABASE",
+      "default_value": "pahlawan",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL User",
+      "env_variable": "DB_USERNAME",
+      "default_value": "pahlawan_app",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string",
+      "field_type": "text"
+    },
+    {
+      "name": "MySQL Password",
+      "env_variable": "DB_PASSWORD",
+      "default_value": "",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "required|string|min:1",
+      "field_type": "text"
+    },
+    {
+      "name": "JWT Secret",
+      "env_variable": "JWT_SECRET",
+      "default_value": "",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "required|string|min:32",
+      "field_type": "text"
+    },
+    {
+      "name": "Discord OAuth Client ID",
+      "env_variable": "DISCORD_CLIENT_ID",
+      "default_value": "",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "nullable|string",
+      "field_type": "text"
+    },
+    {
+      "name": "Discord OAuth Client Secret",
+      "env_variable": "DISCORD_CLIENT_SECRET",
+      "default_value": "",
+      "user_viewable": false,
+      "user_editable": true,
+      "rules": "nullable|string",
+      "field_type": "text"
+    },
+    {
+      "name": "OTP TTL (seconds)",
+      "env_variable": "OTP_TTL",
+      "default_value": "300",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|integer|min:60|max:3600",
+      "field_type": "text"
+    }
+  ]
+}
