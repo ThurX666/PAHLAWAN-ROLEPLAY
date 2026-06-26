@@ -80,18 +80,21 @@ Kalau ini pertama kali setup VPS, urutan baca yang paling gampang:
 
 ## 3 Service Custom Eggs
 
-1. **PAHLAWAN SA-MP Server** (`egg-samp-server.json`)
-   - Image: `pahlawan/samp:latest` (Ubuntu 22.04 + SA-MP binaries + plugins)
-   - Startup: `./samp03svr`
+1. **PAHLAWAN SA-MP Server** (`docs/eggs/egg-samp-server.json`)
+   - Model: import egg JSON, lalu Pterodactyl menjalankan install script saat server dibuat.
+   - Base image: `ubuntu:22.04`.
+   - Startup: `./samp03svr`.
    - Memory: 512 MB, Disk: 5 GB, Port: 7777
 
-2. **PAHLAWAN UCP Website** (`egg-ucp-website.json`)
-   - Image: `pahlawan/ucp:latest` (Nginx + PHP-FPM 8.1 + Node 20)
+2. **PAHLAWAN UCP Website** (`docs/eggs/egg-ucp-website.json`)
+   - Model: import egg JSON, install dependencies saat server dibuat.
+   - Runtime: Nginx + PHP-FPM + Node 20.
    - Startup: build Vite + start PHP-FPM + Nginx
    - Memory: 512 MB, Disk: 5 GB, Port: 80
 
-3. **PAHLAWAN Discord Bot** (`egg-discord-bot.json`)
-   - Image: `pahlawan/bot:latest` (Node 20)
+3. **PAHLAWAN Discord Bot** (`docs/eggs/egg-discord-bot.json`)
+   - Model: import egg JSON.
+   - Runtime: Node 20.
    - Startup: `npm install --production && node index.js`
    - Memory: 384 MB, Disk: 2 GB
 
@@ -109,8 +112,8 @@ Kalau ini pertama kali setup VPS, urutan baca yang paling gampang:
 | `/opt/pahlawan-roleplay/` | Git repo (sumber semua file service) |
 | `/var/www/pterodactyl/` | Pterodactyl Panel (Laravel) |
 | `/etc/pterodactyl/config.yml` | Wings daemon config |
-| `/var/lib/pterodactyl/volumes/<id>/` | Per-service files (symlink ke repo) |
-| `/opt/pterodactyl-images/` | Custom Docker images (source) |
+| `/var/lib/pterodactyl/volumes/<id>/` | Per-service files yang di-copy/sync dari repo via `rsync` |
+| `docs/eggs/` | Egg JSON siap import ke Pterodactyl |
 | `/etc/nginx/sites-available/pterodactyl.conf` | Nginx vhost |
 | `/etc/nginx/ssl/` | Origin SSL certificate |
 
@@ -124,7 +127,7 @@ Kalau ini pertama kali setup VPS, urutan baca yang paling gampang:
 
 ---
 
-## 11 Langkah Paling Penting (Urutan Kritis)
+## 12 Langkah Paling Penting (Urutan Kritis)
 
 Jika cuma ingat beberapa hal, ingat ini:
 
@@ -138,7 +141,8 @@ Jika cuma ingat beberapa hal, ingat ini:
 8. **Setup Cloudflare Origin SSL Certificate** di Nginx untuk HTTPS.
 9. **Clone repo** ke `/opt/pahlawan-roleplay/` di VPS.
 10. **Import 3 egg JSON** dari `docs/eggs/` untuk SA-MP, UCP, dan Discord bot.
-11. **Set env var sensitive via Panel UI** (Discord token, DB password), **JANGAN** commit ke repo.
+11. **Copy/sync file repo ke Pterodactyl volumes** memakai `rsync` sesuai guide lengkap.
+12. **Set env var sensitive via Panel UI** (Discord token, DB password), **JANGAN** commit ke repo.
 
 ---
 

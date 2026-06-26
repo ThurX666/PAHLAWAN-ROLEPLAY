@@ -144,13 +144,12 @@
 
 ### 5.1 SA-MP Server Egg
 
-- [ ] 5.1.1 Buat Docker image untuk SA-MP server:
-    - Base: `ubuntu:22.04` atau `debian:bookworm-slim`.
-    - Install: `libmariadb-dev`, `libssl-dev`, runtime dependencies.
-    - Copy SA-MP server binaries (`samp03svr`/`samp-server.exe`, plugins, `server.cfg` template).
-    - Entry script: jalankan `./samp03svr` (atau open.mp equivalent).
-- [ ] 5.1.2 Buat egg definition JSON (`egg-samp-server.json`):
-    - Docker image: custom SA-MP image di atas.
+- [ ] 5.1.1 Gunakan egg JSON canonical `docs/eggs/egg-samp-server.json`:
+    - Base image: `ubuntu:22.04`.
+    - Install script mengunduh SA-MP server binaries dan plugin dasar saat server dibuat.
+    - Operator import egg JSON ke Panel, bukan build Docker image manual.
+- [ ] 5.1.2 Review/import egg definition JSON (`docs/eggs/egg-samp-server.json`):
+    - Docker image/base: `ubuntu:22.04`.
     - Startup command: `./samp03svr` atau open.mp server binary.
     - Variables: `SERVER_PORT` (default 7777), `MAX_PLAYERS` (default 50), `MAP_NAME`, `GAME_MODE` (main).
     - File directory: mount ke repo `GAMEMODE/`.
@@ -159,13 +158,12 @@
 
 ### 5.2 UCP Website Egg
 
-- [ ] 5.2.1 Buat Docker image untuk UCP website:
-    - Base: `nginx:1.25-alpine` + PHP-FPM 8.2.
-    - Install: `php82-php-fpm`, `php82-php-mysql`, `php82-php-mbstring`, `php82-php-curl`, `php82-php-json`, Node.js 20 (untuk Vite build), Composer.
-    - Entry script: build Vite frontend (`npm install && npm run build`), start PHP-FPM, start Nginx.
+- [ ] 5.2.1 Gunakan egg JSON canonical `docs/eggs/egg-ucp-website.json`:
+    - Base image + install script menyiapkan Nginx, PHP-FPM, Node.js 20, dan Composer.
+    - Startup build Vite frontend (`npm install && npm run build`), start PHP-FPM, start Nginx.
     - Nginx config: serve `WEBSITE/dist` sebagai static, proxy `WEBSITE/public/api` ke PHP-FPM.
-- [ ] 5.2.2 Buat egg definition JSON (`egg-ucp-website.json`):
-    - Docker image: custom UCP image.
+- [ ] 5.2.2 Review/import egg definition JSON (`docs/eggs/egg-ucp-website.json`):
+    - Docker/base image sesuai egg canonical.
     - Startup command: `/start.sh` (build + nginx + php-fpm).
     - Variables: `APP_URL`, `DB_HOST` (172.17.0.1), `DB_PORT` (3306), `DB_NAME` (arivena), `DB_USER` (pahlawan), `DB_PASS`.
     - Port: 80 (HTTP).
@@ -174,12 +172,11 @@
 
 ### 5.3 Discord Bot Egg
 
-- [ ] 5.3.1 Buat Docker image untuk Discord bot:
-    - Base: `node:20-bookworm-slim`.
-    - Install: runtime dependencies.
-    - Entry script: `npm install --production && node index.js`.
-- [ ] 5.3.2 Buat egg definition JSON (`egg-discord-bot.json`):
-    - Docker image: custom bot image.
+- [ ] 5.3.1 Gunakan egg JSON canonical `docs/eggs/egg-discord-bot.json`:
+    - Base image: `node:20-bookworm-slim`.
+    - Startup: `npm install --production && node index.js`.
+- [ ] 5.3.2 Review/import egg definition JSON (`docs/eggs/egg-discord-bot.json`):
+    - Docker/base image sesuai egg canonical.
     - Startup command: `npm install --production && node index.js`.
     - Variables: `DB_HOST` (172.17.0.1), `DB_PORT` (3306), `DB_NAME` (arivena), `DB_USER` (pahlawan), `DB_PASS`.
     - No external port needed (bot connects outbound to Discord gateway).
@@ -206,15 +203,14 @@
     cd GAMEMODE
     ./pawno/pawncc gamemodes/main.pwn -o gamemodes/main.amx
     ```
-- [ ] 6.5 Symlink atau copy repo ke Pterodactyl server directories:
+- [ ] 6.5 Copy/sync repo ke Pterodactyl server directories menggunakan `rsync`:
     ```bash
     # Pterodactyl stores server files in /var/lib/pterodactyl/volumes/<server_id>
-    # Symlink approach:
-    ln -sf /opt/pahlawan-roleplay/GAMEMODE /var/lib/pterodactyl/volumes/<samp_server_id>/
-    ln -sf /opt/pahlawan-roleplay/WEBSITE /var/lib/pterodactyl/volumes/<ucp_server_id>/
-    ln -sf /opt/pahlawan-roleplay/BOT /var/lib/pterodactyl/volumes/<bot_server_id>/
+    rsync -a --delete /opt/pahlawan-roleplay/GAMEMODE/ /var/lib/pterodactyl/volumes/<samp_server_id>/
+    rsync -a --delete /opt/pahlawan-roleplay/WEBSITE/ /var/lib/pterodactyl/volumes/<ucp_server_id>/
+    rsync -a --delete /opt/pahlawan-roleplay/BOT/ /var/lib/pterodactyl/volumes/<bot_server_id>/
     ```
-- [ ] 6.6 Pastikan permission benar: `chown -R 988:988 /opt/pahlawan-roleplay` (UID Pterodactyl container user).
+- [ ] 6.6 Pastikan permission benar: `chown -R 988:988 /var/lib/pterodactyl/volumes/<server_id>/` untuk tiap service (UID Pterodactyl container user).
 
 ## 7. Service Startup dan Smoke Test
 

@@ -1999,16 +1999,22 @@ Jika `bind-address = 127.0.0.1` (default), ganti jadi `0.0.0.0` dan restart MySQ
 
 **Solusi:**
 ```bash
-# Cek permission plugins
-ls -la /opt/pterodactyl-images/samp/plugins/
-# Harus executable
+# Cek isi plugin di volume server SA-MP (ganti <samp_server_id>)
+sudo ls -la /var/lib/pterodactyl/volumes/<samp_server_id>/plugins/
 
-# Cek arsitektur (harus linux x86_64)
-file /opt/pterodactyl-images/samp/plugins/*.so
+# Harus ada streamer.so, sscanf.so, bcrypt.so, dan mysql.so jika gamemode pakai MySQL plugin.
+# Cek arsitektur plugin (harus Linux ELF, bukan .dll Windows)
+sudo file /var/lib/pterodactyl/volumes/<samp_server_id>/plugins/*.so
 
-# Rebuild image dengan plugin terbaru
-cd /opt/pterodactyl-images/samp
-sudo docker build --no-cache -t pahlawan/samp:latest .
+# Jika plugin hilang, upload/copy plugin Linux .so ke folder plugins lalu set permission:
+sudo chmod +x /var/lib/pterodactyl/volumes/<samp_server_id>/plugins/*.so
+sudo chown -R 988:988 /var/lib/pterodactyl/volumes/<samp_server_id>/plugins/
+```
+
+Jika plugin tetap gagal load, cek `server.cfg` apakah line `plugins` memakai nama file yang benar, misalnya:
+
+```cfg
+plugins streamer.so sscanf.so mysql.so bcrypt.so
 ```
 
 ### 14.4. npm install Gagal di Container UCP/Bot
@@ -2123,12 +2129,14 @@ Print checklist ini dan centang saat persiapan Alpha Test 1 Agustus 2026.
 - [ ] Node di Panel heartbeat hijau (connected)
 - [ ] SSL/TLS handshake antara Wings dan Panel OK
 
-### 15.5. Docker Images
+### 15.5. Egg Files & Runtime Dependencies
 
-- [ ] Image `pahlawan/samp:latest` di-build
-- [ ] Image `pahlawan/ucp:latest` di-built (PHP 8.1, Node 20, Nginx)
-- [ ] Image `pahlawan/bot:latest` di-built (Node 20)
-- [ ] SA-MP plugins (streamer, sscanf, mysql, bcrypt) included
+- [ ] `docs/eggs/egg-samp-server.json` siap import dan valid JSON
+- [ ] `docs/eggs/egg-ucp-website.json` siap import dan valid JSON
+- [ ] `docs/eggs/egg-discord-bot.json` siap import dan valid JSON
+- [ ] SA-MP plugins Linux `.so` tersedia di volume server (`streamer.so`, `sscanf.so`, `mysql.so`, `bcrypt.so` jika dipakai)
+- [ ] UCP runtime berhasil install Node/PHP dependency saat startup pertama
+- [ ] Bot runtime berhasil `npm install` saat startup pertama
 
 ### 15.6. Eggs & Servers
 
@@ -2138,8 +2146,8 @@ Print checklist ini dan centang saat persiapan Alpha Test 1 Agustus 2026.
 - [ ] Server SA-MP dibuat (memory 512 MB, port 7777)
 - [ ] Server UCP dibuat (memory 512 MB, port 80)
 - [ ] Server Bot dibuat (memory 384 MB)
-- [ ] Symlink repo `/opt/pahlawan-roleplay/{GAMEMODE,WEBSITE,BOT}` ke volumes
-- [ ] Permission 988:988
+- [ ] File repo sudah di-copy/sync via `rsync` ke volume masing-masing server
+- [ ] Permission volume masing-masing server sudah `988:988`
 
 ### 15.7. Environment Variables
 
@@ -2232,8 +2240,8 @@ Upgrade ke **8 GB plan** sebelum Beta Test jika:
 | `/etc/nginx/ssl/` | Origin SSL certificates (Cloudflare) |
 | `/etc/systemd/system/wings.service` | Wings daemon systemd |
 | `/etc/systemd/system/pteroq.service` | Pterodactyl queue systemd |
-| `/var/lib/pterodactyl/volumes/<server_id>/` | Per-server files |
-| `/opt/pterodactyl-images/` | Custom Docker images source |
+| `/var/lib/pterodactyl/volumes/<server_id>/` | Per-server files hasil `rsync` dari repo |
+| `docs/eggs/` | Egg JSON canonical yang di-import ke Pterodactyl |
 | `/var/log/nginx/` | Nginx logs |
 | `/var/log/mysql/` | MySQL logs |
 | `~/AppData/Local/hermes/skills/` (Windows laptop) | Password manager / dokumen lokal |

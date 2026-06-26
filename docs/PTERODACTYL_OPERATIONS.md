@@ -47,30 +47,19 @@ sudo php artisan p:user:make
    - **Restart** (kuning) — stop lalu start lagi.
    - **Kill** (merah gelap) — paksa mati (gunakan hanya jika Stop hang).
 
-### Lewat CLI (Untuk SSH User)
+### Lewat CLI (Darurat Saja)
+
+Gunakan CLI hanya kalau Panel tidak bisa dibuka. Cara utama tetap lewat Panel UI.
 
 ```bash
-# List semua server ID
-sudo ls /var/lib/pterodactyl/volumes/
+# List container yang sedang jalan
+sudo docker ps
 
-# Stop/Start server via Wings (ganti <server_id>)
-sudo docker stop <container_name>      # stop
-sudo docker start <container_name>     # start
-sudo docker restart <container_name>   # restart
+# Restart container darurat (ganti <container_name>)
+sudo docker restart <container_name>
 ```
 
-Atau via Pterodactyl API:
-
-```bash
-# Set API key dulu di Panel -> Account -> API Credentials
-export PANEL_URL="https://panel.pahlawan-roleplay.id"
-export API_KEY="ptla_xxx..."
-
-curl -X POST "$PANEL_URL/api/client/servers/<server_id>/power" \
-    -H "Authorization: Bearer $API_KEY" \
-    -H "Content-Type: application/json" \
-    -d '{"signal":"start"}'    # signal: start | stop | restart | kill
-```
+> Hindari memakai API token di terminal kalau belum paham. Token API adalah secret dan bisa bocor ke shell history.
 
 ---
 
@@ -132,15 +121,26 @@ cd /opt/pahlawan-roleplay/GAMEMODE
 docker run --rm -v "$PWD":/src -w /src ghcr.io/pawn-lang/pawncc:latest \
     pawncc gamemodes/main.pwn -o gamemodes/main.amx
 
+# Sync hasil update ke volume Pterodactyl
+sudo rsync -a --delete /opt/pahlawan-roleplay/GAMEMODE/ \
+  /var/lib/pterodactyl/volumes/<samp_server_id>/
+
+sudo chown -R 988:988 /var/lib/pterodactyl/volumes/<samp_server_id>/
+
 # Restart SA-MP dari Panel UI (Servers -> klik server -> Restart)
 ```
 
 ### 4.3. UCP Website Update
 
 ```bash
-# Tidak perlu rebuild manual — UCP egg auto-build saat container start.
+# Sync file website dulu ke volume Pterodactyl.
+sudo rsync -a --delete /opt/pahlawan-roleplay/WEBSITE/ \
+  /var/lib/pterodactyl/volumes/<ucp_server_id>/
 
-# Trigger rebuild dengan restart dari Panel UI
+sudo chown -R 988:988 /var/lib/pterodactyl/volumes/<ucp_server_id>/
+
+# Tidak perlu build manual — UCP egg auto-build saat container start.
+# Trigger rebuild dengan restart dari Panel UI.
 # Servers -> PAHLAWAN UCP Website -> Restart
 # Container akan re-run npm install + npm run build saat startup.
 ```
@@ -148,6 +148,11 @@ docker run --rm -v "$PWD":/src -w /src ghcr.io/pawn-lang/pawncc:latest \
 ### 4.4. Discord Bot Update
 
 ```bash
+sudo rsync -a --delete /opt/pahlawan-roleplay/BOT/ \
+  /var/lib/pterodactyl/volumes/<bot_server_id>/
+
+sudo chown -R 988:988 /var/lib/pterodactyl/volumes/<bot_server_id>/
+
 # Restart dari Panel UI untuk trigger npm install ulang
 # Servers -> PAHLAWAN Discord Bot -> Restart
 ```
@@ -157,10 +162,10 @@ docker run --rm -v "$PWD":/src -w /src ghcr.io/pawn-lang/pawncc:latest \
 ```bash
 cd /opt/pahlawan-roleplay
 git log --oneline -5      # lihat commit
-git checkout <commit_hash> -- .   # checkout versi lama (working tree)
-git pull                  # refresh ke main lagi setelah fix
+git checkout <commit_hash> -- .   # checkout versi lama ke working tree
 
-# Lalu restart service terkait dari Panel
+# Lalu rsync ulang service terkait dan restart dari Panel.
+# Setelah fix final sudah ada di main, jalankan git pull lagi untuk kembali ke main terbaru.
 ```
 
 ---
@@ -298,7 +303,7 @@ sudo systemctl restart wings
 **Penyebab umum:**
 - **Port sudah dipakai**: `bind: address already in use` → cek `sudo netstat -tlnp | grep <port>`.
 - **Environment variable kosong** (DB_PASS / DISCORD_TOKEN) → cek tab **Startup**.
-- **Symlink rusak**: cek `ls -la /var/lib/pterodactyl/volumes/<server_id>/` harus pointing ke `/opt/pahlawan-roleplay/...`.
+- **File service belum tersync**: cek `ls -la /var/lib/pterodactyl/volumes/<server_id>/` dan pastikan isi folder GAMEMODE/WEBSITE/BOT sudah tersalin via `rsync` dari `/opt/pahlawan-roleplay/...`.
 - **Disk penuh**: `df -h` di host → Panel tab **Resource** → disk usage.
 
 ### 8.2. OOM Killed
