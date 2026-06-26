@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/ThurX666/PAHLAWAN-ROLEPLAY/security/policy
+    about: Do not post secrets or exploit details publicly. Follow SECURITY.md for private disclosure.
+  - name: Project docs
+    url: https://github.com/ThurX666/PAHLAWAN-ROLEPLAY/tree/main/docs
+    about: Read workflow, validation, and safety docs before opening broad issues.
