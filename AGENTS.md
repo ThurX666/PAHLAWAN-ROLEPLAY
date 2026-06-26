@@ -8,6 +8,28 @@ Project structure:
 - `DATABASE` contains local database dumps and must remain private.
 - `tools/mcp-pahlawan` contains the local MCP server for safe project analysis.
 
+Hermes-specific MCP setup (registered as `pahlawan-roleplay`):
+
+- Use the `mcp__pahlawan_roleplay__*` tools for project context, search, schema,
+  logs, feature tracing, and OpenSpec inspection. They are safer and faster
+  than running generic `search_files` / `read_file` / `terminal` against the
+  full repo because they honor `MCP_MAX_OUTPUT_CHARS`, redaction, and
+  per-module scoping.
+- Before coding any feature, run `mcp__pahlawan_roleplay__openspec_overview`
+  and `mcp__pahlawan_roleplay__openspec_task_status` for any related active
+  change. If one exists, read it first and stay inside its approved scope.
+- For broad tasks, follow the recommended flow below instead of scanning the
+  whole repo. Each tool already enforces compact mode by default.
+- The MCP server is read-only (`MCP_DEFAULT_MODE=readonly`,
+  `MCP_ALLOW_WRITE_FILES=false`, `MCP_ALLOW_WRITE_DB=false`). Do not ask it to
+  mutate files or the database — use the file/terminal tools and get explicit
+  user approval before any write.
+
+Runtime artifacts to ignore:
+
+- `.playwright-cli/` (browser CLI tool QA artifacts) is already gitignored at
+  both the root and `WEBSITE/` levels. Never commit its contents.
+
 Workflow rules:
 
 - OpenSpec is the source of truth for feature planning and requirements.
