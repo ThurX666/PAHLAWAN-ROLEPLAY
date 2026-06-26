@@ -16,6 +16,7 @@
 
 - [ ] Provisioning VPS dan install Pterodactyl panel — [setup lengkap](openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md)
 - [ ] Beli dan konfigurasi domain/DNS/SSL — [domain guide](docs/DOMAIN_PROVIDER_GUIDE.md)
+- [ ] Beli dan konfigurasi SMTP provider untuk email Panel/UCP — [SMTP provider guide](docs/SMTP_PROVIDER_GUIDE.md)
 - [ ] Pilih dan order VPS provider — [VPS provider guide](docs/VPS_PROVIDER_GUIDE.md)
 - [ ] Buat Pterodactyl egg untuk SA-MP/open.mp server — [egg JSON](docs/eggs/egg-samp-server.json)
 - [ ] Buat Pterodactyl egg untuk web (Nginx + PHP-FPM) — [egg JSON](docs/eggs/egg-ucp-website.json)
@@ -27,6 +28,7 @@
 **Dokumen cepat untuk infrastructure:**
 
 - [VPS Setup Guide ringkas](docs/VPS_SETUP_GUIDE.md)
+- [SMTP Provider Guide](docs/SMTP_PROVIDER_GUIDE.md)
 - [VPS + Pterodactyl Setup Guide lengkap](openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md)
 - [Pterodactyl Operations Guide](docs/PTERODACTYL_OPERATIONS.md)
 - [Bootstrap helper script](docs/scripts/bootstrap-vps.sh)

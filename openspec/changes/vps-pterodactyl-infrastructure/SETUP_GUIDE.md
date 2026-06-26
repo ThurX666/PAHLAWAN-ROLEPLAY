@@ -9,6 +9,7 @@
 > **Dokumen terkait di repo ini:**
 > - `docs/VPS_PROVIDER_GUIDE.md` — detail pilihan VPS provider + harga + decision matrix.
 > - `docs/DOMAIN_PROVIDER_GUIDE.md` — detail beli domain, DNS setup, dan SSL.
+> - `docs/SMTP_PROVIDER_GUIDE.md` — detail pilih/beli SMTP provider dan setup email Panel/UCP.
 > - `docs/scripts/bootstrap-vps.sh` — script pra-install (cek OS, generate password awal).
 > - `docs/eggs/egg-samp-server.json` — egg SA-MP siap import (install-on-creation).
 > - `docs/eggs/egg-ucp-website.json` — egg UCP siap import.
@@ -501,6 +502,8 @@ docker run --rm -it mysql:8.0 mysql -h 172.17.0.1 -u pahlawan -p<PANEL_DB_PASSWO
 ---
 
 ## 5. Setup Email (SMTP) untuk Panel + UCP
+
+> **Dokumen lengkap:** lihat [`docs/SMTP_PROVIDER_GUIDE.md`](../../../docs/SMTP_PROVIDER_GUIDE.md) untuk panduan memilih/membeli provider SMTP (Brevo, Zoho, Resend, Mailgun, Amazon SES), setup SPF/DKIM/DMARC, pembuatan SMTP key, dan test `swaks` dari VPS.
 
 Pterodactyl dan UCP butuh SMTP untuk email verifikasi, reset password, notifikasi donasi, dll.
 

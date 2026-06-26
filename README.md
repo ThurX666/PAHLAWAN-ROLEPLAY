@@ -64,6 +64,7 @@ Dokumen deployment VPS/Pterodactyl:
 - [VPS Setup Guide ringkas](docs/VPS_SETUP_GUIDE.md)
 - [VPS Provider Guide](docs/VPS_PROVIDER_GUIDE.md)
 - [Domain Provider Guide](docs/DOMAIN_PROVIDER_GUIDE.md)
+- [SMTP Provider Guide](docs/SMTP_PROVIDER_GUIDE.md)
 - [Pterodactyl Operations Guide](docs/PTERODACTYL_OPERATIONS.md)
 - [VPS + Pterodactyl Setup Guide lengkap](openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md)
 

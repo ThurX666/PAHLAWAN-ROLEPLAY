@@ -105,6 +105,7 @@
 ## Referensi Cepat
 
 - **Setup lengkap langkah-demi-langkah**: `openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md`
+- **SMTP provider untuk email Panel/UCP**: [docs/SMTP_PROVIDER_GUIDE.md](SMTP_PROVIDER_GUIDE.md)
 - **Operasional harian (start/stop/restart/deploy)**: `docs/PTERODACTYL_OPERATIONS.md`
 - **OpenSpec tasks**: `openspec/changes/vps-pterodactyl-infrastructure/tasks.md`
 - **OpenSpec spec**: `openspec/changes/vps-pterodactyl-infrastructure/specs/vps-pterodactyl-infrastructure/spec.md`
