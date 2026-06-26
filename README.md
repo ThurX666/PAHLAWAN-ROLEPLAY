@@ -60,7 +60,7 @@ Dokumen pendukung:
 
 ## License
 
-Belum ada lisensi open-source resmi. Baca [LICENSE_NOTICE.md](LICENSE_NOTICE.md) sebelum reuse, redistribusi, atau packaging eksternal.
+Repo ini menggunakan lisensi MIT. Baca [LICENSE](LICENSE) untuk detail penggunaan, distribusi, dan warranty disclaimer.
 
 ## Security Warning
 
