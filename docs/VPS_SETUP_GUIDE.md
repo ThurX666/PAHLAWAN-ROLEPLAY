@@ -3,6 +3,18 @@
 > Ringkasan operator dari setup VPS + Pterodactyl. Untuk versi **lengkap langkah-demi-langkah**, lihat `openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md`.
 > OpenSpec change: `vps-pterodactyl-infrastructure`.
 
+## Untuk Pemula: Mulai dari Mana?
+
+Kalau ini pertama kali setup VPS, urutan baca yang paling gampang:
+
+1. [`DOMAIN_PROVIDER_GUIDE.md`](DOMAIN_PROVIDER_GUIDE.md) — beli domain dan arahkan DNS.
+2. [`VPS_PROVIDER_GUIDE.md`](VPS_PROVIDER_GUIDE.md) — pilih/order VPS (kandidat utama: VibeGames vServer Anti-DDoS).
+3. [`SMTP_PROVIDER_GUIDE.md`](SMTP_PROVIDER_GUIDE.md) — setup email untuk OTP/reset password.
+4. [`openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md`](../openspec/changes/vps-pterodactyl-infrastructure/SETUP_GUIDE.md) — ikuti command dari atas ke bawah.
+5. [`PTERODACTYL_OPERATIONS.md`](PTERODACTYL_OPERATIONS.md) — setelah semua jalan, pakai ini untuk operasi harian.
+
+**Tips:** Jangan langsung copy semua command sekaligus. Jalankan satu blok, cek hasilnya, baru lanjut.
+
 ## TL;DR Arsitektur
 
 ```

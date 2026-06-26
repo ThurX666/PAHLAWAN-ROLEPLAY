@@ -26,6 +26,7 @@
 
 ## Daftar Isi
 
+- [Cara Pakai Guide Ini (Wajib Dibaca Kalau Masih Awam)](#cara-pakai-guide-ini-wajib-dibaca-kalau-masih-awam)
 0. [Sebelum Mulai — Yang Perlu Disiapkan](#0-sebelum-mulai--yang-perlu-disiapkan)
 1. [Beli Domain](#1-beli-domain)
 2. [Beli VPS](#2-beli-vps)
@@ -42,6 +43,61 @@
 13. [Smoke Test End-to-End](#13-smoke-test-end-to-end) `[Task 7.1 – 7.6]`
 14. [Troubleshooting Umum](#14-troubleshooting-umum)
 15. [Checklist Sebelum Go-Live Alpha](#15-checklist-sebelum-go-live-alpha)
+
+---
+
+## Cara Pakai Guide Ini (Wajib Dibaca Kalau Masih Awam)
+
+Guide ini panjang karena dibuat sebagai **runbook dari nol sampai jalan**. Cara paling aman memakainya:
+
+1. **Jangan lompat-lompat.** Ikuti urutan dari bagian 0 sampai 15.
+2. **Satu command block = satu langkah.** Copy command, paste ke terminal, tunggu selesai, baru lanjut.
+3. **Kalau ada placeholder seperti `<VPS_IP>` atau `<DOMAIN>`**, ganti dengan nilai asli Anda dan **hapus tanda `<` `>`**.
+   - Contoh salah: `ssh root@<123.123.123.123>`
+   - Contoh benar: `ssh root@123.123.123.123`
+4. **Kalau command diawali `sudo`**, artinya command butuh akses admin/root di VPS.
+5. **Kalau ada kata “opsional”**, boleh dilewati untuk Alpha, tapi baca dulu risikonya.
+6. **Setiap selesai satu bagian besar**, cek bagian “Expected result”. Kalau hasilnya beda, jangan lanjut dulu — perbaiki di bagian troubleshooting.
+7. **Jangan simpan password/token di repo.** Simpan di password manager (Bitwarden/1Password/KeePass).
+
+### Simbol yang Dipakai
+
+| Simbol | Artinya |
+|---|---|
+| `<VPS_IP>` | IP publik VPS, contoh `123.123.123.123` |
+| `<domain>` | Domain Anda, contoh `pahlawan-roleplay.id` |
+| `<GAME_DB_PASSWORD>` | Password database game/UCP/bot |
+| `<PANEL_DB_PASSWORD>` | Password database Pterodactyl panel |
+| `<BREVO_SMTP_KEY>` | SMTP key dari Brevo/SMTP provider |
+| `<YOUR_PUBLIC_IP>` | IP internet rumah/kantor Anda untuk allowlist SSH |
+
+### Glossary Singkat
+
+| Istilah | Penjelasan pemula |
+|---|---|
+| **VPS** | Komputer server sewaan di internet. Semua service akan jalan di sini. |
+| **Pterodactyl Panel** | Dashboard web untuk start/stop/restart server game, web UCP, dan bot. |
+| **Wings** | Agent Pterodactyl di VPS yang menjalankan container Docker. |
+| **Docker container** | “Kotak” isolasi untuk menjalankan service agar tidak saling ganggu. |
+| **Egg** | Template Pterodactyl untuk jenis server tertentu (SA-MP, UCP, Bot). |
+| **UFW** | Firewall simpel di Ubuntu. Dipakai untuk membuka/menutup port. |
+| **MySQL bind-address** | Pengaturan alamat yang boleh didengar MySQL. Tetap harus dilindungi firewall. |
+| **SMTP** | Server pengirim email untuk OTP, reset password, dan notifikasi. |
+| **DNS** | Pengarah domain/subdomain ke IP VPS. |
+| **Cloudflare Proxy** | Proteksi dan reverse proxy untuk HTTP/HTTPS. Tidak boleh dipakai untuk SA-MP port. |
+
+### Stop Point yang Aman
+
+Kalau Anda capek atau mau berhenti sementara, berhentilah di salah satu titik ini:
+
+- Setelah VPS bisa SSH pakai user `pahlawan`.
+- Setelah firewall dan Fail2Ban aktif.
+- Setelah MySQL bisa login dari host.
+- Setelah Pterodactyl Panel bisa dibuka.
+- Setelah Wings node hijau.
+- Setelah masing-masing service berhasil start sekali.
+
+Jangan berhenti di tengah-tengah edit file config atau setelah firewall diubah tapi belum dites.
 
 ---
 
@@ -142,22 +198,19 @@ Saran nama untuk PAHLAWAN ROLEPLAY (sesuaikan):
 
 ### 2.4. Pilih Provider
 
-Rekomendasi (semua support Ubuntu 22.04 + Singapore + Ryzen):
+Rekomendasi praktis untuk kondisi sekarang:
 
-| Provider | Spek yang dicari (≈) | Biaya / bulan (≈) | Catatan |
-|---|---|---|---|
-| **Racknerd** | 2 vCPU / 4 GB / 50 GB SSD / 1 Gbit | USD 22 – 30 | Promo sering, SG & US location, support oke. |
-| **BandwagonHost** | 2 vCPU / 4 GB / 50 GB SSD / 1 Gbit | USD 25 – 35 | CN2 GIA line bagus, SG/US/JP. |
-| **GreenCloudVPS** | 2 vCPU / 4 GB / 50 GB NVMe / 10 Gbit | USD 15 – 25 | Murah, ada SG. |
-| **Vultr** | 2 vCPU / 4 GB / 80 GB NVMe / 1 Gbit | USD 24 | High-frequency CPU, click-to-deploy Ubuntu. |
-| **DigitalOcean** | 2 vCPU / 4 GB / 80 GB SSD / 1 Gbit | USD 24 | UI paling ramah pemula, SG2/SG1. |
-| **Contabo** | 4 vCPU / 8 GB / 50 GB NVMe / 32 Gbit | EUR 6.99 | Sangat murah tapi single-core weaker. |
-| **Hetzner** (EU) | 2 vCPU / 4 GB / 40 GB NVMe / 1 Gbit | EUR 5.39 | Spek bagus, tapi lokasi EU (Singapore hanya di beberapa partner). |
-| **IDCloudHost** (ID) | 2 vCPU / 4 GB / 50 GB SSD | IDR 150k – 250k | Lokal ID, support Bahasa Indonesia, region ID. |
+| Provider | Kapan dipilih | Catatan pemula |
+|---|---|---|
+| **VibeGames vServer** | Jika prioritas keamanan game server dan ingin Anti-DDoS bawaan | Kandidat utama Anda. Pastikan paket punya Anti DDoS Protection, Ubuntu 22.04, IPv4 dedicated, minimal 2 vCPU/4GB/50GB. |
+| **Vultr Singapore** | Jika prioritas latency ke Indonesia | UI ramah pemula dan region Singapore. DDoS biasanya add-on. |
+| **Hetzner CPX11** | Jika prioritas harga murah + spek kuat | Latency Eropa ke Indonesia lebih tinggi, tapi budget bagus. |
+| **Linode Singapore** | Jika ingin CPU dedicated dan latency SG | Lebih premium. |
+| **Contabo SG** | Jika ingin murah dengan spek besar | CPU shared dan reputasi IP kadang kurang bagus untuk email. |
 
-**Rekomendasi utama: DigitalOcean / Vultr / Racknerd** — balance antara harga, keandalan, lokasi SG, dan dokumentasi yang jelas.
+**Rekomendasi utama untuk Anda saat ini: VibeGames vServer**, karena sudah ada Anti-DDoS Protection. Setelah order, tetap ikuti bagian **3.6 Advanced Firewall & DDoS Hardening** — Anti-DDoS provider dan firewall VPS harus saling melengkapi.
 
-> **Catatan kontainer vs KVM:** Pilih **KVM / VPS biasa**, bukan container LXC / OpenVZ (Docker butuh KVM untuk nested virtualization & iptables).
+> **Catatan kontainer vs KVM:** Pilih **KVM / VPS biasa**, bukan container LXC / OpenVZ. Pterodactyl Wings butuh Docker, dan Docker paling aman/stabil di VPS KVM.
 
 ### 2.5. Langkah Order
 
@@ -209,7 +262,7 @@ ssh root@<VPS_IP>
 
 ```bash
 apt update && apt upgrade -y
-apt install -y ufw fail2ban unattended-upgrades apt-listchanges
+apt install -y ufw fail2ban unattended-upgrades apt-listchanges rsync curl wget nano
 ```
 
 Aktifkan auto security update:
@@ -290,14 +343,18 @@ sudo ufw default allow outgoing
 sudo ufw allow 22/tcp    comment "SSH"
 sudo ufw allow 80/tcp    comment "HTTP (UCP website)"
 sudo ufw allow 443/tcp   comment "HTTPS (UCP + Panel setelah domain)"
-sudo ufw allow 7777/tcp  comment "SA-MP Server"
-sudo ufw allow 9999/tcp  comment "SA-MP Query / Secondary"
+sudo ufw allow 7777/tcp  comment "SA-MP Server TCP"
+sudo ufw allow 7777/udp  comment "SA-MP Server UDP"
+sudo ufw allow 9999/tcp  comment "SA-MP Query / Secondary TCP (optional)"
+sudo ufw allow 9999/udp  comment "SA-MP Query / Secondary UDP (optional)"
 sudo ufw allow 8080/tcp  comment "Pterodactyl Panel HTTP (pre-domain)"
 sudo ufw allow 8443/tcp  comment "Pterodactyl Panel HTTPS (jika pakai self-signed)"
 
 sudo ufw enable
 sudo ufw status verbose
 ```
+
+**Expected result:** `sudo ufw status verbose` menampilkan `Status: active` dan rule untuk `22`, `80`, `443`, `7777/tcp`, `7777/udp`. Kalau SSH tiba-tiba putus, login ulang dari terminal baru. Jangan tutup terminal lama sebelum login baru berhasil.
 
 > **Catatan Pterodactyl Panel:**
 > - **Sebelum domain:** panel di `http://<VPS_IP>:8080` — buka port 8080.
@@ -310,6 +367,8 @@ sudo ufw status verbose
 ### 3.6. Advanced Firewall & DDoS Hardening (Direkomendasikan untuk VibeGames)
 
 > VibeGames vServer sudah menyediakan **Anti DDoS Protection**, tetapi firewall host tetap wajib. Provider-level Anti-DDoS membantu menyaring flood besar sebelum masuk VPS; firewall host membantu membatasi service yang benar-benar boleh diakses, rate-limit koneksi, dan mengurangi efek scan/bruteforce.
+>
+> **Mode pemula:** Jalankan dulu bagian 3.5 UFW + 3.7 Fail2Ban. Bagian 3.6 ini bisa dijalankan setelah Anda sudah yakin SSH tidak putus dan Panel berjalan. Jika ragu, kerjakan 3.6.1–3.6.4 dulu; 3.6.5 iptables rate-limit boleh ditunda sampai server mulai public.
 
 #### 3.6.1. Prinsip Port Exposure
 
@@ -1504,33 +1563,44 @@ ls -lh gamemodes/main.amx
 file gamemodes/main.amx
 ```
 
-### 10.5. Symlink ke Pterodactyl Volumes `[Task 6.5, 6.6]`
+### 10.5. Copy/Sync File ke Pterodactyl Volumes `[Task 6.5, 6.6]`
 
-Pterodactyl menyimpan file server di `/var/lib/pterodactyl/volumes/<server_id>/`. Setelah membuat 3 server di Panel (lihat 11), cari `<server_id>` di UI dan symlink:
+Pterodactyl menyimpan file server di `/var/lib/pterodactyl/volumes/<server_id>/`. Untuk pemula, **pakai metode copy/sync**, bukan symlink, karena lebih mudah dipahami dan tidak mudah salah path.
+
+Cari `<server_id>` di Panel UI:
+
+1. Panel → Admin → Servers.
+2. Klik server (SA-MP / UCP / Bot).
+3. Lihat UUID/ID di URL atau tab Settings.
+4. Cocokkan folder di VPS:
+   ```bash
+   sudo ls -lah /var/lib/pterodactyl/volumes/
+   ```
+
+Setelah ID ketemu, sync file:
 
 ```bash
-# Cari ID server (nanti setelah buat di Panel)
-PANEL_TOKEN=$(sudo cat /var/www/pterodactyl/.env | grep APP_KEY)
-# Atau pakai API key admin
+# Ganti <samp_server_id>, <ucp_server_id>, <bot_server_id> dengan folder UUID yang benar.
+# Perhatikan tanda slash / di akhir source: artinya isi folder yang dicopy, bukan folder induknya.
 
-# Manual: setelah create server di Panel, cek di UI:
-# /admin/servers -> klik server -> tab Settings -> ID
+sudo rsync -a --delete /opt/pahlawan-roleplay/GAMEMODE/ \
+  /var/lib/pterodactyl/volumes/<samp_server_id>/
 
-# Contoh symlink (sesuaikan ID):
-sudo ln -sf /opt/pahlawan-roleplay/GAMEMODE \
-    /var/lib/pterodactyl/volumes/<samp_server_id>/
+sudo rsync -a --delete /opt/pahlawan-roleplay/WEBSITE/ \
+  /var/lib/pterodactyl/volumes/<ucp_server_id>/
 
-sudo ln -sf /opt/pahlawan-roleplay/WEBSITE \
-    /var/lib/pterodactyl/volumes/<ucp_server_id>/
+sudo rsync -a --delete /opt/pahlawan-roleplay/BOT/ \
+  /var/lib/pterodactyl/volumes/<bot_server_id>/
 
-sudo ln -sf /opt/pahlawan-roleplay/BOT \
-    /var/lib/pterodactyl/volumes/<bot_server_id>/
-
-# Permission (UID Pterodactyl container user = 988)
-sudo chown -R 988:988 /opt/pahlawan-roleplay
+# Permission container user Pterodactyl. Jika panel memakai user berbeda, cek docs Pterodactyl/Wings.
+sudo chown -R 988:988 /var/lib/pterodactyl/volumes/<samp_server_id>/
+sudo chown -R 988:988 /var/lib/pterodactyl/volumes/<ucp_server_id>/
+sudo chown -R 988:988 /var/lib/pterodactyl/volumes/<bot_server_id>/
 ```
 
-> **Catatan:** Symlink berarti file repo di-host ONCE di `/opt/pahlawan-roleplay`. Update dari Git (`git pull`) akan otomatis terlihat di semua container service.
+**Expected result:** setelah buka File Manager di Panel, file gamemode/website/bot terlihat langsung di root server masing-masing.
+
+> **Update berikutnya:** setiap selesai `git pull` di `/opt/pahlawan-roleplay`, ulangi `rsync` hanya untuk service yang berubah, lalu restart service dari Panel.
 
 ---
 
