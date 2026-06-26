@@ -157,11 +157,11 @@
 
 ### 6.1 SA-MP Server Egg
 
-- [ ] 6.1.1 Gunakan egg JSON canonical `docs/eggs/egg-samp-server.json`:
+- [x] 6.1.1 Gunakan egg JSON canonical `docs/eggs/egg-samp-server.json`:
     - Base image: `ubuntu:22.04`.
     - Install script mengunduh SA-MP server binaries dan plugin dasar saat server dibuat.
     - Operator import egg JSON ke Panel, bukan build Docker image manual.
-- [ ] 6.1.2 Review/import egg definition JSON (`docs/eggs/egg-samp-server.json`):
+- [x] 6.1.2 Review/import egg definition JSON (`docs/eggs/egg-samp-server.json`):
     - Docker image/base: `ubuntu:22.04`.
     - Startup command: `./samp03svr` atau open.mp server binary.
     - Variables: `SERVER_PORT` (default 7777), `MAX_PLAYERS` (default 50), `MAP_NAME`, `GAME_MODE` (main).
@@ -171,11 +171,11 @@
 
 ### 6.2 UCP Website Egg
 
-- [ ] 6.2.1 Gunakan egg JSON canonical `docs/eggs/egg-ucp-website.json`:
+- [x] 6.2.1 Gunakan egg JSON canonical `docs/eggs/egg-ucp-website.json`:
     - Base image + install script menyiapkan Nginx, PHP-FPM, Node.js 20, dan Composer.
     - Startup build Vite frontend (`npm install && npm run build`), start PHP-FPM, start Nginx.
     - Nginx config: serve `WEBSITE/dist` sebagai static, proxy `WEBSITE/public/api` ke PHP-FPM.
-- [ ] 6.2.2 Review/import egg definition JSON (`docs/eggs/egg-ucp-website.json`):
+- [x] 6.2.2 Review/import egg definition JSON (`docs/eggs/egg-ucp-website.json`):
     - Docker/base image sesuai egg canonical.
     - Startup command: `/start.sh` (build + nginx + php-fpm).
     - Variables: `APP_URL`, `DB_HOST` (172.17.0.1), `DB_PORT` (3306), `DB_NAME` (arivena), `DB_USER` (pahlawan), `DB_PASS`.
@@ -186,10 +186,10 @@
 
 ### 6.3 Discord Bot Egg
 
-- [ ] 6.3.1 Gunakan egg JSON canonical `docs/eggs/egg-discord-bot.json`:
+- [x] 6.3.1 Gunakan egg JSON canonical `docs/eggs/egg-discord-bot.json`:
     - Base image: `node:20-bookworm-slim`.
     - Startup: `npm install --production && node index.js`.
-- [ ] 6.3.2 Review/import egg definition JSON (`docs/eggs/egg-discord-bot.json`):
+- [x] 6.3.2 Review/import egg definition JSON (`docs/eggs/egg-discord-bot.json`):
     - Docker/base image sesuai egg canonical.
     - Startup command: `npm install --production && node index.js`.
     - Variables: `DB_HOST` (172.17.0.1), `DB_PORT` (3306), `DB_NAME` (arivena), `DB_USER` (pahlawan), `DB_PASS`.
@@ -254,8 +254,8 @@
 
 ## 9. Dokumentasi Operasional
 
-- [ ] 9.1 Buat `docs/VPS_SETUP_GUIDE.md` berisi semua langkah di atas sebagai referensi operator.
-- [ ] 9.2 Buat `docs/PTERODACTYL_OPERATIONS.md` berisi:
+- [x] 9.1 Buat `docs/VPS_SETUP_GUIDE.md` berisi semua langkah di atas sebagai referensi operator.
+- [x] 9.2 Buat `docs/PTERODACTYL_OPERATIONS.md` berisi:
     - Cara start/stop/restart tiap service.
     - Cara deploy update (git pull + restart).
     - Cara cek log dari Panel.
