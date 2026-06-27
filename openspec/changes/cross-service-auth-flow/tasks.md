@@ -27,7 +27,11 @@
   - `verify.php`: SELECT dari `player_ucp`, UPDATE `Verify_Status=1` + `Verify_Code=-1` setelah OTP match. ✅
   - `forgot.php`: SELECT `reset_token`/`reset_expires`, UPDATE password baru dengan `password_hash(PASSWORD_BCRYPT)`. ✅
   - Discord link: cek `discord_id` di `auth.php` login flow → redirect ke discord link. ✅
-- [ ] **2.2** — Hapus/deprecate dummy/preview mode di `Auth.tsx` — ganti jadi selalu fetch ke `auth.php` (live DB).
+- [x] **2.2** — Hapus/deprecate dummy/preview mode di `Auth.tsx` — ganti jadi selalu fetch ke `auth.php` (live DB).
+  - `WEBSITE/Auth.tsx`: branch `isPreviewEnv()` (admin/player hardcoded) dihapus, import `isPreviewEnv` dihapus. ✅
+  - `WEBSITE/components/Auth.tsx`: branch `isPreviewEnv()` dihapus, import `isPreviewEnv` dihapus. ✅
+  - `localAuthPreview` (QA mode dengan server preview) tetap dipertahankan — bukan dummy mode.
+  - `config.ts`: `isPreviewEnv()` tetap ada karena masih dipakai `App.tsx` untuk server stats & fetch guard.
 - [x] **2.3** — Pastikan `auth.php` action=register menyimpan password dengan `password_hash($password, PASSWORD_BCRYPT)`. **Done — verified in `register.php` line 22: cost=12.**
 - [x] **2.4** — Pastikan `auth.php` action=login menggunakan `password_verify()`. **Done — verified in `auth.php` line 43.**
 - [ ] **2.5** — Pastikan OTP verify flow: generate code → simpan ke `player_ucp.otp_code` + `otp_expiry` → kirim email via PHPMailer.

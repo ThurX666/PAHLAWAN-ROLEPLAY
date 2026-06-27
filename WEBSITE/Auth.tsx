@@ -6,7 +6,7 @@ import { RegisterForm } from './auth/RegisterForm';
 import { ForgotPasswordForm } from './auth/ForgotPasswordForm';
 import { VerifyForm } from './auth/VerifyForm';
 import { DiscordLinkForm } from './auth/DiscordLinkForm';
-import { isPreviewEnv, API_URL } from '../config';
+import { API_URL } from '../config';
 import { ServerStats } from '../types';
 
 interface AuthProps {
@@ -161,81 +161,64 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
     setLoading(true);
     setError(null);
 
-    if (isPreviewEnv()) {
-        // MODE PREVIEW (DUMMY)
-        setTimeout(() => {
-            const normalizedUser = usernameInput.toLowerCase().trim();
-            // SIMULATION VALIDATION LOGIC
-            if (normalizedUser === 'admin' || normalizedUser === 'player') {
-                setLoading(false);
-                onLogin(usernameInput, undefined, undefined, true); // password is not needed for dummy
-            } else {
-                setLoading(false);
-                setError("Kredensial Login tidak valid. Silakan periksa kembali username dan password Anda.");
-            }
-        }, 1000);
-    } else {
-        // MODE LIVE (XAMPP / HOSTING - FETCH MYSQL API)
-        try {
-            const formData = new FormData();
-            formData.append('action', 'login');
-            formData.append('username', usernameInput);
-            formData.append('password', passwordInput || '');
-            
-            let currentDevice = deviceInfo.device;
-            if (!currentDevice) {
-                if (navigator.userAgent.includes("Windows")) currentDevice = "Windows PC";
-                else if (navigator.userAgent.includes("Mac")) currentDevice = "Mac";
-                else if (navigator.userAgent.includes("Linux")) currentDevice = "Linux";
-                else if (navigator.userAgent.includes("Android")) currentDevice = "Android";
-                else if (navigator.userAgent.includes("iPhone") || navigator.userAgent.includes("iPad")) currentDevice = "iOS";
-                else currentDevice = "Unknown Device";
-            }
-            formData.append('device', currentDevice);
-            
-            if (deviceInfo.ip) formData.append('ip', deviceInfo.ip);
-            if (deviceInfo.location) formData.append('location', deviceInfo.location);
+    // MODE LIVE (XAMPP / HOSTING - FETCH MYSQL API)
+    try {
+        const formData = new FormData();
+        formData.append('action', 'login');
+        formData.append('username', usernameInput);
+        formData.append('password', passwordInput || '');
+        
+        let currentDevice = deviceInfo.device;
+        if (!currentDevice) {
+            if (navigator.userAgent.includes("Windows")) currentDevice = "Windows PC";
+            else if (navigator.userAgent.includes("Mac")) currentDevice = "Mac";
+            else if (navigator.userAgent.includes("Linux")) currentDevice = "Linux";
+            else if (navigator.userAgent.includes("Android")) currentDevice = "Android";
+            else if (navigator.userAgent.includes("iPhone") || navigator.userAgent.includes("iPad")) currentDevice = "iOS";
+            else currentDevice = "Unknown Device";
+        }
+        formData.append('device', currentDevice);
+        
+        if (deviceInfo.ip) formData.append('ip', deviceInfo.ip);
+        if (deviceInfo.location) formData.append('location', deviceInfo.location);
 
-            const response = await fetch(`${API_URL}/auth.php`, {
-                method: 'POST',
-                credentials: 'include',
-                body: formData
-            });
+        const response = await fetch(`${API_URL}/auth.php`, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        });
 
-            if (!response.ok) {
-                throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+        }
 
-            const data = await response.json();
+        const data = await response.json();
 
-            setLoading(false);
-            if (data.status === 'success') {
-                // Pass level from DB (kalau adminLevel tidak ada, default to 0)
-                onLogin(data.username, data.admin_level || 0, passwordInput, true, data.is_discord_linked);
-            } else if (data.status === 'discord_required') {
-                localStorage.setItem('pending_discord_username', data.username || usernameInput);
-                localStorage.setItem('pending_discord_password', passwordInput || '');
-                setVerifyUser(data.username || usernameInput);
-                setView('discord');
-            } else if (data.status === 'unverified') {
-                localStorage.setItem('pending_discord_username', data.registered_user || usernameInput);
-                localStorage.setItem('pending_discord_password', passwordInput || '');
-                // Akun belum OTP! Arahkan ke halaman verifikasi.
-                setVerifyUser(data.registered_user || usernameInput);
-                setInitialCooldown(data.cooldown || 0);
-                setView('verify');
-            } else {
-                setError(data.message || 'Login gagal. Periksa username dan password Anda.');
-            }
-        } catch (err) {
-            console.error("Login fetch error:", err);
-            setLoading(false);
-            const errorMessage = err instanceof Error ? err.message : String(err);
-            if (errorMessage === "Failed to fetch") {
-                setError(`Server lokal tidak merespon (API URL: ${API_URL}). Pastikan server PHP jalan.`);
-            } else {
-                setError(`Gagal menghubungi server. Details: ${errorMessage}`);
-            }
+        setLoading(false);
+        if (data.status === 'success') {
+            onLogin(data.username, data.admin_level || 0, passwordInput, true, data.is_discord_linked);
+        } else if (data.status === 'discord_required') {
+            localStorage.setItem('pending_discord_username', data.username || usernameInput);
+            localStorage.setItem('pending_discord_password', passwordInput || '');
+            setVerifyUser(data.username || usernameInput);
+            setView('discord');
+        } else if (data.status === 'unverified') {
+            localStorage.setItem('pending_discord_username', data.registered_user || usernameInput);
+            localStorage.setItem('pending_discord_password', passwordInput || '');
+            setVerifyUser(data.registered_user || usernameInput);
+            setInitialCooldown(data.cooldown || 0);
+            setView('verify');
+        } else {
+            setError(data.message || 'Login gagal. Periksa username dan password Anda.');
+        }
+    } catch (err) {
+        console.error("Login fetch error:", err);
+        setLoading(false);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        if (errorMessage === "Failed to fetch") {
+            setError(`Server lokal tidak merespon (API URL: ${API_URL}). Pastikan server PHP jalan.`);
+        } else {
+            setError(`Gagal menghubungi server. Details: ${errorMessage}`);
         }
     }
   };
@@ -486,14 +469,6 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
             {view === 'login' && (
                 <>
                     <LoginForm onSubmit={handleLoginSubmit} setView={setView} loading={loading} />
-                    {isPreviewEnv() && (
-                        <button 
-                            onClick={() => { setVerifyUser("PreviewPlayer"); setView('discord'); }} 
-                            className="mt-3 w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/[0.08] text-gray-600 dark:text-gray-300 rounded-lg py-2 text-xs opacity-70 hover:opacity-100 transition-all font-mono hover:bg-gray-100 dark:hover:bg-white/10"
-                        >
-                            Pratinjau Tampilan Wajib Discord
-                        </button>
-                    )}
                 </>
             )}
             

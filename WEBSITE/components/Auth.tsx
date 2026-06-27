@@ -6,7 +6,7 @@ import { RegisterForm } from './auth/RegisterForm';
 import { ForgotPasswordForm } from './auth/ForgotPasswordForm';
 import { VerifyForm } from './auth/VerifyForm';
 import { DiscordLinkForm } from './auth/DiscordLinkForm';
-import { isPreviewEnv, API_URL } from '../config';
+import { API_URL } from '../config';
 import { ServerStats } from '../types';
 import { UCP_VERSION } from '../version';
 
@@ -186,18 +186,6 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                 setError("Kredensial Login tidak valid. Gunakan akun preview / preview123 untuk mode QA lokal.");
             }
         }, 500);
-    } else if (isPreviewEnv()) {
-        // MODE PREVIEW (DUMMY)
-        setTimeout(() => {
-            // SIMULATION VALIDATION LOGIC
-            if (normalizedUser === 'admin' || normalizedUser === 'player') {
-                setLoading(false);
-                onLogin(usernameInput, undefined, undefined, true); // password is not needed for dummy
-            } else {
-                setLoading(false);
-                setError("Kredensial Login tidak valid. Silakan periksa kembali username dan password Anda.");
-            }
-        }, 1000);
     } else {
         // MODE LIVE (XAMPP / HOSTING - FETCH MYSQL API)
         try {
