@@ -34,7 +34,13 @@
   - `config.ts`: `isPreviewEnv()` tetap ada karena masih dipakai `App.tsx` untuk server stats & fetch guard.
 - [x] **2.3** — Pastikan `auth.php` action=register menyimpan password dengan `password_hash($password, PASSWORD_BCRYPT)`. **Done — verified in `register.php` line 22: cost=12.**
 - [x] **2.4** — Pastikan `auth.php` action=login menggunakan `password_verify()`. **Done — verified in `auth.php` line 43.**
-- [ ] **2.5** — Pastikan OTP verify flow: generate code → simpan ke `player_ucp.otp_code` + `otp_expiry` → kirim email via PHPMailer.
+- [x] **2.5** — Pastikan OTP verify flow: generate code → simpan ke `player_ucp.otp_code` + `otp_expiry` → kirim email via PHPMailer.
+  - OTP generate: `mt_rand(1, 999999)` 6-digit. Simpan ke `player_ucp.Verify_Code` (int). ✅
+  - Expiry: pakai `Register_Date` + 30 menit (varchar → strtotime). Di-reset ke CURRENT_TIMESTAMP tiap resend OTP. ✅
+  - Email: `sendVerificationEmail()` via PHPMailer SMTP (`mailer_helper.php`). Support multi-context (register, resend, new_device, new_ip, reauth). ✅
+  - Cooldown: 1800 detik via `Register_Date` timestamp check. ✅
+  - Max attempts: 3 `OTP_Attempts` sebelum blocked. ✅
+  - ⚠️ `Register_Date` masih varchar(30), bukan DATETIME. `otp_expiry` kolom belum ada — migrasi ada di task 1.5.
 - [ ] **2.6** — Pastikan Discord link flow: setelah register/verify, user bisa link Discord account → simpan `discord_id`.
 - [ ] **2.7** — Verifikasi: register akun baru lewat UCP → data muncul di `player_ucp` table.
 - [ ] **2.8** — Verifikasi: login dengan akun yang baru dibuat → sukses → session aktif.
