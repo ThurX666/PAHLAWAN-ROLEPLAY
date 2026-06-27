@@ -1,0 +1,103 @@
+# Tasks — cross-service-auth-flow
+
+**Target:** Alpha Test 1 Agustus 2026 — semua service berbagi database yang sama di **localhost**.
+
+**Mode:** Localhost (XAMPP MySQL + PHP + SA-MP server + Node.js bot).
+
+---
+
+## 1. Database Schema Audit & Migration
+
+- [ ] **1.1** — Audit schema existing: list semua tabel di database SA-MP server saat ini.
+- [ ] **1.2** — Identifikasi tabel `player_ucp` (atau ekuivalennya): struktur, kolom, indexes.
+- [ ] **1.3** — Identifikasi tabel `player_characters` (atau ekuivalennya): struktur, kolom, indexes.
+- [ ] **1.4** — Buat migration script jika schema perlu diselaraskan (tambah kolom, ubah tipe, dll).
+- [ ] **1.5** — Pastikan `player_ucp` punya: id, username (UNIQUE), password (bcrypt hash), email, verified, otp_code, otp_expiry, discord_id, admin_level, last_login, created_at.
+- [ ] **1.6** — Pastikan `player_characters` punya: id, ucp_id (FK → player_ucp.id), char_name (UNIQUE), skin, age, origin, gender, created_at.
+- [ ] **1.7** — Verifikasi: query cross-table JOIN `player_ucp` ↔ `player_characters` berhasil.
+- [ ] **1.8** — Backup database existing sebelum migration.
+
+---
+
+## 2. UCP — Unifikasi ke Shared Database
+
+- [ ] **2.1** — Audit `auth.php`: cek action login, register, verify, forgot_password, discord_link — pastikan semuanya query ke tabel `player_ucp`.
+- [ ] **2.2** — Hapus/deprecate dummy/preview mode di `Auth.tsx` — ganti jadi selalu fetch ke `auth.php` (live DB).
+- [ ] **2.3** — Pastikan `auth.php` action=register menyimpan password dengan `password_hash($password, PASSWORD_BCRYPT)`.
+- [ ] **2.4** — Pastikan `auth.php` action=login menggunakan `password_verify()`.
+- [ ] **2.5** — Pastikan OTP verify flow: generate code → simpan ke `player_ucp.otp_code` + `otp_expiry` → kirim email via PHPMailer.
+- [ ] **2.6** — Pastikan Discord link flow: setelah register/verify, user bisa link Discord account → simpan `discord_id`.
+- [ ] **2.7** — Verifikasi: register akun baru lewat UCP → data muncul di `player_ucp` table.
+- [ ] **2.8** — Verifikasi: login dengan akun yang baru dibuat → sukses → session aktif.
+
+---
+
+## 3. UCP — Character Creation Pipeline
+
+- [ ] **3.1** — Audit `CreateCharacterModal.tsx`: cek form fields, validasi, dan submit handler.
+- [ ] **3.2** — Buat API endpoint baru: `WEBSITE/public/api/character.php` — handle POST create character.
+- [ ] **3.3** — Endpoint `character.php`: validasi session (user harus login), validasi input (nama 3-20 chars, alphanumeric), cek max 3 karakter.
+- [ ] **3.4** — Endpoint `character.php`: INSERT ke `player_characters` dengan `ucp_id` dari session user.
+- [ ] **3.5** — Hubungkan `CreateCharacterModal` submit ke `fetch('api/character.php')`.
+- [ ] **3.6** — Verifikasi: login UCP → buka CreateCharacter → isi form → submit → data muncul di `player_characters`.
+- [ ] **3.7** — Verifikasi: coba buat karakter ke-4 → ditolak (max 3).
+- [ ] **3.8** — Verifikasi: coba buat karakter dengan nama yang sama → ditolak (UNIQUE constraint).
+
+---
+
+## 4. SA-MP Gamemode — Login dengan Shared DB
+
+- [ ] **4.1** — Audit `account_regist.inc`: pahami flow `CheckPlayerUCP()`, `OnLoginPassCheck()`, `OnPlayerPasswordChecked()`.
+- [ ] **4.2** — Pastikan query login di gamemode membaca tabel `player_ucp` (bukan tabel terpisah).
+- [ ] **4.3** — Pastikan password verification di Pawn menggunakan bcrypt plugin yang kompatibel dengan PHP `PASSWORD_BCRYPT`.
+- [ ] **4.4** — Test hash compatibility: hash password di PHP → coba verify di Pawn bcrypt.
+- [ ] **4.5** — Refactor login dialog untuk menggunakan kolom yang sama dengan UCP (username, password).
+- [ ] **4.6** — Tambahkan pengecekan `verified = 1` sebelum player bisa login in-game.
+- [ ] **4.7** — Tambahkan pesan error yang jelas: "Akun belum diverifikasi. Cek email Anda." jika verified = 0.
+- [ ] **4.8** — Verifikasi: register di UCP → verify OTP → login in-game dengan username + password yang sama → sukses masuk ke character selection.
+
+---
+
+## 5. SA-MP Gamemode — Character Selection dari UCP
+
+- [ ] **5.1** — Audit `InsertPlayerName()` di `account_regist.inc`: bagaimana karakter dibuat dari in-game.
+- [ ] **5.2** — Modifikasi character selection flow: setelah login sukses, load karakter dari `player_characters` WHERE `ucp_id` = user's ID.
+- [ ] **5.3** — Tampilkan daftar karakter yang sudah dibuat di UCP dalam dialog selection in-game.
+- [ ] **5.4** — Jika user belum punya karakter, arahkan ke character creation in-game (fallback) atau suruh buat di UCP dulu.
+- [ ] **5.5** — Verifikasi: buat karakter di UCP → login in-game → karakter muncul di selection → bisa spawn.
+
+---
+
+## 6. Discord Bot — Basic Cross-Service Connection
+
+- [ ] **6.1** — Pastikan `BOT/config.json` punya konfigurasi koneksi ke shared MySQL database (host: localhost).
+- [ ] **6.2** — Verifikasi bot bisa start dan connect ke database (cek `clientReady.js`).
+- [ ] **6.3** — Buat slash command `/info [username]` — query `player_ucp` + `player_characters` dan tampilkan info user.
+- [ ] **6.4** — Pastikan bot hanya read-only ke database (tidak ada insert/update/delete dari bot).
+- [ ] **6.5** — Verifikasi: bot online → `/info <username>` → tampilkan data user + karakter.
+
+---
+
+## 7. Localhost Integration Testing
+
+- [ ] **7.1** — Setup XAMPP: pastikan MySQL dan Apache jalan.
+- [ ] **7.2** — Setup database: import schema atau pastikan database existing bisa diakses.
+- [ ] **7.3** — Setup SA-MP server: pastikan server bisa connect ke MySQL localhost.
+- [ ] **7.4** — Setup UCP: jalankan `npm run dev` untuk Vite, pastikan fetch ke `auth.php` jalan.
+- [ ] **7.5** — Setup bot: jalankan `node index.js` (atau `npm start`), pastikan bot connect ke Discord + MySQL.
+- [ ] **7.6** — Full flow test: Register UCP → Verify OTP → Login UCP → Create Character → Login SA-MP → Pilih Karakter → Spawn.
+- [ ] **7.7** — Edge case test: unverified account login in-game, wrong password, duplicate character name, max characters.
+- [ ] **7.8** — Bot test: `/info` command dengan username yang baru dibuat.
+
+---
+
+## 8. Documentation
+
+- [ ] **8.1** — Update `docs/LOCALHOST_DEV_SETUP.md` dengan langkah-langkah setup cross-service auth.
+- [ ] **8.2** — Dokumentasikan schema database final (ERD atau tabel markdown).
+- [ ] **8.3** — Dokumentasikan API endpoints: `auth.php`, `character.php`.
+- [ ] **8.4** — Update ROADMAP.md: centang Pre-Alpha items yang selesai.
+
+---
+
+**Total: 49 tasks** (1.x: 8, 2.x: 8, 3.x: 8, 4.x: 8, 5.x: 5, 6.x: 5, 7.x: 8, 8.x: 4)
