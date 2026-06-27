@@ -21,10 +21,15 @@
 
 ## 2. UCP — Unifikasi ke Shared Database
 
-- [ ] **2.1** — Audit `auth.php`: cek action login, register, verify, forgot_password, discord_link — pastikan semuanya query ke tabel `player_ucp`.
+- [x] **2.1** — Audit `auth.php`: cek action login, register, verify, forgot_password, discord_link — pastikan semuanya query ke tabel `player_ucp`.
+  - `auth.php` (login): SELECT dari `player_ucp` WHERE UCP/Email, `password_verify()`, cek `Verify_Status`, cek `discord_id`. ✅
+  - `register.php`: `password_hash(PASSWORD_BCRYPT, cost=12)`, INSERT ke `player_ucp` (UCP, Email, Password, Verify_Status=0, Verify_Code). ✅
+  - `verify.php`: SELECT dari `player_ucp`, UPDATE `Verify_Status=1` + `Verify_Code=-1` setelah OTP match. ✅
+  - `forgot.php`: SELECT `reset_token`/`reset_expires`, UPDATE password baru dengan `password_hash(PASSWORD_BCRYPT)`. ✅
+  - Discord link: cek `discord_id` di `auth.php` login flow → redirect ke discord link. ✅
 - [ ] **2.2** — Hapus/deprecate dummy/preview mode di `Auth.tsx` — ganti jadi selalu fetch ke `auth.php` (live DB).
-- [ ] **2.3** — Pastikan `auth.php` action=register menyimpan password dengan `password_hash($password, PASSWORD_BCRYPT)`.
-- [ ] **2.4** — Pastikan `auth.php` action=login menggunakan `password_verify()`.
+- [x] **2.3** — Pastikan `auth.php` action=register menyimpan password dengan `password_hash($password, PASSWORD_BCRYPT)`. **Done — verified in `register.php` line 22: cost=12.**
+- [x] **2.4** — Pastikan `auth.php` action=login menggunakan `password_verify()`. **Done — verified in `auth.php` line 43.**
 - [ ] **2.5** — Pastikan OTP verify flow: generate code → simpan ke `player_ucp.otp_code` + `otp_expiry` → kirim email via PHPMailer.
 - [ ] **2.6** — Pastikan Discord link flow: setelah register/verify, user bisa link Discord account → simpan `discord_id`.
 - [ ] **2.7** — Verifikasi: register akun baru lewat UCP → data muncul di `player_ucp` table.
