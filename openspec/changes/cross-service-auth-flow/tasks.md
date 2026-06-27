@@ -29,6 +29,9 @@
 - [ ] **2.6** — Pastikan Discord link flow: setelah register/verify, user bisa link Discord account → simpan `discord_id`.
 - [ ] **2.7** — Verifikasi: register akun baru lewat UCP → data muncul di `player_ucp` table.
 - [ ] **2.8** — Verifikasi: login dengan akun yang baru dibuat → sukses → session aktif.
+- [ ] **2.9** — Audit sistem Inbox UCP: cek tabel `ucp_inbox_messages`, pastikan query dan relasi user (username vs ucp_id) mengarah ke `player_ucp` dengan benar.
+- [ ] **2.10** — Audit sistem Create Character: cek `api_characters.php` + `CreateCharacterModal.tsx`, pastikan pembuatan karakter terhubung ke akun `player_ucp` (via `Char_UCP` atau `ucp_id`).
+- [ ] **2.11** — Audit kolom `admin`: pastikan nama kolom (`admin_level` di `player_ucp` vs `Char_Admin` di `player_characters`), tipe data, dan usage-nya selaras di WEBSITE (PHP), BOT (Node.js), dan GAMEMODE (Pawn).
 
 ---
 
@@ -100,4 +103,4 @@
 
 ---
 
-**Total: 49 tasks** (1.x: 8, 2.x: 8, 3.x: 8, 4.x: 8, 5.x: 5, 6.x: 5, 7.x: 8, 8.x: 4)
+**Total: 57 tasks** (1.x: 8, 2.x: 11, 3.x: 8, 4.x: 8, 5.x: 5, 6.x: 5, 7.x: 8, 8.x: 4)
