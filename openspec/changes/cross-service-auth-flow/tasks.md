@@ -41,7 +41,11 @@
   - Cooldown: 1800 detik via `Register_Date` timestamp check. ✅
   - Max attempts: 3 `OTP_Attempts` sebelum blocked. ✅
   - ⚠️ `Register_Date` masih varchar(30), bukan DATETIME. `otp_expiry` kolom belum ada — migrasi ada di task 1.5.
-- [ ] **2.6** — Pastikan Discord link flow: setelah register/verify, user bisa link Discord account → simpan `discord_id`.
+- [x] **2.6** — Pastikan Discord link flow: setelah register/verify, user bisa link Discord account → simpan `discord_id`.
+  - `auth.php`: setelah login, cek `discord_id` kosong → return `status: discord_required` → frontend redirect ke `DiscordLinkForm`. ✅
+  - `discord_link.php`: mulai OAuth flow (client_id, redirect_uri, state). ✅
+  - `discord_callback.php`: `UPDATE player_ucp SET discord_id = :discord WHERE UCP = :username`. ✅
+  - `Settings.tsx`: tombol link Discord dari halaman settings. ✅
 - [ ] **2.7** — Verifikasi: register akun baru lewat UCP → data muncul di `player_ucp` table.
 - [ ] **2.8** — Verifikasi: login dengan akun yang baru dibuat → sukses → session aktif.
 - [ ] **2.9** — Audit sistem Inbox UCP: cek tabel `ucp_inbox_messages`, pastikan query dan relasi user (username vs ucp_id) mengarah ke `player_ucp` dengan benar.
