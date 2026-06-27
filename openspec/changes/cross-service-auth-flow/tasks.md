@@ -47,6 +47,7 @@
 - [ ] **2.9** — Audit sistem Inbox UCP: cek tabel `ucp_inbox_messages`, pastikan query dan relasi user (username vs ucp_id) mengarah ke `player_ucp` dengan benar.
 - [ ] **2.10** — Audit sistem Create Character: cek `api_characters.php` + `CreateCharacterModal.tsx`, pastikan pembuatan karakter terhubung ke akun `player_ucp` (via `Char_UCP` atau `ucp_id`).
 - [ ] **2.11** — Audit kolom `admin`: pastikan nama kolom (`admin_level` di `player_ucp` vs `Char_Admin` di `player_characters`), tipe data, dan usage-nya selaras di WEBSITE (PHP), BOT (Node.js), dan GAMEMODE (Pawn).
+- [ ] **2.12** — Hapus `isPreviewEnv()` dari `App.tsx`: 10+ pemakaian untuk `MOCK_STATS`, fetch guards, dan login event simulation. Ganti dengan live fetch/data saja. Hapus `isPreviewEnv` import. Setelah semua usage hilang, hapus `isPreviewEnv()` dari `config.ts`. (Ditunda dari task 2.2 karena scope App.tsx di luar Auth.tsx.)
 
 ---
 
@@ -118,4 +119,4 @@
 
 ---
 
-**Total: 57 tasks** (1.x: 8, 2.x: 11, 3.x: 8, 4.x: 8, 5.x: 5, 6.x: 5, 7.x: 8, 8.x: 4)
+**Total: 58 tasks** (1.x: 8, 2.x: 12, 3.x: 8, 4.x: 8, 5.x: 5, 6.x: 5, 7.x: 8, 8.x: 4)
