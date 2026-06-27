@@ -8,9 +8,9 @@
 
 ## 1. Database Schema Audit & Migration
 
-- [ ] **1.1** — Audit schema existing: list semua tabel di database SA-MP server saat ini.
-- [ ] **1.2** — Identifikasi tabel `player_ucp` (atau ekuivalennya): struktur, kolom, indexes.
-- [ ] **1.3** — Identifikasi tabel `player_characters` (atau ekuivalennya): struktur, kolom, indexes.
+- [x] **1.1** — Audit schema existing: 103 tabel ditemukan, database `arivena` MariaDB 10.4.32.
+- [x] **1.2** — `player_ucp` confirmed sebagai single source of truth. Dipakai UCP (PHP) & Gamemode (Pawn). 26 kolom, charset latin1, PK=`ID`, username di `UCP`. Password bcrypt $2y$12$.
+- [x] **1.3** — `player_characters` confirmed. 100+ kolom game data, link via `Char_UCP` (username string, bukan FK). Tabel `characters` (simple, 7 kolom) dan `ucp` (simple, 9 kolom) **orfan — nol referensi kode, nol data, nol FK**. Bisa di-drop.
 - [ ] **1.4** — Buat migration script jika schema perlu diselaraskan (tambah kolom, ubah tipe, dll).
 - [ ] **1.5** — Pastikan `player_ucp` punya: id, username (UNIQUE), password (bcrypt hash), email, verified, otp_code, otp_expiry, discord_id, admin_level, last_login, created_at.
 - [ ] **1.6** — Pastikan `player_characters` punya: id, ucp_id (FK → player_ucp.id), char_name (UNIQUE), skin, age, origin, gender, created_at.
