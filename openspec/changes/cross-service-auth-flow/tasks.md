@@ -48,7 +48,12 @@
   - `Settings.tsx`: tombol link Discord dari halaman settings. ✅
 - [ ] **2.7** — Verifikasi: register akun baru lewat UCP → data muncul di `player_ucp` table.
 - [ ] **2.8** — Verifikasi: login dengan akun yang baru dibuat → sukses → session aktif.
-- [ ] **2.9** — Audit sistem Inbox UCP: cek tabel `ucp_inbox_messages`, pastikan query dan relasi user (username vs ucp_id) mengarah ke `player_ucp` dengan benar.
+- [x] **2.9** — Audit sistem Inbox UCP: cek tabel `ucp_inbox_messages`, pastikan query dan relasi user (username vs ucp_id) mengarah ke `player_ucp` dengan benar.
+  - Schema: `username` varchar(255) → match dengan `player_ucp.UCP`. ✅
+  - `api_inbox.php` GET: `WHERE username = ?` via `ucp_require_username()` dari session. ✅
+  - `api_inbox.php` broadcast: `SELECT UCP as username FROM player_ucp`. ✅
+  - Insert dari berbagai endpoint (donations, stories, characters, change_requests) semua pakai `username` string. ✅
+  - ⚠️ Relasi masih string-based (`username`) bukan FK integer (`ucp_id`). Konsisten dengan arsitektur existing.
 - [ ] **2.10** — Audit sistem Create Character: cek `api_characters.php` + `CreateCharacterModal.tsx`, pastikan pembuatan karakter terhubung ke akun `player_ucp` (via `Char_UCP` atau `ucp_id`).
 - [ ] **2.11** — Audit kolom `admin`: pastikan nama kolom (`admin_level` di `player_ucp` vs `Char_Admin` di `player_characters`), tipe data, dan usage-nya selaras di WEBSITE (PHP), BOT (Node.js), dan GAMEMODE (Pawn).
 - [ ] **2.12** — Hapus `isPreviewEnv()` dari `App.tsx`: 10+ pemakaian untuk `MOCK_STATS`, fetch guards, dan login event simulation. Ganti dengan live fetch/data saja. Hapus `isPreviewEnv` import. Setelah semua usage hilang, hapus `isPreviewEnv()` dari `config.ts`. (Ditunda dari task 2.2 karena scope App.tsx di luar Auth.tsx.)
