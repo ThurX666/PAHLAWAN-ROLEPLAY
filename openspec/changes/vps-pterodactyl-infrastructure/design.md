@@ -19,9 +19,14 @@ Ketiga service perlu shared MySQL database (`player_ucp`, `player_characters`, d
 **Non-Goals:**
 - Tidak mengubah source code GAMEMODE, WEBSITE, atau BOT.
 - Tidak setup CI/CD pipeline (itu task terpisah di ROADMAP `deployment-automation`).
-- Tidak setup domain/SSL certificate (bisa ditambah setelah Alpha).
-- Tidak setup external monitoring (Pterodactyl built-in monitoring cukup untuk Alpha).
-- Tidak setup backup otomatis (manual backup acceptable untuk Alpha).
+- Tidak setup external monitoring berbayar/terpisah (Pterodactyl built-in monitoring + command troubleshooting cukup untuk Alpha).
+- Tidak setup backup otomatis production-grade (manual backup acceptable untuk Alpha; cron backup optional untuk Beta).
+
+**Scope tambahan yang sekarang masuk guide:**
+- Pembelian domain + DNS + SSL Cloudflare/Origin Certificate.
+- Pembelian/setup SMTP provider untuk email Panel/UCP.
+- Upload folder project lokal ke VPS (`rsync`, `tar + scp`, SFTP) selain `git clone`.
+- Advanced firewall/DDoS hardening untuk provider game server seperti VibeGames.
 
 ## Decisions
 
@@ -73,9 +78,9 @@ Ketiga service perlu shared MySQL database (`player_ucp`, `player_characters`, d
 
 **Alternatif dipertimbangkan:** MySQL di container terpisah — lebih isolated tapi overhead RAM lebih besar (~256MB extra) dan complexity network bertambah. Tidak worth untuk Alpha.
 
-### 6. Pterodactyl Eggs: Custom, Bukan Community
+### 6. Pterodactyl Eggs: Custom JSON, Bukan Community
 
-**Keputusan:** Buat 3 custom eggs daripada pakai community eggs.
+**Keputusan:** Buat 3 custom egg JSON siap-import (`docs/eggs/*.json`) daripada pakai community eggs. Egg memakai model **install-on-creation**: base image umum (`ubuntu:22.04` atau `node:20-bookworm-slim`) + installation script di egg, bukan custom Docker image manual.
 
 **Alasan:**
 - **SA-MP/open.mp** — Community egg biasanya generic, tidak include plugin dan include files spesifik PAHLAWAN.
@@ -83,20 +88,25 @@ Ketiga service perlu shared MySQL database (`player_ucp`, `player_characters`, d
 - **Discord Bot** — Butuh Node.js 20+ dan custom start script.
 
 **Egg definitions:**
-1. `egg-samp-server.json` — SA-MP server binary, auto-compile .pwn → .amx (optional), plugin loader, server.cfg template.
-2. `egg-ucp-website.json` — Nginx reverse proxy + PHP-FPM 8.2, build Vite frontend, serve static + API.
-3. `egg-discord-bot.json` — Node.js 20 LTS, `npm install` on startup, `node index.js` sebagai entry.
+1. `docs/eggs/egg-samp-server.json` — base `ubuntu:22.04`, installation script menyiapkan SA-MP binary/plugin dasar, startup `./samp03svr`.
+2. `docs/eggs/egg-ucp-website.json` — Nginx + PHP-FPM + Node.js 20, build Vite frontend, serve static + API.
+3. `docs/eggs/egg-discord-bot.json` — Node.js 20 LTS, `npm install --production` on startup, `node index.js` sebagai entry.
 
-### 7. Git Deploy Strategy
+### 7. Repository Upload / Deploy Strategy
 
-**Keputusan:** Clone repo di VPS, symlink/copy ke Pterodactyl server directories.
+**Keputusan:** Sumber project ditempatkan di `/opt/pahlawan-roleplay/`, lalu di-copy/sync ke Pterodactyl volumes menggunakan `rsync`. Untuk memasukkan source ke VPS, operator boleh memilih: `git clone`, upload lokal via `rsync`, upload `tar + scp`, atau SFTP.
 
 **Flow:**
-1. SSH ke VPS, clone repo ke `/opt/pahlawan-roleplay/`.
-2. Pterodactyl server mount ke subfolder repo (atau copy saat deploy).
-3. Untuk update: `git pull` + rebuild (jika perlu) + restart dari panel.
+1. SSH ke VPS, buat `/opt/pahlawan-roleplay/`.
+2. Isi folder tersebut melalui salah satu metode: `git clone`, `rsync` dari laptop, `tar + scp`, atau SFTP.
+3. Setup env/config production di `/opt/pahlawan-roleplay/`.
+4. Copy/sync ke `/var/lib/pterodactyl/volumes/<server_id>/` menggunakan `rsync -a --delete` per service.
+5. Untuk update: `git pull` atau upload ulang source lokal → `rsync` service terkait → restart dari Panel.
 
-**Alternatif dipertimbangkan:** Upload file manual via SFTP — lebih simple tapi tidak traceable dan mudah out-of-sync. CI/CD push — ideal tapi masuk scope `deployment-automation` change terpisah.
+**Alternatif dipertimbangkan:**
+- Symlink langsung ke repo — ditolak sebagai default karena lebih rawan salah path untuk pemula.
+- Upload file manual via SFTP — tetap didokumentasikan sebagai opsi GUI, tapi update jangka panjang lebih baik memakai Git/rsync.
+- CI/CD push — ideal tapi masuk scope `deployment-automation` change terpisah.
 
 ## Risks / Trade-offs
 
@@ -112,10 +122,14 @@ Ketiga service perlu shared MySQL database (`player_ucp`, `player_characters`, d
 **Risk:** Container connect ke host MySQL butuh network config yang benar.
 **Mitigasi:** Gunakan `172.17.0.1` (Docker bridge gateway) sebagai MySQL host di env var container. Test koneksi sebelum start service.
 
-### No SSL/Domain di Alpha
-**Risk:** UCP website jalan di HTTP, bukan HTTPS.
-**Mitigasi:** Acceptable untuk internal Alpha. Tambah domain + Let's Encrypt sebelum Beta.
+### Domain/SSL/SMTP Setup Bisa Membingungkan Pemula
+**Risk:** Salah DNS/SSL/SMTP membuat Panel/UCP tidak bisa diakses atau email OTP tidak terkirim.
+**Mitigasi:** Pisahkan guide domain (`docs/DOMAIN_PROVIDER_GUIDE.md`) dan SMTP (`docs/SMTP_PROVIDER_GUIDE.md`) dengan checklist dan test `swaks`.
 
 ### Pterodactyl + Docker Storage Overhead
-**Risk:** Docker images makan storage dari 50GB NVMe.
-**Mitigasi:** Prune unused images berkala. SA-MP image kecil (~200MB). Nginx+PHP ~150MB. Node.js ~300MB. Total ~1GB Docker images. 50GB lebih dari cukup.
+**Risk:** Docker base images, volumes, npm cache, logs, dan backups makan storage dari 50GB NVMe.
+**Mitigasi:** Prune unused Docker resources berkala, jangan upload `node_modules/` dan log/cache dari lokal, serta pantau `df -h`.
+
+### Firewall / DDoS Misconfiguration
+**Risk:** Port terlalu terbuka (MySQL public) atau firewall terlalu agresif (player tidak bisa connect).
+**Mitigasi:** UFW default deny, MySQL hanya dari Docker bridge, SA-MP TCP+UDP dibuka, advanced iptables rate-limit dibuat opsional/bertahap, dan provider Anti-DDoS seperti VibeGames tetap dipakai sebagai lapisan depan.

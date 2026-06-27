@@ -31,7 +31,11 @@ The infrastructure SHALL enforce a security baseline on the host OS before insta
 
 #### Scenario: Firewall ports must match service requirements
 - **WHEN** the operator configures the host firewall
-- **THEN** the specification lists every required port with its purpose (SSH, HTTP, SA-MP, Pterodactyl Panel) and the exact `ufw` commands to open them
+- **THEN** the specification lists every required port with its purpose (SSH, HTTP, SA-MP/open.mp TCP+UDP, Pterodactyl Panel) and the exact `ufw` commands to open them
+
+#### Scenario: Operator enables advanced firewall and DDoS hardening
+- **WHEN** the selected provider includes Anti-DDoS protection (for example VibeGames vServer) or the server is being prepared for public exposure
+- **THEN** the setup procedure documents host-level hardening for SSH allowlisting/rate-limiting, MySQL access restricted to Docker bridge, SA-MP/open.mp TCP+UDP port exposure, optional iptables rate-limits, and Nginx rate limits without making those steps mandatory for first-time internal Alpha setup
 
 ### Requirement: Shared MySQL instance is accessible to all services
 
@@ -63,7 +67,7 @@ The infrastructure SHALL install Pterodactyl Panel (latest stable), configure it
 
 ### Requirement: Three custom Pterodactyl eggs are defined for PAHLAWAN services
 
-The infrastructure SHALL define three custom Pterodactyl eggs — one for SA-MP/open.mp server, one for UCP website (Nginx + PHP-FPM + Vite build), and one for Discord bot (Node.js) — each with appropriate Docker images, startup commands, configurable environment variables, and resource defaults.
+The infrastructure SHALL define three custom Pterodactyl egg JSON files — one for SA-MP/open.mp server, one for UCP website (Nginx + PHP-FPM + Vite build), and one for Discord bot (Node.js) — each with appropriate base images or install scripts, startup commands, configurable environment variables, and resource defaults.
 
 #### Scenario: SA-MP server starts from Pterodactyl panel
 - **WHEN** an operator clicks Start on the SA-MP server in Pterodactyl
@@ -81,17 +85,21 @@ The infrastructure SHALL define three custom Pterodactyl eggs — one for SA-MP/
 - **WHEN** a service needs database credentials or API keys
 - **THEN** the egg exposes environment variables as configurable fields in the Pterodactyl UI, so the operator can update them without SSH or file editing
 
-### Requirement: Repository deployment from Git to Pterodactyl volumes is documented
+### Requirement: Repository deployment from Git or local upload to Pterodactyl volumes is documented
 
-The infrastructure SHALL define a deployment flow from Git repository to Pterodactyl server volumes, including clone location, environment file setup, gamemode compilation (if needed), and file linking strategy.
+The infrastructure SHALL define a deployment flow from either Git repository or local project upload to Pterodactyl server volumes, including target source location, upload methods, environment file setup, gamemode compilation (if needed), and copy/sync strategy.
 
 #### Scenario: Operator deploys the repository to VPS for the first time
 - **WHEN** the VPS is set up and Pterodactyl is operational
-- **THEN** the deployment procedure covers: cloning the repo, creating environment files from templates, compiling the gamemode, and linking files to Pterodactyl server volumes
+- **THEN** the deployment procedure covers: preparing `/opt/pahlawan-roleplay`, using either `git clone`, `rsync`, `tar + scp`, or SFTP to place the project on the VPS, creating environment files from templates, compiling the gamemode, and copying/syncing files to Pterodactyl server volumes
 
 #### Scenario: Operator updates the deployed code
-- **WHEN** new code changes are pushed to the repository
-- **THEN** the update procedure covers: pulling changes, rebuilding if needed (Vite, gamemode), and restarting affected services from the Pterodactyl panel
+- **WHEN** new code changes are pushed to the repository or refreshed local files are available
+- **THEN** the update procedure covers: pulling changes or uploading refreshed local files, syncing the affected service directory to the correct Pterodactyl volume with `rsync`, rebuilding if needed (Vite, gamemode), and restarting affected services from the Pterodactyl panel
+
+#### Scenario: Operator uploads project files from a local laptop
+- **WHEN** the operator does not want to rely only on `git clone` from the VPS
+- **THEN** the setup procedure provides beginner-friendly upload methods using `rsync`, `tar + scp`, and SFTP, including excludes for `.git`, `.hermes`, `node_modules`, logs, caches, and private SQL dumps
 
 ### Requirement: Smoke test validates all services are operational
 

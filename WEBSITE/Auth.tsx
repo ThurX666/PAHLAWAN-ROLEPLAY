@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect } from 'react';
 import { Hexagon, Star, Shield, AlertCircle, X, Smartphone, Map, Mic, Globe, TrendingUp, Users, Wifi, Radio, XCircle } from 'lucide-react';
 import { LoginForm } from './auth/LoginForm';
@@ -257,7 +257,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   return (
     <div className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-ph-surface-deep ph-page-vignette">
 
-      {/* Dynamic Background — strong PHRP identity */}
+      {/* Dynamic Background â€” strong PHRP identity */}
       <div className="absolute inset-0 z-0">
          <div className="absolute top-[-25%] left-[-15%] w-[70%] h-[70%] rounded-full bg-ph-crimson-700/[0.20] blur-[180px] animate-pulse-slow"></div>
          <div className="absolute bottom-[-15%] right-[-10%] w-[55%] h-[55%] rounded-full bg-ph-gold-600/[0.12] blur-[160px] animate-pulse-slow" style={{animationDelay: '1.5s'}}></div>
@@ -366,7 +366,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
               <span className="text-[9px] font-mono font-bold tracking-widest text-gray-400 dark:text-gray-500 uppercase">v1.0</span>
           </div>
           
-          {/* Server Status Bar — premium */}
+          {/* Server Status Bar â€” premium */}
           <div className="shrink-0 flex justify-center pt-1 pb-2.5 px-4">
               <div className="flex items-center gap-2 md:gap-2.5 ph-status-pill rounded-full px-3.5 py-1.5">
                   {/* Status */}
@@ -411,7 +411,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
               </div>
           </div>
 
-          {/* Scrollable Form Area — wrapped in inner card section for premium feel */}
+          {/* Scrollable Form Area â€” wrapped in inner card section for premium feel */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 md:px-5 pb-5 pt-1 ph-scroll-thin">
            <div className="ph-auth-panel-inner max-w-[420px] mx-auto w-full rounded-2xl px-5 md:px-7 py-5 md:py-6 my-2">
             

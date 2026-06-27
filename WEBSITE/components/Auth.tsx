@@ -1,4 +1,4 @@
-
+﻿
 import React, { useState, useEffect, useRef } from 'react';
 import { Shield, Mic, Globe, TrendingUp, Users, Wifi, X, XCircle } from 'lucide-react';
 import { LoginForm } from './auth/LoginForm';
@@ -275,7 +275,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   const localAuthPreview = canUseLocalAuthPreview();
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center relative overflow-x-hidden overflow-y-auto font-sans bg-[#fbf8f5] ph-page-vignette p-3 sm:p-5 md:p-6 lg:p-8">
+    <div className="h-[100dvh] max-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-[#fbf8f5] ph-page-vignette p-3 sm:p-5 md:p-6 lg:p-8">
 
       {/* Phase 4.15: light premium hosting x roleplay backdrop */}
       <div className="absolute inset-0 z-0">
@@ -284,7 +284,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.18]"></div>
       </div>
 
-      <div className="relative z-10 grid w-full max-w-[1180px] md:h-[min(720px,calc(100dvh-48px))] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
+      <div className="relative z-10 grid w-full max-w-[1180px] h-full max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-40px)] md:h-[min(720px,calc(100dvh-48px))] md:max-h-[calc(100dvh-48px)] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
 
         {/* LEFT SIDE: Roleplay highlight panel */}
         <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-9 lg:p-10 overflow-hidden">
