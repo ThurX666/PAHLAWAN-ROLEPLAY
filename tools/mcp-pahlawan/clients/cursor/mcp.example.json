@@ -3,30 +3,42 @@
     "pahlawan-roleplay": {
       "command": "node",
       "args": [
-        "D:/PAHLAWAN_ROLEPLAY/tools/mcp-pahlawan/dist/index.js"
+        "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY/tools/mcp-pahlawan/dist/index.js"
       ],
       "env": {
-        "PROJECT_ROOT": "D:/PAHLAWAN_ROLEPLAY",
+        "PROJECT_ROOT": "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY",
         "GAMEMODE_DIR": "GAMEMODE",
         "WEBSITE_DIR": "WEBSITE",
         "BOT_DIR": "BOT",
         "DATABASE_DIR": "DATABASE",
         "LOGS_DIR": "GAMEMODE/logs",
+
+        "MYSQL_HOST": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "",
+        "MYSQL_DATABASE": "arivena",
+
+        "PAWN_COMPILER_PATH": "GAMEMODE/pawno/pawncc.exe",
+        "PAWN_COMPILE_ARGS": "gamemodes/main.pwn -ogamemodes/main.amx -ipawno/include -ipawno/pawno/include",
+
+        "MCP_DEFAULT_MODE": "readonly",
         "MCP_ALLOW_WRITE_FILES": "false",
         "MCP_ALLOW_WRITE_DB": "false",
         "MCP_REDACT_SECRETS": "true",
-        "MCP_MAX_FILE_SIZE_KB": "512",
-        "MCP_MAX_SEARCH_RESULTS": "10",
-        "MCP_MAX_FILE_READ_LINES": "120",
-        "MCP_MAX_LOG_LINES": "80",
-        "MCP_MAX_DB_ROWS": "20",
-        "MCP_MAX_SNIPPET_LINES": "5",
-        "MCP_MAX_OUTPUT_CHARS": "8000",
-        "MCP_MAX_SCHEMA_TABLES": "20",
-        "MCP_MAX_FEATURE_FILES": "25",
-        "MCP_DEFAULT_INCLUDE_SNIPPETS": "false",
-        "MCP_COMPACT_MODE": "true",
-        "MCP_DEFAULT_MODE": "readonly"
+
+        "MCP_MAX_FILE_SIZE_KB": "8192",
+        "MCP_MAX_SEARCH_RESULTS": "50",
+        "MCP_MAX_FILE_READ_LINES": "1000",
+        "MCP_MAX_LOG_LINES": "500",
+        "MCP_MAX_DB_ROWS": "100",
+        "MCP_MAX_SNIPPET_LINES": "30",
+        "MCP_MAX_OUTPUT_CHARS": "100000",
+        "MCP_MAX_SCHEMA_TABLES": "103",
+        "MCP_MAX_FEATURE_FILES": "50",
+
+        "MCP_DEFAULT_INCLUDE_SNIPPETS": "true",
+        "MCP_COMPACT_MODE": "false"
       }
     }
   }
