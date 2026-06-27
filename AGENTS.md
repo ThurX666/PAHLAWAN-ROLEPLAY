@@ -1,74 +1,97 @@
 # PAHLAWAN ROLEPLAY Agent Instructions
 
-Project structure:
+Project root: `C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY`
 
-- `GAMEMODE` contains SA-MP/open.mp Pawn source, includes, filterscripts, runtime config, plugins, logs, and compile output.
-- `WEBSITE` contains the UCP React/Vite frontend and PHP API backend.
-- `BOT` contains the Discord bot Node.js project.
-- `DATABASE` contains local database dumps and must remain private.
-- `tools/mcp-pahlawan` contains the local MCP server for safe project analysis.
+## Project Structure
 
-Hermes-specific MCP setup (registered as `pahlawan-roleplay`):
+- `GAMEMODE` — SA-MP/open.mp Pawn source, includes, filterscripts, plugins, logs, compile output.
+  - Entry: `gamemodes/main.pwn`
+  - Includes: `gamemodes/core/*.inc` (account, admin, business, faction, etc.)
+  - Compiler: `pawno/pawncc.exe`
+- `WEBSITE` — UCP React/Vite frontend + PHP API backend.
+  - Frontend: `Auth.tsx`, `App.tsx`, `components/`
+  - Backend: `public/api/*.php` (auth.php, auth_session.php, api_characters.php, etc.)
+  - Dev server: `npm run dev` (Vite, port 5173)
+- `BOT` — Discord bot Node.js (discord.js v14, mysql2).
+  - Entry: `index.js`
+  - Commands: `commands/admin/`, `events/`
+  - Config: `config.json`
+- `DATABASE` — SQL dumps + migrations. Private.
+  - Main dump: `phrp.sql` (103 tables, MariaDB 10.4.32, database `arivena`)
+- `tools/mcp-pahlawan` — Local MCP server for project analysis.
+- `openspec/` — OpenSpec changes and specs.
 
-- Use the `mcp__pahlawan_roleplay__*` tools for project context, search, schema,
-  logs, feature tracing, and OpenSpec inspection. They are safer and faster
-  than running generic `search_files` / `read_file` / `terminal` against the
-  full repo because they honor `MCP_MAX_OUTPUT_CHARS`, redaction, and
-  per-module scoping.
-- Before coding any feature, run `mcp__pahlawan_roleplay__openspec_overview`
-  and `mcp__pahlawan_roleplay__openspec_task_status` for any related active
-  change. If one exists, read it first and stay inside its approved scope.
-- For broad tasks, follow the recommended flow below instead of scanning the
-  whole repo. Each tool already enforces compact mode by default.
-- The MCP server is read-only (`MCP_DEFAULT_MODE=readonly`,
-  `MCP_ALLOW_WRITE_FILES=false`, `MCP_ALLOW_WRITE_DB=false`). Do not ask it to
-  mutate files or the database — use the file/terminal tools and get explicit
-  user approval before any write.
+## Compile Command (Pawn)
 
-Runtime artifacts to ignore:
+```bash
+cmd //c 'pawno\pawncc.exe gamemodes\main.pwn -ogamemodes\main.amx -ipawno\include -ipawno\pawno\include'
+```
 
-- `.playwright-cli/` (browser CLI tool QA artifacts) is already gitignored at
-  both the root and `WEBSITE/` levels. Never commit its contents.
+Run from `GAMEMODE` directory. Must use `cmd //c` (not direct bash) because Pawn compiler needs Windows path separators.
 
-Workflow rules:
+## Database
 
-- OpenSpec is the source of truth for feature planning and requirements.
-- MCP is the context, diagnostics, search, database/log/code inspection, and validation support layer.
-- Before coding, always check active OpenSpec changes.
-- If an OpenSpec change exists, read it first and implement only within its approved scope.
-- Do not create a competing plan when OpenSpec already exists.
-- If no OpenSpec exists and the task is medium/high risk, propose creating one first.
+- Engine: MariaDB 10.4.32 (XAMPP)
+- Database: `arivena`
+- Tables: 103 total
+- Key tables:
+  - `player_ucp` — UCP accounts (26 cols, PK=ID, username=UCP, password=bcrypt $2y$12$)
+  - `player_characters` — Character data (100+ cols, link via Char_UCP string)
+  - `ucp_*` — UCP subsystem tables (stories, tickets, donations, etc.)
+- Orphan tables (safe to drop): `ucp`, `characters`
+
+## MCP Server (pahlawan-roleplay)
+
+- Config v2: MySQL connected, Pawn compiler enabled, compact mode OFF, snippets ON.
+- Read-only mode (`MCP_ALLOW_WRITE_FILES=false`, `MCP_ALLOW_WRITE_DB=false`).
+- Use `mcp__pahlawan_roleplay__*` tools for project context, search, schema, logs, feature tracing, OpenSpec.
+- MCP output is full (no compression) — 9router handles compression externally.
+- For file writes, use `patch` or `write_file` tools, not MCP.
+
+## OpenSpec
+
+Active changes:
+- `vps-pterodactyl-infrastructure` — VPS + Pterodactyl setup (8/71 tasks done)
+- `cross-service-auth-flow` — Cross-service auth unification (3/54 tasks done)
+
+Rules:
+- OpenSpec is the source of truth for feature planning.
+- Before coding, check `openspec_overview` + `openspec_task_status`.
+- Stay within approved scope of active change.
+- Do not create competing plans when OpenSpec exists.
+- If no OpenSpec exists and task is medium/high risk, propose creating one first.
+
+## Workflow Rules
+
 - Analyze first; do not edit broad areas immediately.
 - Use MCP tools before guessing project structure or flow.
 - Prefer small, reviewable patches.
 - Never edit everything at once.
-- Never expose `.env`, tokens, database passwords, Discord tokens, webhook URLs, API keys, or private dumps.
-- Keep database operations read-only unless the user explicitly approves a migration/write.
-- For Pawn/open.mp, inspect existing includes and callbacks before adding code. Do not invent natives or functions.
-- For Discord bot work, respect interaction timeout, `deferReply`, `reply`, `editReply`, and double-reply rules.
-- For UCP work, preserve auth flow, validation, SQL safety, and session security.
-- For broad sync tasks, generate mapping and migration plans before editing.
+- Never expose `.env`, tokens, passwords, Discord tokens, webhook URLs, API keys.
+- Keep database operations read-only unless user explicitly approves.
+- For Pawn, inspect existing includes and callbacks before adding code.
+- For UCP, preserve auth flow, validation, SQL safety, session security.
+- For Discord bot, respect interaction timeout, deferReply/reply/editReply rules.
+- For broad sync tasks, generate mapping + migration plans before editing.
 
-Recommended broad-task flow:
+## Recommended Task Flow
 
-1. Run `generate_task_context`.
-2. Run `gamemode_overview`.
-3. Run `ucp_overview`.
-4. Run `db_schema_overview`.
-5. Run `trace_feature` for each relevant feature.
-6. Produce a database-feature mapping table.
-7. Detect mismatches across gamemode, UCP, bot, and database.
-8. Generate a migration/adapter plan.
-9. Ask for confirmation before writing files.
-10. Apply changes feature-by-feature.
+1. `openspec_overview` — check active changes
+2. `openspec_task_status` — find next task
+3. `generate_task_context` — gather related files/functions/tables
+4. `gamemode_overview` / `ucp_overview` / `bot_overview` — understand module
+5. `trace_feature` — trace feature across services
+6. `db_schema_overview` — check relevant tables
+7. Read only necessary files (use MCP `read_project_file` with line limits)
+8. Make targeted patches via `patch` tool
+9. Validate (compile, test, check)
+10. Commit + push after each logical chunk
 
-MCP context rules:
+## Runtime Artifacts (gitignored, never commit)
 
-- Never scan the entire project by default.
-- Never dump full files, the full database schema, or full logs by default.
-- Work feature-by-feature with compact mode enabled.
-- Prefer summaries, paths, symbols, line numbers, and small snippets.
-- Ask before reading large files or applying patches.
-- Use pagination for large results.
-- Keep every tool response under `MCP_MAX_OUTPUT_CHARS`.
-- Do not delete files, run migrations, or write database data without explicit approval.
+- `.playwright-cli/` — browser QA artifacts
+- `GAMEMODE/logs/` — runtime logs
+- `WEBSITE/node_modules/` — npm deps
+- `BOT/node_modules/` — npm deps
+- `*.env` — secrets
+- `DATABASE/phrp.sql` — contains user data
