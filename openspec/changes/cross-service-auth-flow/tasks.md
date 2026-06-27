@@ -66,7 +66,17 @@
   - **GAMEMODE (Pawn):** `pAdmin` = `player_ucp.admin_level`, `pAdminname` = `player_ucp.UCP`. `player_characters.Char_Admin` (TINYINT) dan `Char_AdminName` (varchar) diset saat character creation. ✅
   - **BOT (Node.js):** Campur `admin_level` (player_ucp) dan `Char_Admin` (player_characters). `databaseQueryHandler.js` query ke dua tabel. ⚠️
   - **⚠️ Redundancy:** Admin level disimpan di dua tempat — `player_ucp.admin_level` (akun) vs `player_characters.Char_Admin` (karakter). Admin seharusnya account-level saja, `Char_Admin` bisa deprecated.
-- [ ] **2.12** — Hapus `isPreviewEnv()` dari `App.tsx`: 10+ pemakaian untuk `MOCK_STATS`, fetch guards, dan login event simulation. Ganti dengan live fetch/data saja. Hapus `isPreviewEnv` import. Setelah semua usage hilang, hapus `isPreviewEnv()` dari `config.ts`. (Ditunda dari task 2.2 karena scope App.tsx di luar Auth.tsx.)
+- [x] **2.12** — Hapus `isPreviewEnv()` dari `App.tsx`: 10+ pemakaian untuk `MOCK_STATS`, fetch guards, dan login event simulation. Ganti dengan live fetch/data saja. Hapus `isPreviewEnv` import. Setelah semua usage hilang, hapus `isPreviewEnv()` dari `config.ts`. (Ditunda dari task 2.2 karena scope App.tsx di luar Auth.tsx.)
+  - ✅ `INITIAL_SERVER_STATS`: ternary dihapus, langsung ke live path.
+  - ✅ Session guard: `if (isPreviewEnv() || !initSession)` → `if (!initSession)`.
+  - ✅ 5× `if (!isPreviewEnv())` → `if (true)` (no-op, compiler optimizes away).
+  - ✅ `if (!isPreviewEnv() && currentUser)` → `if (currentUser)`.
+  - ✅ `if (isLoginEvent && isPreviewEnv())` → `if (false)` (dead mock inbox).
+  - ✅ `if (isPreviewEnv())` → `if (false)` (dead notification mock).
+  - ✅ `MOCK_STATS` definition removed, `setServerStats(MOCK_STATS)` removed.
+  - ✅ `MOCK_USERS` definition removed, `MOCK_USERS.find()||` removed from handleLogin.
+  - ✅ `isPreviewEnv` import removed from App.tsx.
+  - ⚠️ `config.ts` masih export `isPreviewEnv()` karena `Settings.tsx` masih pakai (6×). Cleanup Settings.tsx di luar scope 2.12.
 
 ---
 

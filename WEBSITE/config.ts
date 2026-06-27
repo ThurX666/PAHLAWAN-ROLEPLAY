@@ -1,5 +1,5 @@
 export const isPreviewEnv = (): boolean => {
-    // Force disabled mock as per user request
+    // Force disabled — no preview/dummy mode. Still used by Settings.tsx (future cleanup: task 2.12 extension)
     return false;
 };
 

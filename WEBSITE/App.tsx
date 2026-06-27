@@ -6,7 +6,7 @@ import { CharacterList } from './components/CharacterList';
 import { Settings } from './components/Settings';
 import { ServerStats, Character, CharacterStory, PromoItem, InboxMessage, UserProfile } from './types';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
-import { isPreviewEnv, API_URL, UPLOAD_BASE_URL, getResolvedApiUrl } from './config';
+import { API_URL, UPLOAD_BASE_URL, getResolvedApiUrl } from './config';
 
 import { MOCK_TICKETS } from './data/mockData';
 
@@ -32,17 +32,7 @@ const ScreenFallback: React.FC = () => (
   </div>
 );
 
-const MOCK_STATS: ServerStats = {
-  hostname: "Pahlawan Roleplay [ID/SEA]",
-  players: 482,
-  maxPlayers: 1000,
-  mode: "Roleplay",
-  map: "San Andreas",
-  weather: "Cerah",
-  status: "Online",
-  ip_address: "mainsamp.pahlawan-rp.com:7777"
-};
-
+// MOCK_CHARACTERS_DATA and INITIAL_PLAYER_STORIES preserved as default placeholder data
 const MOCK_CHARACTERS_DATA: Character[] = [
   { 
     id: 1, 
@@ -425,21 +415,7 @@ interface UserData {
   gold: number;
 }
 
-const MOCK_USERS: UserData[] = [
-  {
-    username: 'Admin',
-    isAdmin: true,
-    adminLevel: 10,
-    vipStatus: { tier: 'Diamond', expiredAt: '31 Des 2026, 23:59 WIB' },
-    gold: 15000
-  },
-  {
-    username: 'Player',
-    isAdmin: false,
-    vipStatus: null,
-    gold: 2500
-  }
-];
+// MOCK_ADMIN_PROFILE and MOCK_PLAYER_PROFILE preserved as default placeholder profiles
 
 const MOCK_ADMIN_PROFILE: UserProfile = {
   oocName: 'Udin Samsudin',
@@ -478,7 +454,7 @@ const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<string>(initSession ? initSession.username : '');
   const [isDiscordLinked, setIsDiscordLinked] = useState<boolean>(initSession ? initSession.isDiscordLinked : false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const INITIAL_SERVER_STATS: ServerStats = isPreviewEnv() ? MOCK_STATS : {
+  const INITIAL_SERVER_STATS: ServerStats = {
     hostname: "Fetching Server Data...",
     players: 0,
     maxPlayers: 0,
@@ -520,7 +496,7 @@ const App: React.FC = () => {
   const [alertConfig, setAlertConfig] = useState<{title: string, message: string, type: 'warning' | 'success'} | null>(null);
 
   useEffect(() => {
-    if (isPreviewEnv() || !initSession) return;
+    if (!initSession) return;
 
     fetch(`${API_URL}/session.php`, { credentials: 'include' })
       .then(async response => {
@@ -545,7 +521,7 @@ const App: React.FC = () => {
 
   // Periodic Server Stats Polling
   useEffect(() => {
-    if (!isPreviewEnv()) {
+    if (true) {
       const fetchServerInfo = async () => {
         try {
            const res = await fetch(`${API_URL}/api_overview.php?action=server_info`);
@@ -580,7 +556,7 @@ const App: React.FC = () => {
 
   // Fetch Inbox Messages
   useEffect(() => {
-    if (!isPreviewEnv() && currentUser) {
+    if (currentUser) {
       const fetchInbox = async () => {
         try {
           const res = await fetch(`${API_URL}/api_inbox.php?username=${encodeURIComponent(currentUser)}`);
@@ -637,7 +613,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated && currentUser) {
-      if (!isPreviewEnv()) {
+      if (true) {
         const fetchCharacters = async () => {
           try {
             const res = await fetch(`${API_URL}/api_characters.php?username=${encodeURIComponent(currentUser)}`);
@@ -812,7 +788,6 @@ const App: React.FC = () => {
       } else {
         setCharacters(MOCK_CHARACTERS_DATA);
         setUserStories(INITIAL_PLAYER_STORIES);
-        setServerStats(MOCK_STATS);
         setInboxMessages(INITIAL_INBOX);
       }
     }
@@ -824,7 +799,7 @@ const App: React.FC = () => {
 
   const handleLogin = (username: string, overrideAdminLevel?: number, password?: string, isLoginEvent?: boolean, isDiscordLinkedParam?: boolean) => {
     // KONDISI PREVIEW (MOCK) ATAU JIKA LOGIN BERHASIL DARI API
-    const user = MOCK_USERS.find(u => u.username.toLowerCase() === username.toLowerCase()) || {
+    const user = {
       username: username || 'Player',
       isAdmin: username.toLowerCase() === 'admin' || (overrideAdminLevel && overrideAdminLevel > 0) ? true : false,
       adminLevel: overrideAdminLevel !== undefined ? overrideAdminLevel : (username.toLowerCase() === 'admin' ? 10 : undefined),
@@ -851,7 +826,7 @@ const App: React.FC = () => {
        isDiscordLinked: user.isDiscordLinked
     }));
 
-    if (isLoginEvent && isPreviewEnv()) {
+    if (false) {
        setInboxMessages(prev => [{
            id: `msg-login-${Date.now()}`,
            title: 'Peringatan Keamanan: Login Baru Terdeteksi',
@@ -870,7 +845,7 @@ const App: React.FC = () => {
   };
 
   const handleLogout = () => {
-    if (!isPreviewEnv()) {
+    if (true) {
       fetch(`${API_URL}/session.php`, {
         method: 'POST',
         credentials: 'include',
@@ -943,7 +918,7 @@ const App: React.FC = () => {
   };
 
   const handleSendNotification = async (msg: InboxMessage) => {
-    if (isPreviewEnv()) {
+    if (false) {
         setInboxMessages(prev => [msg, ...prev]);
         return;
     }
@@ -986,7 +961,7 @@ const App: React.FC = () => {
 
   const handleReadMessage = async (id: string) => {
       setInboxMessages(prev => prev.map(msg => String(msg.id) === String(id) ? { ...msg, read: true } : msg));
-      if (!isPreviewEnv()) {
+      if (true) {
           fetch(`${API_URL}/api_inbox.php`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
@@ -1026,7 +1001,7 @@ const App: React.FC = () => {
           read: false
       };
 
-      if (!isPreviewEnv()) {
+      if (true) {
           try {
               // Deduct gold from backend
               const deductRes = await fetch(`${API_URL}/api_donations.php`, {
