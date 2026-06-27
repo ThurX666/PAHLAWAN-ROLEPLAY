@@ -61,7 +61,11 @@
   - `api_characters.php` GET: `JOIN player_characters c ON c.Char_UCP = player_ucp.UCP`. ✅
   - Create: verifikasi `SELECT UCP FROM player_ucp WHERE UCP = ?`, cek `count(pID) <= max_chars`, `INSERT INTO player_characters (Char_UCP, Char_Name, ...)`. ✅
   - `CreateCharacterModal.tsx`: submit via `onCreate` callback → `App.tsx` → fetch ke `api_characters.php`. ✅
-- [ ] **2.11** — Audit kolom `admin`: pastikan nama kolom (`admin_level` di `player_ucp` vs `Char_Admin` di `player_characters`), tipe data, dan usage-nya selaras di WEBSITE (PHP), BOT (Node.js), dan GAMEMODE (Pawn).
+- [x] **2.11** — Audit kolom `admin`: pastikan nama kolom (`admin_level` di `player_ucp` vs `Char_Admin` di `player_characters`), tipe data, dan usage-nya selaras di WEBSITE (PHP), BOT (Node.js), dan GAMEMODE (Pawn).
+  - **WEBSITE (PHP):** pakai `admin_level` (INT, default 0) dari `player_ucp`. Konsisten di `auth.php`, `auth_session.php`, `api_profile.php`, `discord_callback.php`. ✅
+  - **GAMEMODE (Pawn):** `pAdmin` = `player_ucp.admin_level`, `pAdminname` = `player_ucp.UCP`. `player_characters.Char_Admin` (TINYINT) dan `Char_AdminName` (varchar) diset saat character creation. ✅
+  - **BOT (Node.js):** Campur `admin_level` (player_ucp) dan `Char_Admin` (player_characters). `databaseQueryHandler.js` query ke dua tabel. ⚠️
+  - **⚠️ Redundancy:** Admin level disimpan di dua tempat — `player_ucp.admin_level` (akun) vs `player_characters.Char_Admin` (karakter). Admin seharusnya account-level saja, `Char_Admin` bisa deprecated.
 - [ ] **2.12** — Hapus `isPreviewEnv()` dari `App.tsx`: 10+ pemakaian untuk `MOCK_STATS`, fetch guards, dan login event simulation. Ganti dengan live fetch/data saja. Hapus `isPreviewEnv` import. Setelah semua usage hilang, hapus `isPreviewEnv()` dari `config.ts`. (Ditunda dari task 2.2 karena scope App.tsx di luar Auth.tsx.)
 
 ---
