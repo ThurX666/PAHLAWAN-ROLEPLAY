@@ -11,11 +11,14 @@
 - [x] **1.1** — Audit schema existing: 103 tabel ditemukan, database `arivena` MariaDB 10.4.32.
 - [x] **1.2** — `player_ucp` confirmed sebagai single source of truth. Dipakai UCP (PHP) & Gamemode (Pawn). 26 kolom, charset latin1, PK=`ID`, username di `UCP`. Password bcrypt $2y$12$.
 - [x] **1.3** — `player_characters` confirmed. 100+ kolom game data, link via `Char_UCP` (username string, bukan FK). Tabel `characters` (simple, 7 kolom) dan `ucp` (simple, 9 kolom) **orfan — nol referensi kode, nol data, nol FK**. Bisa di-drop.
-- [ ] **1.4** — Buat migration script jika schema perlu diselaraskan (tambah kolom, ubah tipe, dll).
 - [ ] **1.5** — Pastikan `player_ucp` punya: id, username (UNIQUE), password (bcrypt hash), email, verified, otp_code, otp_expiry, discord_id, admin_level, last_login, created_at.
+  - ⚠️ `Register_Date` masih varchar(30) bukan DATETIME — perlu ALTER ke DATETIME.
+  - ⚠️ `Last_Login` masih varchar(30) bukan DATETIME.
+  - ⚠️ Belum ada kolom `otp_expiry` — saat ini pakai `Register_Date` + 30 menit sebagai proxy.
 - [ ] **1.6** — Pastikan `player_characters` punya: id, ucp_id (FK → player_ucp.id), char_name (UNIQUE), skin, age, origin, gender, created_at.
 - [ ] **1.7** — Verifikasi: query cross-table JOIN `player_ucp` ↔ `player_characters` berhasil.
 - [ ] **1.8** — Backup database existing sebelum migration.
+- [ ] **1.9** — Migration `player_ucp`: ALTER `Register_Date` varchar(30) → DATETIME, ALTER `Last_Login` varchar(30) → DATETIME, tambah kolom `otp_expiry` DATETIME, update `verify.php` untuk pakai `otp_expiry` sebagai expiry check (bukan `Register_Date` + 30 menit).
 
 ---
 
@@ -54,7 +57,10 @@
   - `api_inbox.php` broadcast: `SELECT UCP as username FROM player_ucp`. ✅
   - Insert dari berbagai endpoint (donations, stories, characters, change_requests) semua pakai `username` string. ✅
   - ⚠️ Relasi masih string-based (`username`) bukan FK integer (`ucp_id`). Konsisten dengan arsitektur existing.
-- [ ] **2.10** — Audit sistem Create Character: cek `api_characters.php` + `CreateCharacterModal.tsx`, pastikan pembuatan karakter terhubung ke akun `player_ucp` (via `Char_UCP` atau `ucp_id`).
+- [x] **2.10** — Audit sistem Create Character: cek `api_characters.php` + `CreateCharacterModal.tsx`, pastikan pembuatan karakter terhubung ke akun `player_ucp` (via `Char_UCP` atau `ucp_id`).
+  - `api_characters.php` GET: `JOIN player_characters c ON c.Char_UCP = player_ucp.UCP`. ✅
+  - Create: verifikasi `SELECT UCP FROM player_ucp WHERE UCP = ?`, cek `count(pID) <= max_chars`, `INSERT INTO player_characters (Char_UCP, Char_Name, ...)`. ✅
+  - `CreateCharacterModal.tsx`: submit via `onCreate` callback → `App.tsx` → fetch ke `api_characters.php`. ✅
 - [ ] **2.11** — Audit kolom `admin`: pastikan nama kolom (`admin_level` di `player_ucp` vs `Char_Admin` di `player_characters`), tipe data, dan usage-nya selaras di WEBSITE (PHP), BOT (Node.js), dan GAMEMODE (Pawn).
 - [ ] **2.12** — Hapus `isPreviewEnv()` dari `App.tsx`: 10+ pemakaian untuk `MOCK_STATS`, fetch guards, dan login event simulation. Ganti dengan live fetch/data saja. Hapus `isPreviewEnv` import. Setelah semua usage hilang, hapus `isPreviewEnv()` dari `config.ts`. (Ditunda dari task 2.2 karena scope App.tsx di luar Auth.tsx.)
 
