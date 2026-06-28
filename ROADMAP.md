@@ -72,6 +72,8 @@
 - [ ] Stabilkan auth flow UCP (register, OTP, login)
 - [ ] Compile gamemode dan deploy ke VPS tanpa error blocker
 - [ ] Setup karakter creation flow: web → database → in-game spawn
+- [ ] Improve UI website UCP (responsive, branding, UX polish)
+- [ ] Improve fitur gamemode (economy, jobs, factions, core systems)
 - [ ] Basic bot commands: welcome, help, status
 - [ ] Smoke test: 5 user internal berhasil full cycle
 - [ ] OpenSpec yang relevan: `cross-service-auth-flow`, `vps-pterodactyl-infrastructure`, `deployment-automation`
