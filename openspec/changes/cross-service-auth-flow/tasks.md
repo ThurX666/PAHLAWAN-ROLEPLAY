@@ -133,7 +133,10 @@
 
 - [x] **6.1** — Pastikan `BOT/config.json` punya konfigurasi koneksi ke shared MySQL database (host: localhost). Bot sudah pakai `mysql2/promise` + connection pool ke database SA-MP server. ✅
 - [x] **6.2** — Verifikasi bot bisa start dan connect ke database (cek `clientReady.js`). `database.js` line 152: `[PHRP-AI-DB] Connected to MySQL: ${host}:${port}/${name}`. ✅
-- [ ] **6.3** — Buat slash command `/info [username]` — query `player_ucp` + `player_characters` dan tampilkan info user. ⚠️ Bot belum punya /info command; punya `find_player` via messageCreate + `PHRP-AI/databaseQueryHandler.js`.
+- [x] **6.3** — Buat slash command `/info [username]` — query `player_ucp` + `player_characters` dan tampilkan info user. ✅ Created: `BOT/commands/warga/info.js`.
+  - Query `player_ucp` (ID, Verify_Status, admin_level, vip, gold, discord, dates) + `player_characters` (char list).
+  - Embed dengan fields: ID, Verified, Admin, VIP, Gold, Discord, Register Date, Last Login, Characters.
+  - Auto-loaded via recursive scan di `index.js`.
 - [x] **6.4** — Pastikan bot hanya read-only ke database (tidak ada insert/update/delete dari bot). `databaseQueryHandler.js` line 13: `ALLOWED_QUERY_TYPES = ['find_player','find_staff','find_by_discord','custom','check_ban']` — semua read-only kecuali custom. ✅
 - [ ] **6.5** — Verifikasi: bot online → `/info <username>` → tampilkan data user + karakter. ⚠️ Butuh bot token + Discord guild.
 
