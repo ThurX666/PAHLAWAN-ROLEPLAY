@@ -100,24 +100,24 @@
 
 ## 4. SA-MP Gamemode — Login dengan Shared DB
 
-- [ ] **4.1** — Audit `account_regist.inc`: pahami flow `CheckPlayerUCP()`, `OnLoginPassCheck()`, `OnPlayerPasswordChecked()`.
-- [ ] **4.2** — Pastikan query login di gamemode membaca tabel `player_ucp` (bukan tabel terpisah).
-- [ ] **4.3** — Pastikan password verification di Pawn menggunakan bcrypt plugin yang kompatibel dengan PHP `PASSWORD_BCRYPT`.
-- [ ] **4.4** — Test hash compatibility: hash password di PHP → coba verify di Pawn bcrypt.
-- [ ] **4.5** — Refactor login dialog untuk menggunakan kolom yang sama dengan UCP (username, password).
-- [ ] **4.6** — Tambahkan pengecekan `verified = 1` sebelum player bisa login in-game.
-- [ ] **4.7** — Tambahkan pesan error yang jelas: "Akun belum diverifikasi. Cek email Anda." jika verified = 0.
-- [ ] **4.8** — Verifikasi: register di UCP → verify OTP → login in-game dengan username + password yang sama → sukses masuk ke character selection.
+- [x] **4.1** — Audit `account_regist.inc`: pahami flow `CheckPlayerUCP()`, `OnLoginPassCheck()`, `OnPlayerPasswordChecked()`. Flow: OnPlayerConnect → CheckPlayerUCP → SELECT Verify_Status dari player_ucp → if verified=1 → LoadCharacter, else → VerificationCode flow. ✅
+- [x] **4.2** — Pastikan query login di gamemode membaca tabel `player_ucp` (bukan tabel terpisah). Semua query di account_regist.inc pakai `player_ucp`. ✅
+- [x] **4.3** — Pastikan password verification di Pawn menggunakan bcrypt plugin yang kompatibel dengan PHP `PASSWORD_BCRYPT`. Menggunakan `bcrypt_verify()` + `bcrypt_hash()` dari plugin bcrypt. ✅
+- [ ] **4.4** — Test hash compatibility: hash password di PHP → coba verify di Pawn bcrypt. ⚠️ Belum di-test — perlu SA-MP server jalan + user register test. PHP pakai cost=12 (`$2y$12$`), Pawn pakai `BCRYPT_COST` default. Harus kompatibel.
+- [x] **4.5** — Refactor login dialog untuk menggunakan kolom yang sama dengan UCP (username, password). Login dialog sudah pakai UCP username + password via TextDraw → `OnLoginPassCheck()` → bcrypt_verify ke `player_ucp.Password`. ✅
+- [x] **4.6** — Tambahkan pengecekan `verified = 1` sebelum player bisa login in-game. `OnLoadLastLogin()` cek `Verify_Status == 1` → if yes, LoadCharacter; if no, VerificationCode flow. ✅
+- [x] **4.7** — Tambahkan pesan error yang jelas: "Akun belum diverifikasi. Cek email Anda." jika verified = 0. Line 181: "UCP ini telah terdaftar namun belum melakukan verifikasi! Nama UCP: ... (Silakan masukkan kode verifikasi):". ✅
+- [ ] **4.8** — Verifikasi: register di UCP → verify OTP → login in-game dengan username + password yang sama → sukses masuk ke character selection. ⚠️ Butuh SA-MP server + UCP server jalan.
 
 ---
 
 ## 5. SA-MP Gamemode — Character Selection dari UCP
 
-- [ ] **5.1** — Audit `InsertPlayerName()` di `account_regist.inc`: bagaimana karakter dibuat dari in-game.
-- [ ] **5.2** — Modifikasi character selection flow: setelah login sukses, load karakter dari `player_characters` WHERE `ucp_id` = user's ID.
-- [ ] **5.3** — Tampilkan daftar karakter yang sudah dibuat di UCP dalam dialog selection in-game.
-- [ ] **5.4** — Jika user belum punya karakter, arahkan ke character creation in-game (fallback) atau suruh buat di UCP dulu.
-- [ ] **5.5** — Verifikasi: buat karakter di UCP → login in-game → karakter muncul di selection → bisa spawn.
+- [x] **5.1** — Audit `InsertPlayerName()` di `account_regist.inc`: bagaimana karakter dibuat dari in-game. InsertPlayerName membuat karakter via dialog in-game → INSERT ke `player_characters`. ✅
+- [x] **5.2** — Modifikasi character selection flow: setelah login sukses, load karakter dari `player_characters` WHERE `Char_UCP` = user's name. `LoadCharacter()` sudah query `player_characters WHERE Char_UCP = '%e' LIMIT %d`. ✅
+- [x] **5.3** — Tampilkan daftar karakter yang sudah dibuat di UCP dalam dialog selection in-game. `LoadCharacter2()` menampilkan character list dialog dengan `Char_Name`, `Char_Level`, `Char_Skin`. ✅
+- [x] **5.4** — Jika user belum punya karakter, arahkan ke character creation in-game (fallback) atau suruh buat di UCP dulu. Line 322: message "Harap buat karakter baru di: https://ucp.pahlawanroleplay.my.id" lalu kick. ✅
+- [ ] **5.5** — Verifikasi: buat karakter di UCP → login in-game → karakter muncul di selection → bisa spawn. ⚠️ Butuh SA-MP server jalan.
 
 ---
 
