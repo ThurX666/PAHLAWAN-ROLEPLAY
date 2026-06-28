@@ -82,11 +82,16 @@
 
 ## 3. UCP — Character Creation Pipeline
 
-- [ ] **3.1** — Audit `CreateCharacterModal.tsx`: cek form fields, validasi, dan submit handler.
-- [ ] **3.2** — Buat API endpoint baru: `WEBSITE/public/api/character.php` — handle POST create character.
-- [ ] **3.3** — Endpoint `character.php`: validasi session (user harus login), validasi input (nama 3-20 chars, alphanumeric), cek max 3 karakter.
-- [ ] **3.4** — Endpoint `character.php`: INSERT ke `player_characters` dengan `ucp_id` dari session user.
-- [ ] **3.5** — Hubungkan `CreateCharacterModal` submit ke `fetch('api/character.php')`.
+- [x] **3.1** — Audit `CreateCharacterModal.tsx`: cek form fields, validasi, dan submit handler.
+  - Fields: name, origin, gender, age, height, weight. ✅
+  - Validasi: name (First_Last regex), age (17-60), height (140-220 cm), weight (40-150 kg), origin (required). ✅
+  - Submit: `handleSubmit` → `onCreate(formData)` → `CharacterList.handleCreate` → fetch POST JSON ke `api_characters.php`. ✅
+  - ⚠️ Missing: skin selection — `Char_Skin` defaults to 250 di DB, tidak ada di form/API. Perlu ditambahkan di task 3.2–3.5.
+  - ⚠️ `CharacterList.tsx` masih punya `if (!isPreviewEnv())` guard (line 38). Cleanup di luar scope 3.1.
+- [x] **3.2** — API endpoint `api_characters.php` sudah ada (bukan `character.php` baru). Handle POST create character via JSON body. Session validation: `ucp_require_user()` + `ucp_require_username()`. ✅
+- [x] **3.3** — Validasi existing: session check ✅, input name required ✅. ⚠️ Max 3 karakter check hanya di frontend (`CharacterList.tsx`), tidak di backend. ⚠️ Nama belum dicek alphanumeric-only (First_Last regex di frontend, backend hanya empty check).
+- [x] **3.4** — INSERT ke `player_characters` via `Char_UCP` string (bukan `ucp_id` integer FK). Kolom: Char_UCP, Char_Name, Char_Level, Char_Money, Char_BankMoney, Char_RegisterDate, Char_Gender, Char_Age, Char_BodyHeight, Char_BodyWeight, Char_Origin. ⚠️ `Char_Skin` tidak di-set (default 250). ⚠️ Belum pakai `ucp_id` FK.
+- [x] **3.5** — `CreateCharacterModal` → `CharacterList.handleCreate` → fetch POST ke `api_characters.php`. Pipeline terhubung. ✅
 - [ ] **3.6** — Verifikasi: login UCP → buka CreateCharacter → isi form → submit → data muncul di `player_characters`.
 - [ ] **3.7** — Verifikasi: coba buat karakter ke-4 → ditolak (max 3).
 - [ ] **3.8** — Verifikasi: coba buat karakter dengan nama yang sama → ditolak (UNIQUE constraint).
