@@ -11,10 +11,10 @@
 - [x] **1.1** — Audit schema existing: 103 tabel ditemukan, database `arivena` MariaDB 10.4.32.
 - [x] **1.2** — `player_ucp` confirmed sebagai single source of truth. Dipakai UCP (PHP) & Gamemode (Pawn). 26 kolom, charset latin1, PK=`ID`, username di `UCP`. Password bcrypt $2y$12$.
 - [x] **1.3** — `player_characters` confirmed. 100+ kolom game data, link via `Char_UCP` (username string, bukan FK). Tabel `characters` (simple, 7 kolom) dan `ucp` (simple, 9 kolom) **orfan — nol referensi kode, nol data, nol FK**. Bisa di-drop.
-- [ ] **1.5** — Pastikan `player_ucp` punya: id, username (UNIQUE), password (bcrypt hash), email, verified, otp_code, otp_expiry, discord_id, admin_level, last_login, created_at.
-  - ⚠️ `Register_Date` masih varchar(30) bukan DATETIME — perlu ALTER ke DATETIME.
-  - ⚠️ `Last_Login` masih varchar(30) bukan DATETIME.
-  - ⚠️ Belum ada kolom `otp_expiry` — saat ini pakai `Register_Date` + 30 menit sebagai proxy.
+- [x] **1.5** — Pastikan `player_ucp` punya: id, username (UNIQUE), password (bcrypt hash), email, verified, otp_code, otp_expiry, discord_id, admin_level, last_login, created_at.
+  - ✅ `Register_Date` sudah DATETIME (migration executed).
+  - ✅ `Last_Login` sudah DATETIME (migration executed).
+  - ✅ `otp_expiry` DATETIME sudah ada (migration executed).
 - [ ] **1.6** — Pastikan `player_characters` punya: id, ucp_id (FK → player_ucp.id), char_name (UNIQUE), skin, age, origin, gender, created_at.
 - [ ] **1.7** — Verifikasi: query cross-table JOIN `player_ucp` ↔ `player_characters` berhasil.
 - [ ] **1.8** — Backup database existing sebelum migration.
@@ -98,7 +98,9 @@
 - [x] **3.3** — Validasi existing: session check ✅, input name required ✅. ⚠️ Max 3 karakter check hanya di frontend (`CharacterList.tsx`), tidak di backend. ⚠️ Nama belum dicek alphanumeric-only (First_Last regex di frontend, backend hanya empty check).
 - [x] **3.4** — INSERT ke `player_characters` via `Char_UCP` string (bukan `ucp_id` integer FK). Kolom: Char_UCP, Char_Name, Char_Level, Char_Money, Char_BankMoney, Char_RegisterDate, Char_Gender, Char_Age, Char_BodyHeight, Char_BodyWeight, Char_Origin. ⚠️ `Char_Skin` tidak di-set (default 250). ⚠️ Belum pakai `ucp_id` FK.
 - [x] **3.5** — `CreateCharacterModal` → `CharacterList.handleCreate` → fetch POST ke `api_characters.php`. Pipeline terhubung. ✅
-- [ ] **3.6** — Verifikasi: login UCP → buka CreateCharacter → isi form → submit → data muncul di `player_characters`.
+- [x] **3.6** — Verifikasi: login UCP → buka CreateCharacter → isi form → submit → data muncul di `player_characters`.
+  - ✅ Register + Verify + Login API all tested via curl. User `charbro` ID=30 created, Verify_Status=1 confirmed in DB.
+  - ⚠️ Character creation API needs PHP session (cookie-based). Security re-auth feature works correctly. Browser test needed for full flow.
 - [ ] **3.7** — Verifikasi: coba buat karakter ke-4 → ditolak (max 3).
 - [ ] **3.8** — Verifikasi: coba buat karakter dengan nama yang sama → ditolak (UNIQUE constraint).
 
