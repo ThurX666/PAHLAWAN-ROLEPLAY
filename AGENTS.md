@@ -24,10 +24,15 @@ Project root: `C:\Users\guyub\Documents\PAHLAWAN ROLEPLAY`
 ## Compile Command (Pawn)
 
 ```bash
+# Compile dari GAMEMODE
 cmd //c 'pawno\pawncc.exe gamemodes\main.pwn -ogamemodes\main.amx -ipawno\include -ipawno\pawno\include'
+# Copy ke runtime (Windows Defender blokir GAMEMODE kadang)
+cp gamemodes/main.amx C:/Users/guyub/Downloads/ARIVENA50JT/gamemodes/main.amx
+# Jalankan server
+cd C:/Users/guyub/Downloads/ARIVENA50JT && ./samp-server.exe
 ```
 
-Run from `GAMEMODE` directory. Must use `cmd //c` (not direct bash) because Pawn compiler needs Windows path separators.
+Run from `GAMEMODE` directory. Must use `cmd //c` (not direct bash) because Pawn compiler needs Windows path separators. Server runtime at `C:\Users\guyub\Downloads\ARIVENA50JT`.
 
 ## Database
 

@@ -56,27 +56,28 @@ curl -X POST http://127.0.0.1:8000/api/auth.php \
 
 ## 4. SA-MP Server
 
+⚠️ **Workflow:** GAMEMODE untuk coding/compile, ARIVENA50JT untuk runtime.
+Server harus dijalankan dari `C:\Users\guyub\Downloads\ARIVENA50JT` karena
+Windows Defender kadang blokir/menghapus file di direktori Documents.
+
 ### Compile gamemode:
 ```bash
-cd GAMEMODE
+cd C:/Users/guyub/Documents/PAHLAWAN\ ROLEPLAY/GAMEMODE
 cmd //c 'pawno\pawncc.exe gamemodes\main.pwn -ogamemodes\main.amx -ipawno\include -ipawno\pawno\include'
 ```
 
-### Run server:
+### Copy AMX ke runtime:
 ```bash
-cd GAMEMODE
+cp C:/Users/guyub/Documents/PAHLAWAN\ ROLEPLAY/GAMEMODE/gamemodes/main.amx C:/Users/guyub/Downloads/ARIVENA50JT/gamemodes/main.amx
+```
+
+### Run server dari ARIVENA50JT:
+```bash
+cd C:/Users/guyub/Downloads/ARIVENA50JT
 ./samp-server.exe
 ```
 
 Port: `7777`
-
-MySQL config: `gamemodes/utils/utils_defines.inc`:
-```pawn
-#define DATABASE_ADDRESS "localhost"
-#define DATABASE_USERNAME "root"
-#define DATABASE_PASSWORD ""
-#define DATABASE_NAME "arivena"
-```
 
 ## 5. Discord Bot
 
