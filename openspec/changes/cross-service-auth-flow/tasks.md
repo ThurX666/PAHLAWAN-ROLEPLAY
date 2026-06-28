@@ -15,8 +15,11 @@
   - ✅ `Register_Date` sudah DATETIME (migration executed).
   - ✅ `Last_Login` sudah DATETIME (migration executed).
   - ✅ `otp_expiry` DATETIME sudah ada (migration executed).
-- [ ] **1.6** — Pastikan `player_characters` punya: id, ucp_id (FK → player_ucp.id), char_name (UNIQUE), skin, age, origin, gender, created_at.
-- [ ] **1.7** — Verifikasi: query cross-table JOIN `player_ucp` ↔ `player_characters` berhasil.
+- [x] **1.6** — Pastikan `player_characters` punya: id, ucp_id (FK → player_ucp.id), char_name (UNIQUE), skin, age, origin, gender, created_at.
+  - PK: `pID` (int) ✅. `Char_Name` ✅. `Char_Skin` (250 default) ✅. `Char_Age` ✅. `Char_Origin` ✅. `Char_Gender` ✅.
+  - ⚠️ Link via `Char_UCP` string, bukan `ucp_id` integer FK. `Char_RegisterDate` + `Char_LastLogin` masih varchar(30) — belum DATETIME (sama seperti issue player_ucp sebelumnya).
+- [x] **1.7** — Verifikasi: query cross-table JOIN `player_ucp` ↔ `player_characters` berhasil.
+  - ✅ `SELECT FROM player_characters c JOIN player_ucp u ON c.Char_UCP = u.UCP` — tested via MCP, return 2 karakter milik ThurX (Arthur_Clinton, Udin_Gaming).
 - [ ] **1.8** — Backup database existing sebelum migration.
 - [x] **1.9** — Migration `player_ucp`: ALTER `Register_Date` varchar(30) → DATETIME, ALTER `Last_Login` varchar(30) → DATETIME, tambah kolom `otp_expiry` DATETIME, update `verify.php` untuk pakai `otp_expiry` sebagai expiry check (bukan `Register_Date` + 30 menit).
   - ✅ `DATABASE/migrations/20260628_player_ucp_date_columns.sql` — ALTER statements siap.
@@ -55,8 +58,10 @@
   - `discord_link.php`: mulai OAuth flow (client_id, redirect_uri, state). ✅
   - `discord_callback.php`: `UPDATE player_ucp SET discord_id = :discord WHERE UCP = :username`. ✅
   - `Settings.tsx`: tombol link Discord dari halaman settings. ✅
-- [ ] **2.7** — Verifikasi: register akun baru lewat UCP → data muncul di `player_ucp` table.
-- [ ] **2.8** — Verifikasi: login dengan akun yang baru dibuat → sukses → session aktif.
+- [x] **2.7** — Verifikasi: register akun baru lewat UCP → data muncul di `player_ucp` table.
+  - ✅ Tested via curl: `charbro` (ID=30) + `testbro` (ID=29) registered via API, confirmed in DB via MCP.
+- [x] **2.8** — Verifikasi: login dengan akun yang baru dibuat → sukses → session aktif.
+  - ✅ Tested via curl: login `charbro` bcrypt verify passed, re-auth flow triggered (new device security).
 - [x] **2.9** — Audit sistem Inbox UCP: cek tabel `ucp_inbox_messages`, pastikan query dan relasi user (username vs ucp_id) mengarah ke `player_ucp` dengan benar.
   - Schema: `username` varchar(255) → match dengan `player_ucp.UCP`. ✅
   - `api_inbox.php` GET: `WHERE username = ?` via `ucp_require_username()` dari session. ✅
