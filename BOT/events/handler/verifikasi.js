@@ -1,3 +1,16 @@
+/**
+ * DISCORD SERVER VERIFICATION — Role Gate (Captcha)
+ * ===================================================
+ * Flow ini MEMBERIKAN ROLE DISCORD setelah user memasukkan kode captcha.
+ * Ini BUKAN Discord Account Link ke UCP.
+ *
+ * Untuk linking UCP ↔ Discord (menulis player_ucp.discord_id),
+ * lihat: WEBSITE/public/api/discord_callback.php
+ *
+ * Dependency: ../../utils/verificationGaptcha.js (generate/save/validate kode)
+ * Output:     Tambah role verified, hapus role unverified, log verifikasi.
+ * DB:         Tidak menyentuh player_ucp.
+ */
 const {
     EmbedBuilder,
     ModalBuilder,

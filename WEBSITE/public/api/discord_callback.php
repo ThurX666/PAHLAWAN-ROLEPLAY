@@ -58,32 +58,54 @@ if (isset($token_data['access_token'])) {
         $discord_id = $user_data['id'];
         $discord_username = htmlspecialchars($user_data['username'] ?? 'Discord User');
         
-        // Simpan ke database
-        $update = $conn->prepare("UPDATE player_ucp SET discord_id = :discord WHERE UCP = :username");
-        $update->execute(['discord' => $discord_id, 'username' => $username]);
+        // --- TRANSAKSI: canonical link + inbox notification ---
+        $conn->beginTransaction();
+        try {
+            // Canonical: update player_ucp.discord_id
+            $update = $conn->prepare(
+                "UPDATE player_ucp SET discord_id = :discord WHERE UCP = :username"
+            );
+            $update->execute(['discord' => $discord_id, 'username' => $username]);
 
-        $stmtSession = $conn->prepare("SELECT ID as id, UCP as username, admin_level FROM player_ucp WHERE UCP = :username LIMIT 1");
+            $conn->commit();
+        } catch (PDOException $txEx) {
+            $conn->rollBack();
+            error_log("Discord callback: gagal update player_ucp.discord_id untuk {$username}: " . $txEx->getMessage());
+            die("Gagal menyimpan tautan Discord. Silakan coba lagi.");
+        }
+        // --- END TRANSAKSI ---
+
+        // Ambil session user setelah commit
+        $stmtSession = $conn->prepare(
+            "SELECT ID as id, UCP as username, admin_level FROM player_ucp WHERE UCP = :username LIMIT 1"
+        );
         $stmtSession->execute(['username' => $username]);
         $sessionUser = $stmtSession->fetch(PDO::FETCH_ASSOC);
         if ($sessionUser) {
             ucp_create_session($sessionUser);
         }
-        
+
         // --- INBOX NOTIFICATION: DISCORD LINK SUCCESS ---
+        // Non-critical: failure here tidak boleh menggagalkan link
         $inboxTitle = "Discord Berhasil Ditautkan 🎉";
-        
-        $metadataObj = [
-            'discordUsername' => $discord_username
-        ];
+        $metadataObj = ['discordUsername' => $discord_username];
         $metadataJson = json_encode($metadataObj);
 
-        $stmt_inbox = $conn->prepare("INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata) VALUES (:username, :title, :message, 'System', 0, 'DiscordLinked', :metadata)");
-        $stmt_inbox->execute([
-            'username' => $username, 
-            'title' => $inboxTitle, 
-            'message' => 'Akun UCP Anda kini telah tertaut dengan akun Discord.',
-            'metadata' => $metadataJson
-        ]);
+        try {
+            $stmt_inbox = $conn->prepare(
+                "INSERT INTO ucp_inbox_messages (username, title, message, type, is_read, template, metadata)
+                 VALUES (:username, :title, :message, 'System', 0, 'DiscordLinked', :metadata)"
+            );
+            $stmt_inbox->execute([
+                'username' => $username,
+                'title' => $inboxTitle,
+                'message' => 'Akun UCP Anda kini telah tertaut dengan akun Discord.',
+                'metadata' => $metadataJson,
+            ]);
+        } catch (PDOException $inboxEx) {
+            // jangan gagalkan flow utama; canonical link sudah tersimpan
+            error_log("Discord callback: gagal insert inbox untuk {$username}: " . $inboxEx->getMessage());
+        }
         // --- END INBOX NOTIFICATION ---
 
         // Add to Guild (if not already in) using OAuth access token

@@ -59,15 +59,29 @@ export function listActiveOpenSpecChangeIds(config: AppConfig): string[] {
 }
 
 export function parseOpenSpecTasks(markdown: string): OpenSpecTask[] {
+  // Flexible regex menerima:
+  //   - [ ] Task text           (tanpa ID)
+  //   - [x] Task text           (completed tanpa ID)
+  //   - [ ] 1.1 Task text       (numeric ID)
+  //   - [ ] 1.1. Task text      (numeric ID + trailing dot)
+  //   - [ ] **1.1** Task text   (bold ID)
+  //   * [ ] Task text           (asterisk markdown)
+  const CHECK_RE = /^\s*[-*]\s+\[([ xX])\]\s+(?:(?:\*\*)?(\d+(?:\.\d+)*)(?:\*\*)?\.?\s+)?(.+)$/;
+
+  const BLOCKED_RE = /\b(?:blocked|blokir|terblokir|menunggu)\b/i;
+
+  let autoId = 0;
+
   return markdown.split(/\r?\n/).flatMap((line) => {
-    const match = line.match(/^\s*-\s+\[([ xX])\]\s+([0-9.]+)\s+(.+)$/);
+    const match = line.match(CHECK_RE);
     if (!match) return [];
     const text = match[3].trim();
+    autoId++;
     return [{
-      id: match[2],
+      id: match[2] ?? `task-${autoId}`,
       text,
       completed: match[1].toLowerCase() === "x",
-      blocked: /\bblocked\b/i.test(text),
+      blocked: BLOCKED_RE.test(text),
     }];
   });
 }

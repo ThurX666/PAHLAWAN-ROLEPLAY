@@ -1,3 +1,14 @@
+/**
+ * DISCORD SERVER VERIFICATION — Setup Panel Command
+ * ==================================================
+ * `/setup verifikasi` membuat panel embed + tombol untuk user Discord
+ * memulai proses VERIFIKASI ROLE DISCORD (captcha gate).
+ *
+ * Ini BUKAN Discord Account Link ke UCP.
+ * Untuk linking UCP ↔ Discord, lihat: WEBSITE/public/api/discord_callback.php
+ *
+ * Hanya developer (config.developerIds) yang bisa menjalankan command ini.
+ */
 const {
     SlashCommandBuilder,
     EmbedBuilder,

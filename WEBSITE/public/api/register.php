@@ -31,15 +31,23 @@ if ($action === 'register') {
             exit;
         }
 
+        // IP tracking (P1 data quality)
+        $ip = $_POST['ip'] ?? ($_SERVER['REMOTE_ADDR'] === '::1' ? '127.0.0.1' : $_SERVER['REMOTE_ADDR']);
+
         // GENERATE KODE OTP UNTUK VERIFIKASI (6 DIGIT ANGKA ACAK)
         $otp_code = sprintf("%06d", mt_rand(1, 999999));
 
         // Memasukkan input baru dengan "Verify_Status" = 0
-        $stmt = $conn->prepare("INSERT INTO player_ucp (UCP, Email, Password, Verify_Status, Verify_Code, otp_expiry, Register_Date) VALUES (:username, :email, :password, 0, :verify_token, DATE_ADD(NOW(), INTERVAL 30 MINUTE), CURRENT_TIMESTAMP)");
+        // Last_Login sengaja tidak diisi (NULL) — akan di-update saat login pertama
+        $stmt = $conn->prepare(
+            "INSERT INTO player_ucp (UCP, Email, Password, IP, Verify_Status, Verify_Code, otp_expiry, Register_Date)
+             VALUES (:username, :email, :password, :ip, 0, :verify_token, DATE_ADD(NOW(), INTERVAL 30 MINUTE), CURRENT_TIMESTAMP)"
+        );
         $stmt->execute([
             'username' => $username,
             'email' => $email,
             'password' => $hashed_password,
+            'ip' => $ip,
             'verify_token' => $otp_code
         ]);
 
@@ -69,7 +77,13 @@ if ($action === 'register') {
             ]);
         }
     } catch (PDOException $e) {
-        echo json_encode(['status' => 'error', 'message' => 'Gagal mendaftar: Terjadi kesalahan pada server.']);
+        // 23000 = integrity constraint violation (duplicate entry, etc.)
+        if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'Duplicate entry')) {
+            echo json_encode(['status' => 'error', 'message' => 'Username atau Email sudah terdaftar!']);
+        } else {
+            error_log("Register error: " . $e->getMessage());
+            echo json_encode(['status' => 'error', 'message' => 'Gagal mendaftar: Terjadi kesalahan pada server.']);
+        }
     }
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid Action!']);
