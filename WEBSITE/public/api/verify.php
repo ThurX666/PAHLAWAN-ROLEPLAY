@@ -24,7 +24,8 @@ if ($action === 'verify_otp') {
             discord_id,
             Verify_Status as is_verified, 
             Verify_Code as verify_token, 
-            Register_Date as created_at 
+            Register_Date as created_at,
+            otp_expiry
             FROM player_ucp WHERE UCP = :username OR Email = :email LIMIT 1");
         $stmt->execute(['username' => $username, 'email' => $username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -49,12 +50,10 @@ if ($action === 'verify_otp') {
             exit;
         }
         
-        // Cek apakah expired (jika waktu sekarang melebihi 30 menit dari created_at)
-        if (!empty($user['created_at'])) {
-            $expire_time = strtotime($user['created_at']) + (30 * 60); // + 30 menit
-            if (time() > $expire_time) {
-                // Berubah menjadi -1 secara live ketika kadaluarsa
-                $stmt_expire = $conn->prepare("UPDATE player_ucp SET Verify_Code = '-1' WHERE ID = :id");
+        // Cek apakah OTP expired via kolom otp_expiry
+        if (!empty($user['otp_expiry'])) {
+            if (time() > strtotime($user['otp_expiry'])) {
+                $stmt_expire = $conn->prepare("UPDATE player_ucp SET Verify_Code = '-1', otp_expiry = NULL WHERE ID = :id");
                 $stmt_expire->execute(['id' => $user['id']]);
 
                 echo json_encode(['status' => 'error', 'message' => 'Kode OTP telah habis masa berlakunya (lebih dari 30 menit). Silakan minta ulang.']);
@@ -67,7 +66,7 @@ if ($action === 'verify_otp') {
         $location = $_POST['location'] ?? 'Unknown Location';
 
         // KODE BENAR! Update is_verified menjadi 1
-        $update = $conn->prepare("UPDATE player_ucp SET Verify_Status = 1, Verify_Code = '-1', last_device = :device, last_ip = :ip, last_location = :location WHERE ID = :id");
+        $update = $conn->prepare("UPDATE player_ucp SET Verify_Status = 1, Verify_Code = '-1', otp_expiry = NULL, last_device = :device, last_ip = :ip, last_location = :location WHERE ID = :id");
         $update->execute([
             'id' => $user['id'],
             'device' => $device,

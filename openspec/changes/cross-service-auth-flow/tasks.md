@@ -18,7 +18,13 @@
 - [ ] **1.6** — Pastikan `player_characters` punya: id, ucp_id (FK → player_ucp.id), char_name (UNIQUE), skin, age, origin, gender, created_at.
 - [ ] **1.7** — Verifikasi: query cross-table JOIN `player_ucp` ↔ `player_characters` berhasil.
 - [ ] **1.8** — Backup database existing sebelum migration.
-- [ ] **1.9** — Migration `player_ucp`: ALTER `Register_Date` varchar(30) → DATETIME, ALTER `Last_Login` varchar(30) → DATETIME, tambah kolom `otp_expiry` DATETIME, update `verify.php` untuk pakai `otp_expiry` sebagai expiry check (bukan `Register_Date` + 30 menit).
+- [x] **1.9** — Migration `player_ucp`: ALTER `Register_Date` varchar(30) → DATETIME, ALTER `Last_Login` varchar(30) → DATETIME, tambah kolom `otp_expiry` DATETIME, update `verify.php` untuk pakai `otp_expiry` sebagai expiry check (bukan `Register_Date` + 30 menit).
+  - ✅ `DATABASE/migrations/20260628_player_ucp_date_columns.sql` — ALTER statements siap.
+  - ✅ `verify.php` — SELECT+check `otp_expiry`, clear on success.
+  - ✅ `register.php` — INSERT set `otp_expiry = DATE_ADD(NOW(), INTERVAL 30 MINUTE)`.
+  - ✅ `auth.php` — 2× UPDATE resend set `otp_expiry`.
+  - ✅ `resend_otp.php` — UPDATE set `otp_expiry`.
+  - ⚠️ SQL migration belum dijalankan — perlu execute manual di phpMyAdmin/MySQL.
 
 ---
 

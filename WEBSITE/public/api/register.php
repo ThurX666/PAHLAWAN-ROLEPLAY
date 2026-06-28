@@ -35,7 +35,7 @@ if ($action === 'register') {
         $otp_code = sprintf("%06d", mt_rand(1, 999999));
 
         // Memasukkan input baru dengan "Verify_Status" = 0
-        $stmt = $conn->prepare("INSERT INTO player_ucp (UCP, Email, Password, Verify_Status, Verify_Code, Register_Date) VALUES (:username, :email, :password, 0, :verify_token, CURRENT_TIMESTAMP)");
+        $stmt = $conn->prepare("INSERT INTO player_ucp (UCP, Email, Password, Verify_Status, Verify_Code, otp_expiry, Register_Date) VALUES (:username, :email, :password, 0, :verify_token, DATE_ADD(NOW(), INTERVAL 30 MINUTE), CURRENT_TIMESTAMP)");
         $stmt->execute([
             'username' => $username,
             'email' => $email,

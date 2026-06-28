@@ -77,7 +77,7 @@ if ($action === 'login') {
                 $new_otp_code = sprintf("%06d", mt_rand(1, 999999));
                 
                 // Downgrade status ke 0 (kunci sementara) agar dia masuk form Verifikasi
-                $stmt_update = $conn->prepare("UPDATE player_ucp SET Verify_Status = 0, Verify_Code = :new_token, Register_Date = CURRENT_TIMESTAMP, OTP_Attempts = 1 WHERE ID = :id");
+                $stmt_update = $conn->prepare("UPDATE player_ucp SET Verify_Status = 0, Verify_Code = :new_token, otp_expiry = DATE_ADD(NOW(), INTERVAL 30 MINUTE), Register_Date = CURRENT_TIMESTAMP, OTP_Attempts = 1 WHERE ID = :id");
                 $stmt_update->execute(['new_token' => $new_otp_code, 'id' => $user['id']]);
 
                 if (isLocalOtpPreviewMode()) {
@@ -141,7 +141,7 @@ if ($action === 'login') {
                         $new_otp_code = sprintf("%06d", mt_rand(1, 999999));
                         
                         // Update ke database (Kode baru, Reset Date, Tambah Attempt)
-                        $stmt_update = $conn->prepare("UPDATE player_ucp SET Verify_Code = :new_token, Register_Date = CURRENT_TIMESTAMP, OTP_Attempts = OTP_Attempts + 1 WHERE ID = :id");
+                        $stmt_update = $conn->prepare("UPDATE player_ucp SET Verify_Code = :new_token, otp_expiry = DATE_ADD(NOW(), INTERVAL 30 MINUTE), Register_Date = CURRENT_TIMESTAMP, OTP_Attempts = OTP_Attempts + 1 WHERE ID = :id");
                         $stmt_update->execute(['new_token' => $new_otp_code, 'id' => $user['id']]);
 
                         if (isLocalOtpPreviewMode()) {
