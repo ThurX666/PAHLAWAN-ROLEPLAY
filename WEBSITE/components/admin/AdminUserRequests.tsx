@@ -82,14 +82,14 @@ export const AdminUserRequests: React.FC = () => {
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
         <input value={search} onChange={event => setSearch(event.target.value)}
-          className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm dark:border-white/10 dark:bg-[#121212]"
+          className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm dark:border-white/10 dark:bg-ph-surface-card"
           placeholder="Cari UCP atau tipe permohonan..." />
       </div>
       {loading ? <Loader2 className="animate-spin" /> : (
         <div className="grid gap-3 lg:grid-cols-2">
           {filtered.map(request => (
             <button key={request.id} onClick={() => { setSelected(request); setFeedback(request.admin_feedback || ''); }}
-              className="rounded-xl border border-gray-200 bg-white p-4 text-left dark:border-white/10 dark:bg-[#121212]">
+              className="rounded-xl border border-gray-200 bg-white p-4 text-left dark:border-white/10 dark:bg-ph-surface-card">
               <div className="flex justify-between gap-3">
                 <strong>{request.request_type} #{request.id}</strong>
                 <span className="text-xs">{request.status}</span>
@@ -101,7 +101,7 @@ export const AdminUserRequests: React.FC = () => {
         </div>
       )}
       {selected && (
-        <div className="mt-5 rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-[#121212]">
+        <div className="mt-5 rounded-2xl border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-ph-surface-card">
           <h3 className="font-bold">{selected.request_type} — {selected.username}</h3>
           <p className="my-3 whitespace-pre-wrap text-sm">{selected.content}</p>
           <pre className="mb-4 overflow-auto rounded-lg bg-gray-100 p-3 text-xs dark:bg-black/30">

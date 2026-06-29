@@ -10,7 +10,7 @@ interface StoryViewProps {
 
 export const StoryView: React.FC<StoryViewProps> = ({ character, story }) => {
   return (
-    <div className="bg-white dark:bg-gradient-to-br dark:from-[#1a1a1a] dark:to-[#2a1a1a] border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm dark:shadow-2xl relative min-h-[500px]">
+    <div className="bg-white dark:bg-gradient-to-br dark:from-ph-surface-panel dark:to-[#2a1a1a] border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm dark:shadow-2xl relative min-h-[500px]">
         {/* Background Glow */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-purple-500/10 dark:bg-purple-900/20 blur-[120px] rounded-full pointer-events-none"></div>
 
@@ -18,11 +18,11 @@ export const StoryView: React.FC<StoryViewProps> = ({ character, story }) => {
             {/* Header Section */}
             <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-8 md:mb-12 items-center md:items-start text-center md:text-left">
                 {/* Avatar/Image */}
-                <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-100 dark:bg-[#121212] rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl overflow-hidden shrink-0">
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-100 dark:bg-ph-surface-card rounded-2xl border border-gray-200 dark:border-white/10 shadow-xl overflow-hidden shrink-0">
                     {character.photoUrl || getCharacterPhotoUrl(character.name) ? (
                         <img src={getCharacterPhotoUrl(character.name, character.photoUrl)} className="w-full h-full object-cover" alt="Character Photo" />
                     ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200 dark:bg-[#1a1a1a] text-gray-400 dark:text-gray-500">
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200 dark:bg-ph-surface-panel text-gray-400 dark:text-gray-500">
                             <User size={32} className="mb-1 opacity-50" />
                             <span className="text-[10px] font-bold uppercase tracking-widest opacity-50 text-center leading-tight">No Image</span>
                         </div>

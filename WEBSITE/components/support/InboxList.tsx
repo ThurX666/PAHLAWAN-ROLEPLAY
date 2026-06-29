@@ -23,8 +23,8 @@ export const InboxList: React.FC<InboxListProps> = ({ messages, selectedMessageI
   );
 
   return (
-    <div className={`${isHiddenOnMobile ? 'hidden md:flex' : 'flex'} w-full flex-1 h-full flex-col bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm`}>
-        <div className="p-5 bg-gray-50 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-white/5 font-black text-gray-400 dark:text-gray-500 uppercase text-[10px] tracking-widest flex items-center justify-between flex-shrink-0">
+    <div className={`${isHiddenOnMobile ? 'hidden md:flex' : 'flex'} w-full flex-1 h-full flex-col bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm`}>
+        <div className="p-5 bg-gray-50 dark:bg-ph-surface-panel border-b border-gray-200 dark:border-white/5 font-black text-gray-400 dark:text-gray-500 uppercase text-[10px] tracking-widest flex items-center justify-between flex-shrink-0">
             <div className="flex items-center">
                 <Inbox size={14} className="mr-2" /> Daftar Pesan
             </div>
@@ -50,8 +50,8 @@ export const InboxList: React.FC<InboxListProps> = ({ messages, selectedMessageI
                             selectedMessageId === msg.id 
                             ? 'bg-red-50 dark:bg-red-900/10 border-red-500/50 shadow-sm' 
                             : msg.read 
-                                ? 'bg-white dark:bg-[#0a0a0a] border-gray-100 dark:border-white/5 hover:border-red-500/30 hover:bg-gray-50 dark:hover:bg-[#111]' 
-                                : 'bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-white/10 shadow-sm'
+                                ? 'bg-white dark:bg-ph-surface-deep border-gray-100 dark:border-white/5 hover:border-red-500/30 hover:bg-gray-50 dark:hover:bg-[#111]' 
+                                : 'bg-white dark:bg-ph-surface-panel border-gray-200 dark:border-white/10 shadow-sm'
                         }`}
                     >
                         {!msg.read && (
@@ -79,7 +79,7 @@ export const InboxList: React.FC<InboxListProps> = ({ messages, selectedMessageI
             )}
         </div>
         {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-[#111]/50">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-ph-surface-deep/50">
                 <button 
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}

@@ -281,7 +281,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
                                 className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 border ${
                                     activeTab === 'inbox' 
                                     ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-600/20' 
-                                    : 'bg-white dark:bg-[#121212] text-gray-500 border-gray-200 dark:border-white/10 hover:border-red-500/50'
+                                    : 'bg-white dark:bg-ph-surface-card text-gray-500 border-gray-200 dark:border-white/10 hover:border-red-500/50'
                                 }`}
                             >
                                 <Mail size={16} /> PESAN
@@ -294,7 +294,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
                                 className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 border ${
                                     activeTab === 'tickets' 
                                     ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20' 
-                                    : 'bg-white dark:bg-[#121212] text-gray-500 border-gray-200 dark:border-white/10 hover:border-blue-500/50'
+                                    : 'bg-white dark:bg-ph-surface-card text-gray-500 border-gray-200 dark:border-white/10 hover:border-blue-500/50'
                                 }`}
                             >
                                 <LifeBuoy size={16} /> TIKET
@@ -322,7 +322,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
                         )}
                     </div>
 
-                    <div className={`hidden md:flex flex-1 min-w-0 bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm flex-col overflow-hidden relative transition-all ${!selectedTicket && !isCreating ? 'items-center justify-center' : ''}`}>
+                    <div className={`hidden md:flex flex-1 min-w-0 bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm flex-col overflow-hidden relative transition-all ${!selectedTicket && !isCreating ? 'items-center justify-center' : ''}`}>
                         
                         {!selectedTicket && !isCreating && (
                             <div className="text-center p-8 opacity-50 select-none">
@@ -356,7 +356,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
 
                     {/* Mobile Portals for Ticket Tab */}
                     {isCreating && createPortal(
-                        <div className="fixed inset-0 z-[9999] flex flex-col bg-white dark:bg-[#121212] md:hidden animate-[slideInUp_0.3s_ease-out]">
+                        <div className="fixed inset-0 z-[9999] flex flex-col bg-white dark:bg-ph-surface-card md:hidden animate-[slideInUp_0.3s_ease-out]">
                             <div className="w-full flex-1 overflow-hidden flex flex-col">
                                 <CreateTicketForm 
                                     onClose={() => setIsCreating(false)} 
@@ -368,7 +368,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
                     )}
 
                     {selectedTicket && !isCreating && createPortal(
-                        <div className="fixed inset-0 z-[9999] flex flex-col bg-white dark:bg-[#121212] md:hidden animate-[slideInUp_0.3s_ease-out]">
+                        <div className="fixed inset-0 z-[9999] flex flex-col bg-white dark:bg-ph-surface-card md:hidden animate-[slideInUp_0.3s_ease-out]">
                             <div className="w-full flex-1 overflow-hidden flex flex-col">
                                 <TicketDetail 
                                     ticket={selectedTicket} 
@@ -406,7 +406,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
                                 className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 border ${
                                     activeTab === 'inbox' 
                                     ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-600/20' 
-                                    : 'bg-white dark:bg-[#121212] text-gray-500 border-gray-200 dark:border-white/10 hover:border-red-500/50'
+                                    : 'bg-white dark:bg-ph-surface-card text-gray-500 border-gray-200 dark:border-white/10 hover:border-red-500/50'
                                 }`}
                             >
                                 <Mail size={16} /> PESAN
@@ -419,7 +419,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
                                 className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 border ${
                                     activeTab === 'tickets' 
                                     ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-600/20' 
-                                    : 'bg-white dark:bg-[#121212] text-gray-500 border-gray-200 dark:border-white/10 hover:border-blue-500/50'
+                                    : 'bg-white dark:bg-ph-surface-card text-gray-500 border-gray-200 dark:border-white/10 hover:border-blue-500/50'
                                 }`}
                             >
                                 <LifeBuoy size={16} /> TIKET
@@ -437,7 +437,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
                         </div>
                      </div>
 
-                     <div className={`hidden md:flex flex-1 min-w-0 bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm flex-col overflow-hidden relative transition-all ${!selectedMessage ? 'items-center justify-center' : ''}`}>
+                     <div className={`hidden md:flex flex-1 min-w-0 bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm flex-col overflow-hidden relative transition-all ${!selectedMessage ? 'items-center justify-center' : ''}`}>
                          {!selectedMessage ? (
                             <div className="text-center p-8 opacity-50 select-none">
                                 <div className="w-24 h-24 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -457,7 +457,7 @@ export const TicketSystem: React.FC<TicketSystemProps> = ({ userName, isAdmin, m
 
                      {/* Mobile Portal for Inbox */}
                      {selectedMessage && createPortal(
-                        <div className="fixed inset-0 z-[9999] flex flex-col bg-white dark:bg-[#121212] md:hidden animate-[slideInUp_0.3s_ease-out]">
+                        <div className="fixed inset-0 z-[9999] flex flex-col bg-white dark:bg-ph-surface-card md:hidden animate-[slideInUp_0.3s_ease-out]">
                             <div className="w-full flex-1 overflow-hidden flex flex-col">
                                  <InboxDetail 
                                     message={selectedMessage} 

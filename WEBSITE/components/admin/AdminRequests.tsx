@@ -134,7 +134,7 @@ export const AdminRequests: React.FC<AdminRequestsProps> = ({ onOocReviewed }) =
 
             <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
                 {/* Left Area - Request List */}
-                <div className="lg:w-1/3 flex flex-col bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm overflow-hidden">
+                <div className="lg:w-1/3 flex flex-col bg-white dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm overflow-hidden">
                     <div className="p-4 border-b border-gray-200 dark:border-white/10 space-y-4">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
@@ -203,7 +203,7 @@ export const AdminRequests: React.FC<AdminRequestsProps> = ({ onOocReviewed }) =
                 </div>
 
                 {/* Right Area - Detail */}
-                <div className="lg:w-2/3 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm flex flex-col overflow-hidden">
+                <div className="lg:w-2/3 bg-white dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 rounded-2xl shadow-sm flex flex-col overflow-hidden">
                     {selectedRequest ? (
                         <div className="flex flex-col h-full">
                             <div className="p-6 border-b border-gray-200 dark:border-white/10 flex-shrink-0">
@@ -249,14 +249,14 @@ export const AdminRequests: React.FC<AdminRequestsProps> = ({ onOocReviewed }) =
                             </div>
 
                             {selectedRequest.status === 'Pending' && (
-                                <div className="p-6 bg-gray-50 dark:bg-[#151515] border-t border-gray-200 dark:border-white/10 flex-shrink-0">
+                                <div className="p-6 bg-gray-50 dark:bg-ph-surface-input border-t border-gray-200 dark:border-white/10 flex-shrink-0">
                                     <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">Pesan Konfirmasi / Tolak</label>
                                     <textarea 
                                         rows={3}
                                         value={adminFeedback}
                                         onChange={(e) => setAdminFeedback(e.target.value)}
                                         placeholder="Berikan alasan kenapa pengajuan diterima/ditolak..."
-                                        className="w-full bg-white dark:bg-[#1a1a1a] border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none mb-4"
+                                        className="w-full bg-white dark:bg-ph-surface-panel border border-gray-300 dark:border-white/10 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none mb-4"
                                     ></textarea>
                                     
                                     <div className="flex gap-3">

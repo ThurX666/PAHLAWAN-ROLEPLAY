@@ -124,7 +124,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile, setProfile, o
 
   return (
     <>
-        <div className="h-full flex flex-col justify-center bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-sm relative">
+        <div className="h-full flex flex-col justify-center bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-sm relative">
             <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none text-gray-900 dark:text-white hidden md:block overflow-hidden rounded-3xl">
                 <User size={120} />
             </div>
@@ -145,7 +145,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile, setProfile, o
             {profile.isLocked ? (
                 <div className="flex flex-col relative z-10">
                     {/* Security Banner */}
-                    <div className="bg-gray-50 dark:bg-[#0f0f0f] border border-gray-200 dark:border-white/5 rounded-2xl p-6 md:p-8 text-center mb-6 relative overflow-hidden group">
+                    <div className="bg-gray-50 dark:bg-ph-surface-deep border border-gray-200 dark:border-white/5 rounded-2xl p-6 md:p-8 text-center mb-6 relative overflow-hidden group">
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-500/5 via-transparent to-transparent opacity-50 pointer-events-none"></div>
                         
                         <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-b from-green-100 to-green-50 dark:from-green-900/30 dark:to-green-900/10 rounded-2xl flex items-center justify-center mx-auto text-green-600 dark:text-green-500 shadow-lg shadow-green-900/5 mb-4 border border-green-200 dark:border-green-500/20 transform group-hover:scale-110 transition-transform duration-500">
@@ -343,7 +343,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile, setProfile, o
         {/* CONFIRMATION MODAL */}
         {showConfirm && (
             <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.1s_ease-out]">
-                <div className="bg-white dark:bg-[#121212] w-full max-w-md rounded-t-3xl md:rounded-2xl border-t-4 border-red-600 shadow-2xl overflow-hidden animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+                <div className="bg-white dark:bg-ph-surface-card w-full max-w-md rounded-t-3xl md:rounded-2xl border-t-4 border-red-600 shadow-2xl overflow-hidden animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
                     
                     {/* Mobile Drag Handle */}
                     <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden"></div>
@@ -383,7 +383,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ profile, setProfile, o
 
 // Refined LockedField for better fit and visual appeal
 const LockedField = ({label, value, subValue, icon: Icon, className = ""}: {label: string, value: string, subValue?: string, icon: any, className?: string}) => (
-    <div className={`bg-gray-50 dark:bg-[#151515] p-3 md:p-4 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-3 md:gap-4 group hover:border-gray-300 dark:hover:border-white/20 transition-all ${className}`}>
+    <div className={`bg-gray-50 dark:bg-ph-surface-input p-3 md:p-4 rounded-2xl border border-gray-200 dark:border-white/5 flex items-center gap-3 md:gap-4 group hover:border-gray-300 dark:hover:border-white/20 transition-all ${className}`}>
         <div className="w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-white/5 rounded-xl flex items-center justify-center text-gray-400 group-hover:text-red-500 transition-colors shadow-sm shrink-0 border border-gray-100 dark:border-white/5">
             <Icon size={20} className="md:w-5 md:h-5" />
         </div>

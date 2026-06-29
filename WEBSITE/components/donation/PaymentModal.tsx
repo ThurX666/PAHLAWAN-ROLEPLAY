@@ -6,7 +6,7 @@ const ImageCropModal = lazy(() => import('../ui/ImageCropModal').then(module => 
 
 const CropperFallback: React.FC = () => (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl w-full max-w-md border border-gray-200 dark:border-white/10 p-8 text-center shadow-2xl">
+        <div className="bg-white dark:bg-ph-surface-panel rounded-2xl w-full max-w-md border border-gray-200 dark:border-white/10 p-8 text-center shadow-2xl">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
                 Memuat Cropper...
@@ -177,15 +177,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ selectedPkg, onClose
           )}
 
           {/* Mobile: Bottom Sheet, Desktop: Centered Modal */}
-          <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 w-full md:max-w-2xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[95dvh] animate-[slideUp_0.3s_ease-out] md:animate-none relative">
+          <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 w-full md:max-w-2xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[95dvh] animate-[slideUp_0.3s_ease-out] md:animate-none relative">
               
               {/* Mobile Drag Handle */}
-              <div className="w-full flex justify-center pt-3 pb-1 md:hidden absolute top-0 left-0 z-50 bg-white dark:bg-[#121212] rounded-t-3xl">
+              <div className="w-full flex justify-center pt-3 pb-1 md:hidden absolute top-0 left-0 z-50 bg-white dark:bg-ph-surface-card rounded-t-3xl">
                   <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
               </div>
 
               {/* Left Column: Summary & Info (Desktop) */}
-              <div className="w-full md:w-5/12 bg-gray-50 dark:bg-[#0f0f0f] border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/5 p-4 md:p-6 flex flex-col shrink-0 pt-8 md:pt-6 overflow-y-auto custom-scrollbar">
+              <div className="w-full md:w-5/12 bg-gray-50 dark:bg-ph-surface-deep border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/5 p-4 md:p-6 flex flex-col shrink-0 pt-8 md:pt-6 overflow-y-auto custom-scrollbar">
                   <div className="flex justify-between items-center mb-4 md:mb-6 md:hidden">
                         <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase italic">Konfirmasi</h3>
                         <button onClick={onClose} className="p-2 bg-gray-100 dark:bg-white/5 rounded-full"><X size={18} className="text-gray-500 hover:text-red-500" /></button>
@@ -253,7 +253,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ selectedPkg, onClose
               </div>
 
               {/* Right Column: Form */}
-              <div className="w-full md:w-7/12 flex flex-col h-full bg-white dark:bg-[#121212] overflow-hidden">
+              <div className="w-full md:w-7/12 flex flex-col h-full bg-white dark:bg-ph-surface-card overflow-hidden">
                   <div className="hidden md:flex justify-between items-center p-6 border-b border-gray-200 dark:border-white/5 shrink-0">
                       <div>
                         <h3 className="text-lg font-black text-gray-900 dark:text-white uppercase italic">Selesaikan Pembayaran</h3>
@@ -287,7 +287,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ selectedPkg, onClose
 
                                     {/* Custom Dropdown Menu */}
                                     {isDropdownOpen && (
-                                        <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#151515] border border-gray-200 dark:border-white/10 rounded-xl shadow-xl z-50 overflow-hidden animate-[fadeIn_0.1s_ease-out] max-h-56 overflow-y-auto custom-scrollbar">
+                                        <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-ph-surface-input border border-gray-200 dark:border-white/10 rounded-xl shadow-xl z-50 overflow-hidden animate-[fadeIn_0.1s_ease-out] max-h-56 overflow-y-auto custom-scrollbar">
                                             {PAYMENT_GROUPS.map((group, groupIdx) => (
                                                 <div key={group.label} className={groupIdx > 0 ? 'border-t border-gray-100 dark:border-white/5' : ''}>
                                                     <div className="px-3 md:px-4 py-1.5 md:py-2 bg-gray-50 dark:bg-white/5 text-[9px] font-bold text-gray-400 uppercase tracking-widest sticky top-0 backdrop-blur-sm">
@@ -317,7 +317,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ selectedPkg, onClose
 
                             {/* Dynamic Payment Details Info */}
                             {paymentMethod && PAYMENT_CHANNELS[paymentMethod] && (
-                                <div className="bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-xl p-3 md:p-4 relative group animate-[fadeIn_0.3s_ease-out]">
+                                <div className="bg-gray-50 dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 rounded-xl p-3 md:p-4 relative group animate-[fadeIn_0.3s_ease-out]">
                                     <p className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase mb-2 flex items-center gap-1">
                                         <Info size={10} /> Rekening Tujuan
                                     </p>
@@ -362,7 +362,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ selectedPkg, onClose
                                             return n;
                                         });
                                     }} 
-                                    className={`w-full bg-gray-50 dark:bg-[#0a0a0a] border rounded-xl p-2.5 md:p-3.5 text-xs text-gray-900 dark:text-white outline-none transition-all font-medium ${errors.sender ? 'border-red-500 focus:border-red-600 bg-red-50/10' : 'border-gray-200 dark:border-white/10 focus:border-red-500'}`} 
+                                    className={`w-full bg-gray-50 dark:bg-ph-surface-deep border rounded-xl p-2.5 md:p-3.5 text-xs text-gray-900 dark:text-white outline-none transition-all font-medium ${errors.sender ? 'border-red-500 focus:border-red-600 bg-red-50/10' : 'border-gray-200 dark:border-white/10 focus:border-red-500'}`} 
                                     placeholder="Nama Pemilik Rekening Anda" 
                                 />
                             </div>
@@ -372,7 +372,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ selectedPkg, onClose
                                     <label className={`text-[10px] font-bold uppercase transition-colors ${errors.proof ? 'text-red-500' : 'text-gray-500'}`}>3. Bukti Transfer</label>
                                     {errors.proof && <span className="text-[9px] text-red-500 font-bold animate-pulse flex items-center gap-1"><AlertCircle size={10}/> {errors.proof}</span>}
                                 </div>
-                                <div className={`border-2 border-dashed rounded-xl p-4 md:p-6 text-center relative transition-all bg-gray-50 dark:bg-[#0a0a0a] group ${errors.proof ? 'border-red-500 bg-red-50/10' : 'border-gray-300 dark:border-white/10 hover:border-red-500/50 hover:bg-red-50/10'}`}>
+                                <div className={`border-2 border-dashed rounded-xl p-4 md:p-6 text-center relative transition-all bg-gray-50 dark:bg-ph-surface-deep group ${errors.proof ? 'border-red-500 bg-red-50/10' : 'border-gray-300 dark:border-white/10 hover:border-red-500/50 hover:bg-red-50/10'}`}>
                                     <input 
                                         type="file" 
                                         accept="image/*" 
@@ -412,7 +412,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ selectedPkg, onClose
                   </div>
 
                   {/* Desktop Footer Action: Fixed at bottom */}
-                  <div className="hidden md:block p-6 border-t border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-[#151515] shrink-0 z-20 relative pb-6">
+                  <div className="hidden md:block p-6 border-t border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-ph-surface-input shrink-0 z-20 relative pb-6">
                       <button form="pay-form" disabled={isSubmitting} className="w-full bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-bold py-4 rounded-xl text-sm uppercase shadow-lg shadow-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed tracking-widest transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
                           {isSubmitting ? 'Memproses...' : <>Kirim Konfirmasi <CreditCard size={16} className="w-4 h-4" /></>}
                       </button>

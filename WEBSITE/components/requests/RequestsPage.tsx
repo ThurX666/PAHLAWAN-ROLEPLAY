@@ -139,11 +139,11 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
   ];
 
   return (
-    <div className="flex-1 overflow-auto custom-scrollbar bg-gray-50 dark:bg-[#050505]">
+    <div className="flex-1 overflow-auto custom-scrollbar bg-gray-50 dark:bg-ph-surface-deep">
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
         
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/50 dark:bg-[#121212]/50 p-6 rounded-2xl border border-gray-200 dark:border-white/5 backdrop-blur-sm">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white/50 dark:bg-ph-surface-card/50 p-6 rounded-2xl border border-gray-200 dark:border-white/5 backdrop-blur-sm">
           <div>
             <h1 className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tight">Request Center</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">Ajukan permohonan ke tim administrasi server.</p>
@@ -158,7 +158,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
                     onClick={() => { setActiveTab(tab.id); setContent(''); setSubmitResult(null); }}
                     className={`flex items-center space-x-2 px-4 py-2.5 outline-none rounded-lg font-bold text-sm transition-all flex-1 md:flex-none justify-center ${
                       activeTab === tab.id 
-                          ? 'bg-white dark:bg-[#222] text-red-600 shadow-sm border border-gray-200 dark:border-white/10 scale-100' 
+                          ? 'bg-white dark:bg-ph-surface-elevated text-red-600 shadow-sm border border-gray-200 dark:border-white/10 scale-100' 
                           : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-white/5 scale-[0.98]'
                   }`}
                 >
@@ -170,7 +170,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Form */}
-          <div className="bg-white dark:bg-[#121212] rounded-2xl shadow-sm border border-gray-200 dark:border-white/5 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="bg-white dark:bg-ph-surface-card rounded-2xl shadow-sm border border-gray-200 dark:border-white/5 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 uppercase border-b border-gray-200 dark:border-white/5 pb-4">
               Buat {activeTab} Request
             </h2>
@@ -194,7 +194,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
                     <input type="text" 
                         value={metadata.character || ''} 
                         onChange={(e) => setMetadata({...metadata, character: e.target.value})}
-                        className="w-full bg-gray-50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                        className="w-full bg-gray-50 dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
                         placeholder="Contoh: Ucok_Slepbeuw" required />
                   </div>
                   <div>
@@ -202,7 +202,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
                     <input type="text" 
                         value={metadata.admin || ''} 
                         onChange={(e) => setMetadata({...metadata, admin: e.target.value})}
-                        className="w-full bg-gray-50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                        className="w-full bg-gray-50 dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
                         placeholder="Contoh: Admin_Brave" required />
                   </div>
                 </>
@@ -214,7 +214,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
                     <input type="text" 
                         value={metadata.oldName || ''} 
                         onChange={(e) => setMetadata({...metadata, oldName: e.target.value})}
-                        className="w-full bg-gray-50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                        className="w-full bg-gray-50 dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
                         placeholder="Contoh: Budi_Santoso" required />
                   </div>
                   <div>
@@ -222,7 +222,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
                     <input type="text" 
                         value={metadata.newName || ''} 
                         onChange={(e) => setMetadata({...metadata, newName: e.target.value})}
-                        className="w-full bg-gray-50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                        className="w-full bg-gray-50 dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
                         placeholder="Contoh: Alexander_Rodriguez" required />
                   </div>
                   <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
@@ -238,7 +238,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
                     <input type="text" 
                         value={metadata.lostAsset || ''} 
                         onChange={(e) => setMetadata({...metadata, lostAsset: e.target.value})}
-                        className="w-full bg-gray-50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                        className="w-full bg-gray-50 dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600"
                         placeholder="Contoh: Kendaraan Infernus atau Uang $5.000" required />
                   </div>
                 </>
@@ -249,7 +249,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
                 <textarea 
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[120px] resize-y custom-scrollbar"
+                  className="w-full bg-gray-50 dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500/50 outline-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-600 min-h-[120px] resize-y custom-scrollbar"
                   placeholder="Jelaskan dengan detail permohonan Anda..."
                   required
                 ></textarea>
@@ -271,7 +271,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
           </div>
 
           {/* Request History */}
-          <div className="bg-white dark:bg-[#121212] rounded-2xl shadow-sm border border-gray-200 dark:border-white/5 p-6 flex flex-col min-h-[400px]">
+          <div className="bg-white dark:bg-ph-surface-card rounded-2xl shadow-sm border border-gray-200 dark:border-white/5 p-6 flex flex-col min-h-[400px]">
              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6 uppercase border-b border-gray-200 dark:border-white/5 pb-4">
                 Riwayat Request
              </h2>
@@ -289,7 +289,7 @@ export const Requests: React.FC<RequestsProps> = ({ userName }) => {
              ) : (
                 <div className="space-y-4 flex-1 overflow-y-auto pr-2 custom-scrollbar">
                     {requests.map(req => (
-                        <div key={req.id} className="p-4 rounded-xl border border-gray-200 dark:border-white/5 bg-gray-50/50 dark:bg-[#0a0a0a]/50">
+                        <div key={req.id} className="p-4 rounded-xl border border-gray-200 dark:border-white/5 bg-gray-50/50 dark:bg-ph-surface-deep/50">
                             <div className="flex justify-between items-start mb-2">
                                 <span className="font-bold text-gray-900 dark:text-white text-sm">{req.request_type} Request</span>
                                 <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-1 rounded-md ${

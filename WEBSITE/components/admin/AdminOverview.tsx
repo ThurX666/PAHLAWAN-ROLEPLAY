@@ -10,7 +10,7 @@ const EconomyChart = lazy(() => import('./overview/EconomyChart').then(module =>
 const AssetDetail = lazy(() => import('./overview/AssetDetail').then(module => ({ default: module.AssetDetail })));
 
 const ChartFallback: React.FC = () => (
-    <div className="bg-white dark:bg-[#121212] rounded-2xl border border-gray-100 dark:border-white/5 p-6 flex min-h-[350px] items-center justify-center shadow-sm">
+    <div className="bg-white dark:bg-ph-surface-card rounded-2xl border border-gray-100 dark:border-white/5 p-6 flex min-h-[350px] items-center justify-center shadow-sm">
         <div className="text-center">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
@@ -175,7 +175,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigate, ticket
                     </div>
 
                     {/* PENDING ACTIONS (1/3) */}
-                    <div className="bg-white dark:bg-[#121212] rounded-2xl border border-gray-100 dark:border-white/5 p-6 flex flex-col h-full shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div className="bg-white dark:bg-ph-surface-card rounded-2xl border border-gray-100 dark:border-white/5 p-6 flex flex-col h-full shadow-sm hover:shadow-md transition-shadow duration-300">
                         <h3 className="text-gray-900 dark:text-white font-black uppercase text-sm tracking-widest mb-6 flex items-center">
                             <ShieldAlert className="mr-2 text-red-500" size={20} /> Antrean Tugas
                         </h3>
@@ -344,7 +344,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigate, ticket
 
         {/* LIST VIEW */}
         {viewLevel === 'list' && (
-            <div className="bg-white dark:bg-[#0a0a0a] rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden animate-[fadeIn_0.3s_ease-out]">
+            <div className="bg-white dark:bg-ph-surface-deep rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden animate-[fadeIn_0.3s_ease-out]">
                 <div className="p-4 border-b border-gray-200 dark:border-white/5 flex justify-between items-center">
                     <h3 className="font-bold text-gray-900 dark:text-white uppercase text-sm">List {selectedCategory}</h3>
                     <div className="relative">
@@ -361,7 +361,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ onNavigate, ticket
 
         {/* DETAIL VIEW */}
         {viewLevel === 'detail' && (
-            <div className="bg-white dark:bg-[#0a0a0a] rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden animate-[fadeIn_0.3s_ease-out]">
+            <div className="bg-white dark:bg-ph-surface-deep rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden animate-[fadeIn_0.3s_ease-out]">
                 <Suspense fallback={<DetailFallback />}>
                     <AssetDetail category={selectedCategory} detailId={selectedDetailId} />
                 </Suspense>

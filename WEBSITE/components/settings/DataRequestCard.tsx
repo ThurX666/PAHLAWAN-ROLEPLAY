@@ -71,7 +71,7 @@ export const DataRequestCard: React.FC<DataRequestCardProps> = ({ userName }) =>
     return (
         <>
             <div 
-                className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 p-6 md:p-8 rounded-2xl md:rounded-3xl relative overflow-hidden group transition-all duration-500"
+                className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 p-6 md:p-8 rounded-2xl md:rounded-3xl relative overflow-hidden group transition-all duration-500"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
@@ -101,7 +101,7 @@ export const DataRequestCard: React.FC<DataRequestCardProps> = ({ userName }) =>
                     <div className="shrink-0 w-full md:w-auto">
                         <button 
                             onClick={() => setIsModalOpen(true)}
-                            className="w-full md:w-auto px-8 bg-[#1A1A1A] hover:bg-[#222222] border border-white/5 text-white py-3.5 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 whitespace-nowrap"
+                            className="w-full md:w-auto px-8 bg-ph-surface-panel hover:bg-ph-surface-elevated border border-ph-border-default text-white py-3.5 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2 whitespace-nowrap"
                         >
                             <FileEdit size={14} /> Buat Pengajuan
                         </button>
@@ -112,8 +112,8 @@ export const DataRequestCard: React.FC<DataRequestCardProps> = ({ userName }) =>
             {/* Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-                    <div className="bg-white dark:bg-[#121212] w-full max-w-lg rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col max-h-[90vh]">
-                        <div className="p-4 border-b border-gray-200 dark:border-white/10 flex justify-between items-center bg-gray-50 dark:bg-[#1a1a1a]">
+                    <div className="bg-white dark:bg-ph-surface-card w-full max-w-lg rounded-2xl shadow-2xl border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col max-h-[90vh]">
+                        <div className="p-4 border-b border-gray-200 dark:border-white/10 flex justify-between items-center bg-gray-50 dark:bg-ph-surface-panel">
                             <h3 className="font-bold text-gray-900 dark:text-white uppercase italic tracking-tighter flex items-center gap-2">
                                 <FileEdit size={18} className="text-blue-500" /> Form Pengajuan
                             </h3>
@@ -156,7 +156,7 @@ export const DataRequestCard: React.FC<DataRequestCardProps> = ({ userName }) =>
                                         placeholder="Cth: Udin Samsudin (Nama Asli)"
                                         value={form.targetInfo}
                                         onChange={e => setForm({...form, targetInfo: e.target.value})}
-                                        className="w-full bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full bg-gray-50 dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                         required
                                     />
                                 </div>
@@ -168,7 +168,7 @@ export const DataRequestCard: React.FC<DataRequestCardProps> = ({ userName }) =>
                                             type="text" 
                                             value={form.oldValue}
                                             onChange={e => setForm({...form, oldValue: e.target.value})}
-                                            className="w-full bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                            className="w-full bg-gray-50 dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                         />
                                     </div>
                                     <div>
@@ -177,7 +177,7 @@ export const DataRequestCard: React.FC<DataRequestCardProps> = ({ userName }) =>
                                             type="text" 
                                             value={form.newValue}
                                             onChange={e => setForm({...form, newValue: e.target.value})}
-                                            className="w-full bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                            className="w-full bg-gray-50 dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                             required
                                         />
                                     </div>
@@ -190,7 +190,7 @@ export const DataRequestCard: React.FC<DataRequestCardProps> = ({ userName }) =>
                                         placeholder="Jelaskan alasan pengajuan perubahan (cth: mendaftar faction, typo, dsb.)"
                                         value={form.reason}
                                         onChange={e => setForm({...form, reason: e.target.value})}
-                                        className="w-full bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                                        className="w-full bg-gray-50 dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                                         required
                                     ></textarea>
                                 </div>

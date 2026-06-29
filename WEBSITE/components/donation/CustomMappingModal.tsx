@@ -83,7 +83,7 @@ export const CustomMappingModal: React.FC<CustomMappingModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-[#1a1a1a] w-full max-w-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-white/10 flex flex-col max-h-[95dvh] rounded-t-3xl md:rounded-2xl animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+            <div className="bg-white dark:bg-ph-surface-panel w-full max-w-2xl overflow-hidden shadow-2xl border border-gray-200 dark:border-white/10 flex flex-col max-h-[95dvh] rounded-t-3xl md:rounded-2xl animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
                 
                 {/* Mobile Drag Handle */}
                 <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden"></div>
@@ -267,7 +267,7 @@ export const CustomMappingModal: React.FC<CustomMappingModalProps> = ({
                                             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border ${
                                                 mappingTheme === theme 
                                                 ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-500/20' 
-                                                : 'bg-white dark:bg-[#222] border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-indigo-300 dark:hover:border-white/30'
+                                                : 'bg-white dark:bg-ph-surface-elevated border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:border-indigo-300 dark:hover:border-white/30'
                                             }`}
                                         >
                                             {theme}
@@ -300,7 +300,7 @@ export const CustomMappingModal: React.FC<CustomMappingModalProps> = ({
                                 <p className="text-sm text-gray-600 dark:text-gray-400">Anda akan menukarkan Gold Coin untuk layanan Custom Mapping.</p>
                             </div>
 
-                            <div className="bg-gray-50 dark:bg-[#151515] rounded-xl border border-gray-200 dark:border-white/5 p-5 space-y-4">
+                            <div className="bg-gray-50 dark:bg-ph-surface-input rounded-xl border border-gray-200 dark:border-white/5 p-5 space-y-4">
                                 <div className="flex justify-between items-center pb-4 border-b border-gray-200 dark:border-white/5">
                                     <span className="text-sm text-gray-500 font-medium">Karakter</span>
                                     <span className="text-sm font-bold text-gray-900 dark:text-white">{selectedCharacter.name}</span>

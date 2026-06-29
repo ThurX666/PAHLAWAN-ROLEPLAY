@@ -101,7 +101,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   const mobileBottomSheet = mounted && isOpen ? createPortal(
     <div className="fixed inset-0 z-[9999] md:hidden flex flex-col justify-end custom-select-portal">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setIsOpen(false)} />
-      <div className="relative bg-white dark:bg-[#121212] w-full rounded-t-3xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom-full duration-300 shadow-2xl border-t border-gray-200 dark:border-white/10">
+      <div className="relative bg-white dark:bg-ph-surface-card w-full rounded-t-3xl max-h-[85vh] flex flex-col animate-in slide-in-from-bottom-full duration-300 shadow-2xl border-t border-gray-200 dark:border-white/10">
         <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-4 mb-2"></div>
         <div className="px-6 py-4 border-b border-gray-100 dark:border-white/5 flex items-center justify-between shrink-0">
           <span className="font-bold text-gray-900 dark:text-white text-base">{placeholder}</span>
@@ -151,7 +151,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
   const desktopDropdown = mounted && isOpen ? createPortal(
     <div 
-      className="hidden md:flex fixed z-[9999] bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden flex-col animate-in fade-in zoom-in-95 duration-150 custom-select-portal"
+      className="hidden md:flex fixed z-[9999] bg-white dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden flex-col animate-in fade-in zoom-in-95 duration-150 custom-select-portal"
       style={{
         top: `${dropdownPos.top}px`,
         left: `${dropdownPos.left}px`,
@@ -164,7 +164,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           <Search size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" />
           <input 
             type="text"
-            className="w-full bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all shadow-sm"
+            className="w-full bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-all shadow-sm"
             placeholder="Cari pilihan..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

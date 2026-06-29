@@ -185,7 +185,7 @@ export const StoryReviewPanel: React.FC<StoryReviewPanelProps> = ({ storyId, adm
         </div>
       ) : (
         <div className="mt-5">
-          <div className="mb-4 flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-3 dark:border-white/10 dark:bg-[#151515] md:flex-row md:items-center md:justify-between">
+          <div className="mb-4 flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-3 dark:border-white/10 dark:bg-ph-surface-input md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <span className="flex items-center gap-1 font-bold text-gray-700 dark:text-gray-200">
                 <History size={13} /> Review #{selectedReview.id}
@@ -212,7 +212,7 @@ export const StoryReviewPanel: React.FC<StoryReviewPanelProps> = ({ storyId, adm
                   setSelectedReviewId(Number(event.target.value));
                   setActiveView('analysis');
                 }}
-                className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-800 outline-none dark:border-white/10 dark:bg-[#0a0a0a] dark:text-white"
+                className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-800 outline-none dark:border-white/10 dark:bg-ph-surface-deep dark:text-white"
               >
                 {history.map((review, index) => (
                   <option key={review.id} value={review.id}>
@@ -233,13 +233,13 @@ export const StoryReviewPanel: React.FC<StoryReviewPanelProps> = ({ storyId, adm
               </div>
 
               <div className="grid gap-3 xl:grid-cols-[1fr_auto]">
-                <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-white/10 dark:bg-[#151515]">
+                <div className="rounded-xl border border-gray-200 bg-white p-4 dark:border-white/10 dark:bg-ph-surface-input">
                   <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-gray-500">Review Notes</div>
                   <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700 dark:text-gray-200">
                     {selectedReview.review_notes || 'Tidak ada catatan.'}
                   </p>
                 </div>
-                <div className="min-w-[240px] rounded-xl border border-gray-200 bg-white p-4 text-xs dark:border-white/10 dark:bg-[#151515]">
+                <div className="min-w-[240px] rounded-xl border border-gray-200 bg-white p-4 text-xs dark:border-white/10 dark:bg-ph-surface-input">
                   <div className="mb-3 flex items-center gap-2 font-bold uppercase text-gray-500">
                     <Bot size={14} /> Provider Metadata
                   </div>
@@ -299,7 +299,7 @@ export const StoryReviewPanel: React.FC<StoryReviewPanelProps> = ({ storyId, adm
                   className={`rounded-xl border p-4 ${
                     match.is_flagged
                       ? 'border-red-300 bg-red-50 dark:border-red-900/40 dark:bg-red-900/10'
-                      : 'border-gray-200 bg-white dark:border-white/10 dark:bg-[#151515]'
+                      : 'border-gray-200 bg-white dark:border-white/10 dark:bg-ph-surface-input'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-4">

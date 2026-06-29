@@ -39,7 +39,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ userName, stat
       </div>
 
       {/* 2. Server Status (Unified Card) */}
-      <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm relative overflow-hidden group">
+      <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm relative overflow-hidden group">
           {/* Decorative Background */}
           {stats.status === 'Online' && (
             <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-600/5 via-transparent to-transparent pointer-events-none"></div>

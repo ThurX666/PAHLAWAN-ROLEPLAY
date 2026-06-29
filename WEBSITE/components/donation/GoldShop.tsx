@@ -126,7 +126,7 @@ export const GoldShop: React.FC<GoldShopProps> = ({ userGold, characters, onRede
                             <button 
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`flex-1 md:flex-initial px-3 py-2 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${isActive ? 'bg-white dark:bg-[#222] text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                                className={`flex-1 md:flex-initial px-3 py-2 rounded-lg text-[10px] font-bold uppercase transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${isActive ? 'bg-white dark:bg-ph-surface-elevated text-indigo-600 dark:text-indigo-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
                             >
                                 <Icon size={12}/> {tab.label}
                             </button>
@@ -151,7 +151,7 @@ export const GoldShop: React.FC<GoldShopProps> = ({ userGold, characters, onRede
         {/* Catalog Grid */}
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filteredItems.length > 0 ? filteredItems.map(item => (
-                <div key={item.id} className="bg-white dark:bg-[#151515] border border-gray-200 dark:border-white/5 rounded-xl p-3 hover:border-indigo-500/30 hover:shadow-lg transition-all group flex flex-col h-full relative overflow-hidden">
+                <div key={item.id} className="bg-white dark:bg-ph-surface-input border border-gray-200 dark:border-white/5 rounded-xl p-3 hover:border-indigo-500/30 hover:shadow-lg transition-all group flex flex-col h-full relative overflow-hidden">
                      {/* Decorative gradient blob */}
                     <div className="absolute -right-4 -top-4 w-16 h-16 bg-indigo-500/5 rounded-full blur-xl group-hover:bg-indigo-500/10 transition-colors"></div>
 
@@ -188,7 +188,7 @@ export const GoldShop: React.FC<GoldShopProps> = ({ userGold, characters, onRede
                     </button>
                 </div>
             )) : (
-                <div className="col-span-full py-8 text-center text-gray-400 bg-gray-50 dark:bg-[#151515] rounded-xl border border-dashed border-gray-200 dark:border-white/10">
+                <div className="col-span-full py-8 text-center text-gray-400 bg-gray-50 dark:bg-ph-surface-input rounded-xl border border-dashed border-gray-200 dark:border-white/10">
                     <ShoppingBag size={32} className="mx-auto mb-2 opacity-50" />
                     <p className="text-xs font-bold uppercase">Item tidak ditemukan</p>
                 </div>

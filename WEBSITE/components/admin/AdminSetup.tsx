@@ -129,7 +129,7 @@ export const AdminSetup: React.FC = () => {
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
                                 activeTab === tab.id
                                 ? 'bg-blue-500 text-white shadow-md'
-                                : 'bg-white dark:bg-[#1a1a1a] text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 border border-gray-200 dark:border-white/5'
+                                : 'bg-white dark:bg-ph-surface-panel text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 border border-gray-200 dark:border-white/5'
                             }`}
                         >
                             <tab.icon size={18} />
@@ -139,7 +139,7 @@ export const AdminSetup: React.FC = () => {
                 </div>
 
                 {/* Main Form Area */}
-                <div className="flex-1 bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden min-h-[500px]">
+                <div className="flex-1 bg-white dark:bg-ph-surface-panel rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden min-h-[500px]">
                     <form onSubmit={handleSave} className="p-6 md:p-8 flex flex-col h-full">
                         <div className="flex-1 space-y-6">
                             {isLoading ? (
@@ -159,7 +159,7 @@ export const AdminSetup: React.FC = () => {
                                                     type="text" 
                                                     value={settings.server_name}
                                                     onChange={(e) => handleChange('server_name', e.target.value)}
-                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white"
                                                 />
                                             </div>
 
@@ -168,7 +168,7 @@ export const AdminSetup: React.FC = () => {
                                                 <select 
                                                     value={settings.maintenance_mode}
                                                     onChange={(e) => handleChange('maintenance_mode', e.target.value)}
-                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white"
                                                 >
                                                     <option value="0">Non-Aktif (Online)</option>
                                                     <option value="1">Aktif (Maintenance)</option>
@@ -188,7 +188,7 @@ export const AdminSetup: React.FC = () => {
                                                     type="text" 
                                                     value={settings.discord_webhook_url}
                                                     onChange={(e) => handleChange('discord_webhook_url', e.target.value)}
-                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                 />
                                             </div>
 
@@ -199,7 +199,7 @@ export const AdminSetup: React.FC = () => {
                                                     value={settings.discord_bot_token}
                                                     onChange={(e) => handleChange('discord_bot_token', e.target.value)}
                                                     placeholder="MTAx..."
-                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                 />
                                             </div>
                                             
@@ -209,7 +209,7 @@ export const AdminSetup: React.FC = () => {
                                                     type="text" 
                                                     value={settings.discord_guild_id}
                                                     onChange={(e) => handleChange('discord_guild_id', e.target.value)}
-                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                 />
                                             </div>
 
@@ -220,7 +220,7 @@ export const AdminSetup: React.FC = () => {
                                                         type="text" 
                                                         value={settings.discord_client_id}
                                                         onChange={(e) => handleChange('discord_client_id', e.target.value)}
-                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                     />
                                                 </div>
                                                 <div>
@@ -229,7 +229,7 @@ export const AdminSetup: React.FC = () => {
                                                         type="password" 
                                                         value={settings.discord_client_secret}
                                                         onChange={(e) => handleChange('discord_client_secret', e.target.value)}
-                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                     />
                                                 </div>
                                             </div>
@@ -240,7 +240,7 @@ export const AdminSetup: React.FC = () => {
                                                     type="text" 
                                                     value={settings.discord_role_warga_id}
                                                     onChange={(e) => handleChange('discord_role_warga_id', e.target.value)}
-                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                     placeholder="Role ID yang diberikan saat member link Discord"
                                                 />
                                             </div>
@@ -258,7 +258,7 @@ export const AdminSetup: React.FC = () => {
                                                         type="text" 
                                                         value={settings.pusher_app_id}
                                                         onChange={(e) => handleChange('pusher_app_id', e.target.value)}
-                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                     />
                                                 </div>
                                                 <div>
@@ -267,7 +267,7 @@ export const AdminSetup: React.FC = () => {
                                                         type="text" 
                                                         value={settings.pusher_cluster}
                                                         onChange={(e) => handleChange('pusher_cluster', e.target.value)}
-                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                     />
                                                 </div>
                                             </div>
@@ -278,7 +278,7 @@ export const AdminSetup: React.FC = () => {
                                                     type="text" 
                                                     value={settings.pusher_key}
                                                     onChange={(e) => handleChange('pusher_key', e.target.value)}
-                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                 />
                                             </div>
 
@@ -288,7 +288,7 @@ export const AdminSetup: React.FC = () => {
                                                     type="password" 
                                                     value={settings.pusher_secret}
                                                     onChange={(e) => handleChange('pusher_secret', e.target.value)}
-                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                    className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                 />
                                             </div>
                                         </div>
@@ -305,7 +305,7 @@ export const AdminSetup: React.FC = () => {
                                                         type="text" 
                                                         value={settings.smtp_host}
                                                         onChange={(e) => handleChange('smtp_host', e.target.value)}
-                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                     />
                                                 </div>
                                                 
@@ -315,7 +315,7 @@ export const AdminSetup: React.FC = () => {
                                                         type="email" 
                                                         value={settings.smtp_user}
                                                         onChange={(e) => handleChange('smtp_user', e.target.value)}
-                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white"
                                                     />
                                                 </div>
                                                 <div>
@@ -324,7 +324,7 @@ export const AdminSetup: React.FC = () => {
                                                         type="password" 
                                                         value={settings.smtp_pass}
                                                         onChange={(e) => handleChange('smtp_pass', e.target.value)}
-                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                     />
                                                 </div>
                                                 <div>
@@ -333,7 +333,7 @@ export const AdminSetup: React.FC = () => {
                                                         type="number" 
                                                         value={settings.smtp_port}
                                                         onChange={(e) => handleChange('smtp_port', e.target.value)}
-                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 dark:text-white font-mono"
                                                     />
                                                 </div>
                                             </div>
@@ -414,7 +414,7 @@ export const AdminSetup: React.FC = () => {
             {/* Email Preview Modal */}
             {emailPreviewType !== null && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeIn_0.3s_ease-out]">
-                    <div className="bg-white dark:bg-[#121212] rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col m-4 animate-[slideInUp_0.3s_ease-out]">
+                    <div className="bg-white dark:bg-ph-surface-card rounded-2xl md:rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col m-4 animate-[slideInUp_0.3s_ease-out]">
                         <div className="flex justify-between items-center p-4 md:p-6 border-b border-gray-200 dark:border-white/10">
                             <h3 className="text-lg md:text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
                                 <Mail className="text-blue-500" />

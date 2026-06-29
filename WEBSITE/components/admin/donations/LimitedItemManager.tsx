@@ -235,14 +235,14 @@ export const LimitedItemManager: React.FC<LimitedItemManagerProps> = ({ promoIte
 
   if (isFetching) {
       return (
-          <div className="bg-white dark:bg-[#1a1a1a] p-4 rounded-xl border border-gray-200 dark:border-gray-800 flex justify-center items-center h-40">
+          <div className="bg-white dark:bg-ph-surface-panel p-4 rounded-xl border border-gray-200 dark:border-gray-800 flex justify-center items-center h-40">
               <Loader2 className="animate-spin text-purple-600 dark:text-purple-400" size={24} />
           </div>
       );
   }
 
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] p-4 rounded-xl border border-gray-200 dark:border-gray-800 transition-colors">
+    <div className="bg-white dark:bg-ph-surface-panel p-4 rounded-xl border border-gray-200 dark:border-gray-800 transition-colors">
         <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
                 <Tag className="text-purple-600 dark:text-purple-400" size={20} />
@@ -258,7 +258,7 @@ export const LimitedItemManager: React.FC<LimitedItemManagerProps> = ({ promoIte
 
         {isAddingItem && (
             <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/50 backdrop-blur-sm p-0 md:p-4">
-                <div className="bg-white dark:bg-[#111] w-full max-w-md rounded-t-3xl md:rounded-xl border border-gray-200 dark:border-purple-900/50 shadow-2xl overflow-hidden flex flex-col max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+                <div className="bg-white dark:bg-ph-surface-deep w-full max-w-md rounded-t-3xl md:rounded-xl border border-gray-200 dark:border-purple-900/50 shadow-2xl overflow-hidden flex flex-col max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
                     <div className="flex justify-center pt-3 pb-1 md:hidden">
                         <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
                     </div>
@@ -273,13 +273,13 @@ export const LimitedItemManager: React.FC<LimitedItemManagerProps> = ({ promoIte
                         <div className="space-y-3">
                             <div>
                                 <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Nama Item</label>
-                                <input placeholder="Contoh: Infernus Neon" className="w-full bg-gray-50 dark:bg-[#222] text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all" value={newItem.name || ''} onChange={e => setNewItem({...newItem, name: e.target.value})} />
+                                <input placeholder="Contoh: Infernus Neon" className="w-full bg-gray-50 dark:bg-ph-surface-elevated text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none transition-all" value={newItem.name || ''} onChange={e => setNewItem({...newItem, name: e.target.value})} />
                             </div>
                             
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
                                     <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Tipe</label>
-                                    <select className="w-full bg-gray-50 dark:bg-[#222] text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-purple-500 outline-none" value={newItem.type} onChange={e => setNewItem({...newItem, type: e.target.value as any})}>
+                                    <select className="w-full bg-gray-50 dark:bg-ph-surface-elevated text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-purple-500 outline-none" value={newItem.type} onChange={e => setNewItem({...newItem, type: e.target.value as any})}>
                                         <option value="Vehicle">Vehicle</option>
                                         <option value="Property">Property</option>
                                         <option value="Item">Item</option>
@@ -287,19 +287,19 @@ export const LimitedItemManager: React.FC<LimitedItemManagerProps> = ({ promoIte
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Harga Gold</label>
-                                    <input placeholder="0" type="number" className="w-full bg-gray-50 dark:bg-[#222] text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-purple-500 outline-none" value={newItem.priceGold || ''} onChange={e => setNewItem({...newItem, priceGold: parseInt(e.target.value)})} />
+                                    <input placeholder="0" type="number" className="w-full bg-gray-50 dark:bg-ph-surface-elevated text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-purple-500 outline-none" value={newItem.priceGold || ''} onChange={e => setNewItem({...newItem, priceGold: parseInt(e.target.value)})} />
                                 </div>
                             </div>
 
                             <div>
                                 <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Stok (QTY)</label>
-                                <input placeholder="0" type="number" className="w-full bg-purple-50 dark:bg-[#222] text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-purple-200 dark:border-purple-500/50 focus:border-purple-500 outline-none" value={newItem.qty || ''} onChange={e => setNewItem({...newItem, qty: parseInt(e.target.value)})} />
+                                <input placeholder="0" type="number" className="w-full bg-purple-50 dark:bg-ph-surface-elevated text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-purple-200 dark:border-purple-500/50 focus:border-purple-500 outline-none" value={newItem.qty || ''} onChange={e => setNewItem({...newItem, qty: parseInt(e.target.value)})} />
                             </div>
 
                             <div>
                                 <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Upload Gambar</label>
                                 <div 
-                                    className="w-full border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:border-purple-500 dark:hover:border-purple-500 transition-colors bg-gray-50 dark:bg-[#222]"
+                                    className="w-full border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:border-purple-500 dark:hover:border-purple-500 transition-colors bg-gray-50 dark:bg-ph-surface-elevated"
                                     onClick={() => fileInputRef.current?.click()}
                                 >
                                     {newItem.image && newItem.image.startsWith('blob:') ? (
@@ -327,12 +327,12 @@ export const LimitedItemManager: React.FC<LimitedItemManagerProps> = ({ promoIte
 
                             <div>
                                 <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Deskripsi</label>
-                                <textarea placeholder="Deskripsi item..." rows={3} className="w-full bg-gray-50 dark:bg-[#222] text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-purple-500 outline-none resize-none" value={newItem.description || ''} onChange={e => setNewItem({...newItem, description: e.target.value})}></textarea>
+                                <textarea placeholder="Deskripsi item..." rows={3} className="w-full bg-gray-50 dark:bg-ph-surface-elevated text-gray-900 dark:text-white text-xs p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 focus:border-purple-500 outline-none resize-none" value={newItem.description || ''} onChange={e => setNewItem({...newItem, description: e.target.value})}></textarea>
                             </div>
                         </div>
                     </div>
                     
-                    <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-[#1a1a1a]">
+                    <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-ph-surface-panel">
                         <button 
                             onClick={handleAddItem} 
                             disabled={isLoading}
@@ -348,7 +348,7 @@ export const LimitedItemManager: React.FC<LimitedItemManagerProps> = ({ promoIte
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {promoItems.map(item => (
-                <div key={item.id} className="flex items-center justify-between bg-gray-50 dark:bg-[#222] p-3 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
+                <div key={item.id} className="flex items-center justify-between bg-gray-50 dark:bg-ph-surface-elevated p-3 rounded-lg border border-gray-200 dark:border-gray-700 transition-colors">
                     <div className="flex items-center gap-3">
                         <img src={item.image} className="w-10 h-10 object-cover rounded shadow-sm" />
                         <div>

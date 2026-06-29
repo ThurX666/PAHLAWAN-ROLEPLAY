@@ -138,7 +138,7 @@ export const CharacterList: React.FC<CharacterListProps> = ({ userName, characte
   };
 
   const SlotCounter = () => (
-    <div className="flex items-center gap-4 bg-white dark:bg-[#121212] p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm w-full md:w-auto">
+    <div className="flex items-center gap-4 bg-white dark:bg-ph-surface-card p-4 rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm w-full md:w-auto">
       <div className="flex-1 md:flex-none">
           <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Slot Terpakai</p>
           <div className="flex items-end gap-1">
@@ -204,7 +204,7 @@ export const CharacterList: React.FC<CharacterListProps> = ({ userName, characte
       {/* DELETE CONFIRMATION MODAL */}
       {deletingId !== null && (
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="bg-white dark:bg-[#1a1a1a] w-full max-w-md overflow-hidden shadow-2xl border border-gray-200 dark:border-white/10 flex flex-col rounded-t-3xl md:rounded-2xl animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+            <div className="bg-white dark:bg-ph-surface-panel w-full max-w-md overflow-hidden shadow-2xl border border-gray-200 dark:border-white/10 flex flex-col rounded-t-3xl md:rounded-2xl animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
                 {/* Mobile Drag Handle */}
                 <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden"></div>
                 

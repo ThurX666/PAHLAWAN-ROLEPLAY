@@ -53,7 +53,7 @@ export const SecurityCard: React.FC<SecurityCardProps> = ({ is2FAEnabled = false
 
   return (
     <>
-        <div className="h-full flex flex-col justify-center bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 p-6 md:p-8 rounded-2xl md:rounded-3xl relative overflow-hidden group">
+        <div className="h-full flex flex-col justify-center bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 p-6 md:p-8 rounded-2xl md:rounded-3xl relative overflow-hidden group">
             {/* Subtle glow effect */}
             <div className={`absolute -top-10 -right-10 w-40 h-40 ${is2FAEnabled ? 'bg-green-500/20' : 'bg-red-500/20'} rounded-full blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`}></div>
 
@@ -77,7 +77,7 @@ export const SecurityCard: React.FC<SecurityCardProps> = ({ is2FAEnabled = false
                 </button>
                 <button 
                     onClick={() => setShowPasswordModal(true)}
-                    className="w-full bg-[#1A1A1A] hover:bg-[#222222] border border-white/5 text-white py-3.5 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                    className="w-full bg-ph-surface-panel hover:bg-ph-surface-elevated border border-ph-border-default text-white py-3.5 rounded-xl text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all transform hover:-translate-y-0.5 active:translate-y-0"
                 >
                     Ubah Kata Sandi
                 </button>
@@ -87,7 +87,7 @@ export const SecurityCard: React.FC<SecurityCardProps> = ({ is2FAEnabled = false
         {/* 2FA Modal */}
         {show2FAModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-                <div className="bg-white dark:bg-[#121212] w-full max-w-md rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden animate-[slideUp_0.3s_ease-out]">
+                <div className="bg-white dark:bg-ph-surface-card w-full max-w-md rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden animate-[slideUp_0.3s_ease-out]">
                     <div className="p-4 md:p-6 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-gray-50 dark:bg-white/5">
                         <div className="flex items-center gap-3">
                             <div className={`p-2 rounded-lg ${is2FAEnabled ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'}`}>
@@ -163,7 +163,7 @@ export const SecurityCard: React.FC<SecurityCardProps> = ({ is2FAEnabled = false
         {/* Change Password Modal */}
         {showPasswordModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-                <div className="bg-white dark:bg-[#121212] w-full max-w-md rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden animate-[slideUp_0.3s_ease-out]">
+                <div className="bg-white dark:bg-ph-surface-card w-full max-w-md rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden animate-[slideUp_0.3s_ease-out]">
                     <div className="p-4 md:p-6 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-gray-50 dark:bg-white/5">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-red-500/20 text-red-500 rounded-lg">

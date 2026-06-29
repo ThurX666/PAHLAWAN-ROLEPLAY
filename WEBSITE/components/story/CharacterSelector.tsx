@@ -30,7 +30,7 @@ export const CharacterSelector: React.FC<CharacterSelectorProps> = ({ characters
                        p-4 rounded-2xl flex items-center gap-4 shrink-0 border
                        ${isActive 
                        ? 'bg-red-600 text-white border-red-600 shadow-lg shadow-red-600/20 ring-4 ring-red-600/10' 
-                       : 'bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-white/5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'}
+                       : 'bg-white dark:bg-ph-surface-panel border-gray-200 dark:border-white/5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'}
                    `}
                >
                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`}>

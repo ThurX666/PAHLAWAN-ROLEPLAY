@@ -12,7 +12,7 @@ interface PromoItemModalProps {
 export const PromoItemModal: React.FC<PromoItemModalProps> = ({ item, onClose, onRedeem }) => {
   return (
       <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/90 backdrop-blur-md animate-[fadeIn_0.2s_ease-out]">
-           <div className="bg-[#121212] border border-gray-800 w-full max-w-2xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+           <div className="bg-ph-surface-card border border-gray-800 w-full max-w-2xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
                
                {/* Mobile Drag Handle */}
                <div className="w-12 h-1.5 bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden absolute top-0 left-1/2 -translate-x-1/2 z-10"></div>

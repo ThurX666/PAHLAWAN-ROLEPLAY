@@ -263,7 +263,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   const localAuthPreview = canUseLocalAuthPreview();
 
   return (
-    <div className="h-[100dvh] max-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-[#fbf8f5] ph-page-vignette p-3 sm:p-5 md:p-6 lg:p-8">
+    <div className="h-[100dvh] max-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-ph-surface-base ph-page-vignette p-3 sm:p-5 md:p-6 lg:p-8">
 
       {/* Phase 4.15: light premium hosting x roleplay backdrop */}
       <div className="absolute inset-0 z-0">

@@ -101,7 +101,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ promoConfig, onUpdatePro
 
   return (
     <div className="space-y-4 md:space-y-6 text-gray-900 dark:text-white">
-      <header className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 p-4 md:p-6 rounded-xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+      <header className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 p-4 md:p-6 rounded-xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-red-600 to-red-900"></div>
         <div className="flex items-center gap-4 relative z-10 w-full md:w-auto">
              <div className="p-3 bg-gradient-to-br from-red-600 to-red-800 rounded-xl shadow-lg shadow-red-600/20 border border-white/10 shrink-0">
@@ -134,7 +134,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ promoConfig, onUpdatePro
         </div>
       </header>
 
-      <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl p-3 md:p-6 min-h-[400px] shadow-2xl relative">
+      <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-xl p-3 md:p-6 min-h-[400px] shadow-2xl relative">
         {activeTab === 'overview' && <AdminOverview onNavigate={handleOverviewNavigate} tickets={tickets} />}
         {activeTab === 'tickets' && (
             <div className="flex flex-col items-center justify-center min-h-[400px] text-center animate-[fadeIn_0.5s_ease-out]">

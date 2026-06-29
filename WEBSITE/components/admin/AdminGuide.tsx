@@ -222,12 +222,12 @@ VITE_API_BASE_URL=http://localhost/ucp-backend/api
                 description="Dokumentasi lengkap panduan administrasi, konfigurasi koneksi, sistem donasi dan instruksi implementasi aplikasi Pahlawan Roleplay ke tahap siap Production."
             />
 
-            <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm p-4 md:p-6 overflow-hidden">
+            <div className="bg-white dark:bg-ph-surface-panel rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm p-4 md:p-6 overflow-hidden">
                 <div className="space-y-4">
                     {sections.map((section) => (
                         <div 
                             key={section.id} 
-                            className="bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden transition-all duration-300"
+                            className="bg-gray-50 dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-xl overflow-hidden transition-all duration-300"
                         >
                             <button
                                 onClick={() => toggleSection(section.id)}

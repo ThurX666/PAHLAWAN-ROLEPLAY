@@ -58,13 +58,13 @@ export const AssetDetail: React.FC<AssetDetailProps> = ({ category, detailId }) 
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-gray-50 dark:bg-[#0a0a0a] p-4 rounded-xl border border-gray-200 dark:border-white/5">
+                    <div className="bg-gray-50 dark:bg-ph-surface-deep p-4 rounded-xl border border-gray-200 dark:border-white/5">
                         <h4 className="font-bold text-gray-900 dark:text-white mb-2 uppercase text-xs">Informasi Pemilik</h4>
                         <p className="text-sm">Pemilik: <span className="font-bold">{house.owner}</span></p>
                         <p className="text-sm mt-1">Status Pintu: <span className={`font-bold ${house.locked ? 'text-red-500' : 'text-green-500'}`}>{house.locked ? 'Terkunci' : 'Terbuka'}</span></p>
                     </div>
                     
-                    <div className="bg-gray-50 dark:bg-[#0a0a0a] p-4 rounded-xl border border-gray-200 dark:border-white/5">
+                    <div className="bg-gray-50 dark:bg-ph-surface-deep p-4 rounded-xl border border-gray-200 dark:border-white/5">
                         <h4 className="font-bold text-gray-900 dark:text-white mb-2 uppercase text-xs flex items-center gap-2"><Box size={14}/> Isi Lemari Penyimpanan</h4>
                         {house.storage.length > 0 ? (
                             <ul className="space-y-1">
@@ -98,7 +98,7 @@ export const AssetDetail: React.FC<AssetDetailProps> = ({ category, detailId }) 
                     </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-[#0a0a0a] p-4 rounded-xl border border-gray-200 dark:border-white/5">
+                <div className="bg-gray-50 dark:bg-ph-surface-deep p-4 rounded-xl border border-gray-200 dark:border-white/5">
                     <h4 className="font-bold text-gray-900 dark:text-white mb-4 uppercase text-xs flex items-center gap-2"><TrendingUp size={14} className="text-green-500"/> Pendapatan 7 Hari Terakhir (Inflasi Check)</h4>
                     <div className="h-[200px] w-full min-h-[200px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -132,12 +132,12 @@ export const AssetDetail: React.FC<AssetDetailProps> = ({ category, detailId }) 
                     </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-[#0a0a0a] rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden">
+                <div className="bg-gray-50 dark:bg-ph-surface-deep rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden">
                         <div className="p-3 border-b border-gray-200 dark:border-white/5 bg-gray-100 dark:bg-white/5">
                             <h4 className="font-bold text-gray-900 dark:text-white uppercase text-xs flex items-center gap-2"><Users size={14}/> Daftar Anggota</h4>
                         </div>
                         <table className="w-full text-left text-xs text-gray-600 dark:text-gray-400">
-                            <thead className="bg-white dark:bg-[#0f0f0f] border-b border-gray-200 dark:border-white/5">
+                            <thead className="bg-white dark:bg-ph-surface-deep border-b border-gray-200 dark:border-white/5">
                                 <tr>
                                     <th className="px-4 py-2">Nama</th>
                                     <th className="px-4 py-2">Pangkat</th>

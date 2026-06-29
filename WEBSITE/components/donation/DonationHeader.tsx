@@ -59,7 +59,7 @@ export const DonationHeader: React.FC<DonationHeaderProps> = ({
 
         {/* Account Info - Sleek Game Topup Style */}
         <div>
-            <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl p-4 flex flex-col gap-4 shadow-sm">
+            <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl p-4 flex flex-col gap-4 shadow-sm">
                 
                 {/* Top Row */}
                 <div className="flex flex-col md:flex-row items-stretch justify-between gap-4 w-full">
@@ -81,7 +81,7 @@ export const DonationHeader: React.FC<DonationHeaderProps> = ({
                     <div className="w-full md:w-px h-px md:h-auto md:min-h-[80px] bg-gray-200 dark:bg-white/10 hidden md:block self-stretch"></div>
 
                     {/* VIP Status Wrapper */}
-                    <div className="w-full md:flex-1 flex flex-col bg-gray-50 dark:bg-[#1a1a1a] rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden">
+                    <div className="w-full md:flex-1 flex flex-col bg-gray-50 dark:bg-ph-surface-panel rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden">
                         
                         {/* VIP Status */}
                         <div className="flex items-center justify-between w-full gap-4 p-3 md:p-4">
@@ -138,7 +138,7 @@ export const DonationHeader: React.FC<DonationHeaderProps> = ({
                     <div className="w-full md:w-px h-px md:h-auto md:min-h-[80px] bg-gray-200 dark:bg-white/10 hidden md:block self-stretch"></div>
 
                     {/* Gold Balance & Promo Wrapper */}
-                    <div className="w-full md:flex-1 flex flex-col bg-gray-50 dark:bg-[#1a1a1a] rounded-xl overflow-hidden">
+                    <div className="w-full md:flex-1 flex flex-col bg-gray-50 dark:bg-ph-surface-panel rounded-xl overflow-hidden">
                         
                         {/* Gold Balance & CTA */}
                         <div className="flex items-center justify-between w-full gap-4 p-3 md:p-4">

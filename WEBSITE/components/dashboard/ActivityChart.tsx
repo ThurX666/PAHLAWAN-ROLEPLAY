@@ -123,7 +123,7 @@ export const ActivityChart: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl md:rounded-2xl p-5 md:p-6 shadow-sm flex flex-col h-full min-h-[300px]">
+    <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-xl md:rounded-2xl p-5 md:p-6 shadow-sm flex flex-col h-full min-h-[300px]">
          <div className="mb-6 flex flex-col xl:flex-row xl:items-start justify-between gap-4">
              <div className="flex flex-col md:flex-row md:items-center xl:items-start xl:flex-col gap-4">
                  <div>
@@ -138,19 +138,19 @@ export const ActivityChart: React.FC = () => {
                  <div className="flex items-center gap-1 bg-gray-100 dark:bg-white/5 p-1 rounded-lg w-fit md:ml-auto xl:ml-0">
                      <button 
                         onClick={() => setTimeRange('24h')}
-                        className={`px-3 py-1.5 text-[10px] md:text-xs font-bold uppercase rounded-md transition-all ${timeRange === '24h' ? 'bg-white dark:bg-[#202020] text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+                        className={`px-3 py-1.5 text-[10px] md:text-xs font-bold uppercase rounded-md transition-all ${timeRange === '24h' ? 'bg-white dark:bg-ph-surface-elevated text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
                      >
                         24 Jam
                      </button>
                      <button 
                         onClick={() => setTimeRange('7d')}
-                        className={`px-3 py-1.5 text-[10px] md:text-xs font-bold uppercase rounded-md transition-all ${timeRange === '7d' ? 'bg-white dark:bg-[#202020] text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+                        className={`px-3 py-1.5 text-[10px] md:text-xs font-bold uppercase rounded-md transition-all ${timeRange === '7d' ? 'bg-white dark:bg-ph-surface-elevated text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
                      >
                         7 Hari
                      </button>
                      <button 
                         onClick={() => setTimeRange('4w')}
-                        className={`px-3 py-1.5 text-[10px] md:text-xs font-bold uppercase rounded-md transition-all ${timeRange === '4w' ? 'bg-white dark:bg-[#202020] text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+                        className={`px-3 py-1.5 text-[10px] md:text-xs font-bold uppercase rounded-md transition-all ${timeRange === '4w' ? 'bg-white dark:bg-ph-surface-elevated text-red-500 shadow-sm' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
                      >
                         4 Minggu
                      </button>

@@ -148,7 +148,7 @@ export const AdminLogs: React.FC = () => {
                                     value={targetInput}
                                     onChange={(e) => setTargetInput(e.target.value)}
                                     placeholder={currentCategory.targetPlaceholder}
-                                    className="w-full px-3 py-2 bg-white dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white"
+                                    className="w-full px-3 py-2 bg-white dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white"
                                 />
                             </div>
                         )}
@@ -161,7 +161,7 @@ export const AdminLogs: React.FC = () => {
                                     type="date" 
                                     value={dateFilter}
                                     onChange={(e) => setDateFilter(e.target.value)}
-                                    className="w-full pl-9 pr-3 py-2 bg-white dark:bg-[#121212] border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white"
+                                    className="w-full pl-9 pr-3 py-2 bg-white dark:bg-ph-surface-card border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white"
                                 />
                             </div>
                         </div>
@@ -178,9 +178,9 @@ export const AdminLogs: React.FC = () => {
                 </div>
 
                 {/* Right Area - Terminal */}
-                <div className="lg:col-span-3 flex flex-col bg-[#0c0c0c] rounded-xl border border-gray-800 overflow-hidden shadow-2xl relative">
+                <div className="lg:col-span-3 flex flex-col bg-ph-surface-deep rounded-xl border border-gray-800 overflow-hidden shadow-2xl relative">
                     {/* Terminal Header */}
-                    <div className="bg-[#1a1a1a] px-4 py-2 border-b border-gray-800 flex justify-between items-center">
+                    <div className="bg-ph-surface-panel px-4 py-2 border-b border-gray-800 flex justify-between items-center">
                         <div className="flex items-center gap-2">
                             <div className="flex gap-1.5">
                                 <div className="w-3 h-3 rounded-full bg-red-500"></div>

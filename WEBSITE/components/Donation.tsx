@@ -291,7 +291,7 @@ export const Donation: React.FC<DonationProps> = ({
                                 flex items-center justify-center gap-1 sm:gap-1.5 md:gap-2.5 px-2 sm:px-4 md:px-6 py-2.5 md:py-3.5 rounded-xl md:rounded-2xl font-black text-[9px] sm:text-[10px] md:text-sm uppercase tracking-wider md:tracking-widest transition-all duration-300 whitespace-nowrap border-2 flex-1 md:flex-none
                                 ${isActive 
                                     ? `${tab.activeBg} text-white border-transparent shadow-lg shadow-${tab.activeBg.split('-')[1]}-500/30 scale-[1.02] md:scale-105` 
-                                    : `bg-white dark:bg-[#1a1a1a] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-gray-300 dark:hover:border-white/10`
+                                    : `bg-white dark:bg-ph-surface-panel text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/10 hover:border-gray-300 dark:hover:border-white/10`
                                 }
                             `}
                         >
@@ -315,17 +315,17 @@ export const Donation: React.FC<DonationProps> = ({
                  )}
 
                  {activeTab === 'vip' && (
-                     <div id="vip-section" className="animate-[fadeIn_0.3s_ease-out] bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm scroll-mt-24">
+                     <div id="vip-section" className="animate-[fadeIn_0.3s_ease-out] bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm scroll-mt-24">
                          <VipPackages activePkg={activePkg} onSelectPackage={setActivePkg} currentVipTier={vipStatus?.tier} />
                      </div>
                  )}
 
                  {activeTab === 'gold' && (
                      <div id="gold-section" className="animate-[fadeIn_0.3s_ease-out] space-y-4 md:space-y-8 lg:space-y-10 scroll-mt-24">
-                         <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm">
+                         <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm">
                              <GoldPackages activePkg={activePkg} onSelectPackage={setActivePkg} />
                          </div>
-                         <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm">
+                         <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm">
                              <GoldShop 
                                  userGold={userGold}
                                  characters={characters}
@@ -392,7 +392,7 @@ export const Donation: React.FC<DonationProps> = ({
              </div>
 
              {/* Transactions Section */}
-             <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm">
+             <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl p-4 md:p-6 shadow-sm">
                 <TransactionHistory transactions={transactions} />
              </div>
 
@@ -504,7 +504,7 @@ export const Donation: React.FC<DonationProps> = ({
 
       {/* Sticky Bottom CTA for Mobile & Desktop when Package is Selected */}
       {activePkg && !isModalOpen && (
-          <div className="fixed bottom-16 md:bottom-0 left-0 right-0 md:left-64 z-40 bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-white/10 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-full duration-300">
+          <div className="fixed bottom-16 md:bottom-0 left-0 right-0 md:left-64 z-40 bg-white dark:bg-ph-surface-card border-t border-gray-200 dark:border-white/10 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom-full duration-300">
               <div className="w-full mx-auto flex items-center justify-between gap-4">
                   <div className="flex-1 min-w-0">
                       <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Item Terpilih</p>
@@ -541,7 +541,7 @@ export const Donation: React.FC<DonationProps> = ({
       {/* Custom Alert Modal */}
       {alertConfig && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-              <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-200 dark:border-white/10 text-center animate-in zoom-in-95 duration-200">
+              <div className="bg-white dark:bg-ph-surface-panel rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-200 dark:border-white/10 text-center animate-in zoom-in-95 duration-200">
                   <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
                       alertConfig.type === 'success' 
                           ? 'bg-green-100 dark:bg-green-500/20 text-green-500' 

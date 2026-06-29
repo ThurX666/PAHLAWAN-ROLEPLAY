@@ -75,7 +75,7 @@ export const PlayerTable: React.FC = () => {
     const filteredPlayers = players.filter(p => (p.name || (p as any).nickname || (p as any).playername || '').toLowerCase().includes(searchTerm.toLowerCase()) || p.id.toString() === searchTerm);
 
     return (
-        <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-[1.25rem] shadow-sm overflow-hidden flex flex-col h-full">
+        <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-[1.25rem] shadow-sm overflow-hidden flex flex-col h-full">
             <div className="p-4 md:p-6 border-b border-gray-200 dark:border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 md:gap-6">
                 <div className="flex flex-col gap-1">
                     <h3 className="text-lg md:text-xl font-black text-gray-900 dark:text-white uppercase italic tracking-wide flex items-center gap-2">
@@ -90,7 +90,7 @@ export const PlayerTable: React.FC = () => {
                     </div>
                     <input
                         type="text"
-                        className="block w-full pl-10 pr-4 py-2.5 md:py-2 border border-gray-200 dark:border-white/10 rounded-xl leading-5 bg-gray-50 dark:bg-[#1a1a1a] text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 text-sm transition-colors"
+                        className="block w-full pl-10 pr-4 py-2.5 md:py-2 border border-gray-200 dark:border-white/10 rounded-xl leading-5 bg-gray-50 dark:bg-ph-surface-panel text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500 text-sm transition-colors"
                         placeholder="Cari ID / Nama..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -113,7 +113,7 @@ export const PlayerTable: React.FC = () => {
                     </div>
                 ) : (
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-white/5">
-                        <thead className="bg-[#f9fafb] dark:bg-[#1a1a1a] sticky top-0 z-10">
+                        <thead className="bg-[#f9fafb] dark:bg-ph-surface-panel sticky top-0 z-10">
                             <tr>
                                 <th scope="col" className="px-3 sm:px-6 py-3 text-left text-[11px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest w-12 sm:w-16">
                                     ID
@@ -129,7 +129,7 @@ export const PlayerTable: React.FC = () => {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-[#121212] divide-y divide-gray-200 dark:divide-white/5">
+                        <tbody className="bg-white dark:bg-ph-surface-card divide-y divide-gray-200 dark:divide-white/5">
                             {filteredPlayers.length > 0 ? (
                                 filteredPlayers.map((player) => (
                                     <tr key={player.id} className="even:bg-gray-50 dark:even:bg-white/[0.02] hover:bg-gray-100 dark:hover:bg-white/[0.05] transition-colors">

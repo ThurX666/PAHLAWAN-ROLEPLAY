@@ -100,22 +100,24 @@ npm install
 npm run build
 ```
 
-### Hermes Agent config di `~/.hermes/config.yaml`:
-```yaml
-mcp_servers:
-  pahlawan-roleplay:
-    command: node
-    args:
-      - C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY/tools/mcp-pahlawan/dist/index.js
-    env:
-      PROJECT_ROOT: C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY
-      MYSQL_HOST: 127.0.0.1
-      MYSQL_USER: root
-      MYSQL_DATABASE: arivena
-      PAWN_COMPILER_PATH: GAMEMODE/pawno/pawncc.exe
-      ...
-```
 
+### Codex Agent config di `.codex/config.toml`:
+```toml
+[mcp_servers.pahlawan-roleplay]
+command = "node"
+args = ["C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY/tools/mcp-pahlawan/dist/index.js"]
+enabled = true
+startup_timeout_sec = 30
+tool_timeout_sec = 120
+
+[mcp_servers.pahlawan-roleplay.env]
+PROJECT_ROOT = "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY"
+MYSQL_HOST = "127.0.0.1"
+MYSQL_USER = "root"
+MYSQL_DATABASE = "arivena"
+PAWN_COMPILER_PATH = "GAMEMODE/pawno/pawncc.exe"
+...
+```
 ## Verification Checklist
 
 - [ ] MySQL accessible via MCP (`db_safe_query`)

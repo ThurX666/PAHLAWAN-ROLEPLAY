@@ -140,13 +140,13 @@ export const TopUpProcessor: React.FC<TopUpProcessorProps> = ({ isOpen, onClose,
 
     return (
         <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-            <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 w-full max-w-3xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+            <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 w-full max-w-3xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
                 
                 {/* Mobile Drag Handle */}
                 <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden shrink-0"></div>
 
                 {/* Header */}
-                <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-[#151515]">
+                <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-ph-surface-input">
                     <div>
                         <h3 className="text-sm md:text-lg font-black text-gray-900 dark:text-white uppercase italic flex items-center gap-2">
                            <Package size={18} className="text-red-500"/> Proses Top Up
@@ -161,7 +161,7 @@ export const TopUpProcessor: React.FC<TopUpProcessorProps> = ({ isOpen, onClose,
 
                 <div className="flex flex-col md:flex-row h-full overflow-hidden">
                     {/* Sidebar Tabs */}
-                    <div className="w-full md:w-48 bg-gray-50 dark:bg-[#0f0f0f] border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/5 p-2 flex md:flex-col gap-1 overflow-x-auto md:overflow-visible">
+                    <div className="w-full md:w-48 bg-gray-50 dark:bg-ph-surface-deep border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/5 p-2 flex md:flex-col gap-1 overflow-x-auto md:overflow-visible">
                         <button 
                             onClick={() => setActiveTab('currency')}
                             className={`flex items-center gap-2 px-4 py-3 rounded-lg text-xs font-bold uppercase transition-all whitespace-nowrap ${activeTab === 'currency' ? 'bg-red-600 text-white shadow-lg shadow-red-600/20' : 'text-gray-500 hover:bg-gray-200 dark:hover:bg-white/5'}`}
@@ -183,7 +183,7 @@ export const TopUpProcessor: React.FC<TopUpProcessorProps> = ({ isOpen, onClose,
                     </div>
 
                     {/* Content Area */}
-                    <form onSubmit={handleProcess} className="flex-1 p-6 overflow-y-auto bg-white dark:bg-[#121212] flex flex-col">
+                    <form onSubmit={handleProcess} className="flex-1 p-6 overflow-y-auto bg-white dark:bg-ph-surface-card flex flex-col">
                         
                         {/* TAB: CURRENCY & VIP */}
                         {activeTab === 'currency' && (

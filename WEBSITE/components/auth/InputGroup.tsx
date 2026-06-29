@@ -25,7 +25,7 @@ export const InputGroup: React.FC<InputGroupProps> = ({ icon: Icon, error, type,
                 />
                 <input
                     type={inputType}
-                    className={`ph-input-focus w-full bg-[#fbfaf8] border rounded-lg pl-11 pr-11 py-3.5 text-gray-900 placeholder-gray-400 transition-all duration-200 text-sm font-medium shadow-sm
+                    className={`ph-input-focus w-full bg-ph-surface-input border rounded-lg pl-11 pr-11 py-3.5 text-gray-900 placeholder-gray-400 transition-all duration-200 text-sm font-medium shadow-sm
                         ${error
                             ? 'border-ph-crimson-600/60 bg-ph-crimson-600/[0.04] shadow-[0_0_0_3px_rgba(215,25,32,0.08)]'
                             : 'border-gray-200 hover:border-gray-300'

@@ -242,14 +242,14 @@ export const AdminDonations: React.FC<AdminDonationsProps> = ({ promoConfig, onU
     {/* INVOICE DETAIL MODAL */}
     {selectedInvoice && (
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-            <div className="bg-white dark:bg-[#121212] w-full max-w-2xl rounded-t-3xl md:rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+            <div className="bg-white dark:bg-ph-surface-card w-full max-w-2xl rounded-t-3xl md:rounded-2xl border border-gray-200 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
                 
                 {/* Mobile Drag Handle */}
                 <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden shrink-0"></div>
 
                 {/* Left Column: Transaction Details */}
                 <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
-                    <div className="p-4 border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-[#151515] flex justify-between items-center sticky top-0 z-10">
+                    <div className="p-4 border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-ph-surface-input flex justify-between items-center sticky top-0 z-10">
                         <div>
                             <h3 className="font-bold text-gray-900 dark:text-white uppercase text-sm">Invoice #{selectedInvoice.id}</h3>
                             <p className="text-[10px] text-gray-500">{formatDate(selectedInvoice.date)}</p>
@@ -349,8 +349,8 @@ export const AdminDonations: React.FC<AdminDonationsProps> = ({ promoConfig, onU
                 </div>
 
                 {/* Right Column: Proof Image */}
-                <div className="w-full md:w-[280px] bg-gray-100 dark:bg-[#0a0a0a] border-l border-gray-200 dark:border-white/5 flex flex-col">
-                    <div className="p-3 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-gray-50 dark:bg-[#151515] md:hidden">
+                <div className="w-full md:w-[280px] bg-gray-100 dark:bg-ph-surface-deep border-l border-gray-200 dark:border-white/5 flex flex-col">
+                    <div className="p-3 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-gray-50 dark:bg-ph-surface-input md:hidden">
                         <h3 className="font-bold text-gray-500 uppercase text-[10px]">Bukti Transfer</h3>
                         <button onClick={() => setSelectedInvoice(null)}><X size={16}/></button>
                     </div>
@@ -372,7 +372,7 @@ export const AdminDonations: React.FC<AdminDonationsProps> = ({ promoConfig, onU
                             </div>
                         )}
                     </div>
-                    <div className="p-3 bg-white dark:bg-[#121212] border-t border-gray-200 dark:border-white/5 text-center hidden md:block">
+                    <div className="p-3 bg-white dark:bg-ph-surface-card border-t border-gray-200 dark:border-white/5 text-center hidden md:block">
                         <button onClick={() => setSelectedInvoice(null)} className="text-xs text-gray-500 hover:text-red-500 font-bold uppercase">Tutup</button>
                     </div>
                 </div>
@@ -391,7 +391,7 @@ export const AdminDonations: React.FC<AdminDonationsProps> = ({ promoConfig, onU
         onUpdatePromoItems={onUpdatePromoItems}
     />
 
-    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0a0a0a]">
+    <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-white/5 bg-white dark:bg-ph-surface-deep">
         <div className="p-4 border-b border-gray-200 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-3">
             <h3 className="font-bold text-gray-900 dark:text-white uppercase text-sm flex items-center gap-2">
                 <CreditCard size={16} className="text-green-500"/> Riwayat Invoice
@@ -420,7 +420,7 @@ export const AdminDonations: React.FC<AdminDonationsProps> = ({ promoConfig, onU
             </div>
         </div>
         <table className="w-full text-left text-xs text-gray-600 dark:text-gray-400 min-w-[600px]">
-            <thead className="bg-gray-50 dark:bg-[#0f0f0f] uppercase font-bold text-[10px] text-gray-500 border-b border-gray-200 dark:border-white/5">
+            <thead className="bg-gray-50 dark:bg-ph-surface-deep uppercase font-bold text-[10px] text-gray-500 border-b border-gray-200 dark:border-white/5">
                 <tr>
                     <th className="px-3 py-2">ID</th>
                     <th className="px-3 py-2">Player</th>

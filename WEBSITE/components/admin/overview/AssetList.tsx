@@ -82,7 +82,7 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
             return (
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs text-gray-600 dark:text-gray-400">
-                        <thead className="bg-gray-100 dark:bg-[#0f0f0f] uppercase font-bold text-[10px] text-gray-500">
+                        <thead className="bg-gray-100 dark:bg-ph-surface-deep uppercase font-bold text-[10px] text-gray-500">
                             <tr><th className="px-4 py-3">ID</th><th className="px-4 py-3">Lokasi</th><th className="px-4 py-3">Pemilik</th><th className="px-4 py-3">Harga</th><th className="px-4 py-3 text-right">Aksi</th></tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-white/5">
@@ -103,7 +103,7 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
              return (
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs text-gray-600 dark:text-gray-400">
-                        <thead className="bg-gray-100 dark:bg-[#0f0f0f] uppercase font-bold text-[10px] text-gray-500">
+                        <thead className="bg-gray-100 dark:bg-ph-surface-deep uppercase font-bold text-[10px] text-gray-500">
                             <tr><th className="px-4 py-3">ID</th><th className="px-4 py-3">Bisnis</th><th className="px-4 py-3">Tipe</th><th className="px-4 py-3">Lokasi</th><th className="px-4 py-3">Pemilik</th><th className="px-4 py-3 text-right">Aksi</th></tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-white/5">
@@ -126,7 +126,7 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
              return (
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs text-gray-600 dark:text-gray-400">
-                        <thead className="bg-gray-100 dark:bg-[#0f0f0f] uppercase font-bold text-[10px] text-gray-500">
+                        <thead className="bg-gray-100 dark:bg-ph-surface-deep uppercase font-bold text-[10px] text-gray-500">
                             <tr><th className="px-4 py-3">Pekerjaan</th><th className="px-4 py-3">Lokasi</th><th className="px-4 py-3">Rata2 Pekerja/Hari</th><th className="px-4 py-3">Perputaran Uang</th><th className="px-4 py-3">Jam Kerja Avg</th></tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-white/5">
@@ -147,7 +147,7 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
              return (
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs text-gray-600 dark:text-gray-400">
-                        <thead className="bg-gray-100 dark:bg-[#0f0f0f] uppercase font-bold text-[10px] text-gray-500">
+                        <thead className="bg-gray-100 dark:bg-ph-surface-deep uppercase font-bold text-[10px] text-gray-500">
                             <tr><th className="px-4 py-3">ID</th><th className="px-4 py-3">Nama Fraksi</th><th className="px-4 py-3">Leader</th><th className="px-4 py-3">Anggota</th><th className="px-4 py-3">Saldo Bank</th><th className="px-4 py-3 text-right">Aksi</th></tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-white/5">
@@ -169,7 +169,7 @@ export const AssetList: React.FC<AssetListProps> = ({ category, onSelectDetail }
              return (
                 <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs text-gray-600 dark:text-gray-400">
-                        <thead className="bg-gray-100 dark:bg-[#0f0f0f] uppercase font-bold text-[10px] text-gray-500">
+                        <thead className="bg-gray-100 dark:bg-ph-surface-deep uppercase font-bold text-[10px] text-gray-500">
                             <tr><th className="px-4 py-3">ID</th><th className="px-4 py-3">Nama Family</th><th className="px-4 py-3">Leader</th><th className="px-4 py-3">Level</th><th className="px-4 py-3">Saldo Bank</th><th className="px-4 py-3 text-right">Aksi</th></tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100 dark:divide-white/5">

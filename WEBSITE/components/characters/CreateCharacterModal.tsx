@@ -68,12 +68,12 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({ onCl
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-        <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 w-full max-w-sm md:max-w-md rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col max-h-[95dvh] overflow-hidden transform scale-100 transition-all animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+        <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 w-full max-w-sm md:max-w-md rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col max-h-[95dvh] overflow-hidden transform scale-100 transition-all animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             
             {/* Mobile Drag Handle */}
             <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden"></div>
 
-            <div className="flex justify-between items-center p-4 md:p-5 border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-[#151515]">
+            <div className="flex justify-between items-center p-4 md:p-5 border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-ph-surface-input">
                 <h3 className="text-sm md:text-lg font-bold text-gray-900 dark:text-white uppercase italic">Buat Karakter Baru</h3>
                 <button onClick={onClose} className="text-gray-500 hover:text-red-500 transition-colors">
                     <X size={20} />
@@ -300,12 +300,12 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({ onCl
         {/* Custom Country Select Modal / Bottom Sheet */}
         {showCountrySelect && (
             <div className="fixed inset-0 z-[70] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-                <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 w-full h-[85dvh] md:h-auto md:max-h-[80dvh] md:max-w-md rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-full md:zoom-in-95 duration-300">
+                <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 w-full h-[85dvh] md:h-auto md:max-h-[80dvh] md:max-w-md rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-full md:zoom-in-95 duration-300">
                     
                     {/* Mobile Drag Handle */}
                     <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden"></div>
 
-                    <div className="p-4 border-b border-gray-200 dark:border-white/10 flex items-center gap-3 bg-gray-50 dark:bg-[#151515]">
+                    <div className="p-4 border-b border-gray-200 dark:border-white/10 flex items-center gap-3 bg-gray-50 dark:bg-ph-surface-input">
                         <button 
                             type="button" 
                             onClick={() => {
@@ -363,12 +363,12 @@ export const CreateCharacterModal: React.FC<CreateCharacterModalProps> = ({ onCl
         {/* Custom Gender Select Modal / Bottom Sheet */}
         {showGenderSelect && (
             <div className="fixed inset-0 z-[70] flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-                <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 w-full md:max-w-sm rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-full md:zoom-in-95 duration-300">
+                <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 w-full md:max-w-sm rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-full md:zoom-in-95 duration-300">
                     
                     {/* Mobile Drag Handle */}
                     <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden"></div>
 
-                    <div className="p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-gray-50 dark:bg-[#151515]">
+                    <div className="p-4 border-b border-gray-200 dark:border-white/10 flex items-center justify-between bg-gray-50 dark:bg-ph-surface-input">
                         <h3 className="font-bold text-gray-900 dark:text-white">Pilih Gender</h3>
                         <button 
                             type="button" 

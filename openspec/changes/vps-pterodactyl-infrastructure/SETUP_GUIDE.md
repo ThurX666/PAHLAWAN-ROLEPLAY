@@ -1424,7 +1424,7 @@ Setelah folder ini ada di VPS, file service akan di-copy/sync ke volume Pterodac
 - Untuk setup pertama kalau masih awam: **Metode C (tar/zip + scp)**.
 - Untuk update berikutnya: **Metode A (git pull)** kalau repo sudah private/aman, atau **Metode B (rsync)** kalau masih pakai folder lokal.
 
-> **PENTING sebelum upload:** Jangan upload file rahasia/berat yang tidak dibutuhkan runtime, seperti `.git/`, `.hermes/`, `node_modules/`, log, cache, database dump private, dan token production. Daftar exclude ada di bawah.
+> **PENTING sebelum upload:** Jangan upload file rahasia/berat yang tidak dibutuhkan runtime, seperti `.git/`, `.hermes/`, `.codex/`, `.playwright-cli/`, `.codex-plugin/`, `node_modules/`, log, cache, database dump private, dan token production. Daftar exclude ada di bawah.
 
 ### 10.0.1. Buat Folder Target di VPS
 
@@ -1513,6 +1513,9 @@ cd "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY"
 rsync -avz --delete \
   --exclude ".git/" \
   --exclude ".hermes/" \
+  --exclude ".codex/" \
+  --exclude ".playwright-cli/" \
+  --exclude ".codex-plugin/" \
   --exclude "node_modules/" \
   --exclude "WEBSITE/node_modules/" \
   --exclude "WEBSITE/dist/" \
@@ -1556,6 +1559,9 @@ cd "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY"
 tar \
   --exclude='.git' \
   --exclude='.hermes' \
+  --exclude='.codex' \
+  --exclude='.playwright-cli' \
+  --exclude='.codex-plugin' \
   --exclude='node_modules' \
   --exclude='WEBSITE/node_modules' \
   --exclude='WEBSITE/dist' \
@@ -1624,6 +1630,9 @@ Jika Anda lebih nyaman GUI:
 5. Jangan upload:
    - `.git/`
    - `.hermes/`
+   - `.codex/`
+   - `.playwright-cli/`
+   - `.codex-plugin/`
    - `node_modules/`
    - log/cache
    - dump database private
@@ -2433,7 +2442,7 @@ Upgrade ke **8 GB plan** sebelum Beta Test jika:
 | `docs/eggs/` | Egg JSON canonical yang di-import ke Pterodactyl |
 | `/var/log/nginx/` | Nginx logs |
 | `/var/log/mysql/` | MySQL logs |
-| `~/AppData/Local/hermes/skills/` (Windows laptop) | Password manager / dokumen lokal |
+| `~/.codex/skills/` (Windows laptop) | Password manager / dokumen lokal |
 
 ---
 

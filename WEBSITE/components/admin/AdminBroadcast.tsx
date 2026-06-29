@@ -102,7 +102,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
 
     return (
         <div className="animate-[fadeIn_0.3s_ease-out]">
-            <div className="bg-white dark:bg-[#0a0a0a] rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-ph-surface-deep rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm">
                 <div className="p-4 border-b border-gray-200 dark:border-white/5">
                     <h3 className="font-bold text-gray-900 dark:text-white uppercase text-sm flex items-center gap-2">
                         <Send size={16} className="text-red-500"/> Kirim Pesan Custom
@@ -122,7 +122,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                                 <select 
                                     value={targetType}
                                     onChange={(e) => setTargetType(e.target.value as 'All' | 'Single')}
-                                    className="bg-gray-50 dark:bg-[#121212] flex-none border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors"
+                                    className="bg-gray-50 dark:bg-ph-surface-card flex-none border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors"
                                 >
                                     <option value="Single">Pemain Spesifik</option>
                                     <option value="All">Semua Pemain (Broadcast)</option>
@@ -135,7 +135,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                                             value={targetUser}
                                             onChange={(e) => setTargetUser(e.target.value)}
                                             placeholder="Username UCP..."
-                                            className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg pl-8 pr-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors"
+                                            className="w-full bg-gray-50 dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg pl-8 pr-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors"
                                         />
                                     </div>
                                 )}
@@ -147,7 +147,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                             <select 
                                 value={msgType}
                                 onChange={(e) => setMsgType(e.target.value as 'Admin' | 'Voucher')}
-                                className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors"
+                                className="w-full bg-gray-50 dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors"
                             >
                                 <option value="Admin">Admin</option>
                                 <option value="Voucher">Voucher</option>
@@ -162,7 +162,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="Contoh: Pemberitahuan Penting / Hadiah Spesial"
-                            className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors"
+                            className="w-full bg-gray-50 dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors"
                         />
                     </div>
 
@@ -172,7 +172,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
                             placeholder="Tulis pesan lengkap di sini..."
-                            className="w-full bg-gray-50 dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors min-h-[150px] font-mono text-xs"
+                            className="w-full bg-gray-50 dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors min-h-[150px] font-mono text-xs"
                         />
                     </div>
 
@@ -187,7 +187,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                                         value={voucherCode}
                                         onChange={(e) => setVoucherCode(e.target.value)}
                                         placeholder="Contoh: FREE-INF-2026"
-                                        className="w-full bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-blue-500 font-mono tracking-wider transition-colors"
+                                        className="w-full bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-blue-500 font-mono tracking-wider transition-colors"
                                     />
                                 </div>
                                 <div>
@@ -197,7 +197,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                                         value={itemName}
                                         onChange={(e) => setItemName(e.target.value)}
                                         placeholder="Contoh: Infernus / Gold Coin"
-                                        className="w-full bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-blue-500 transition-colors"
+                                        className="w-full bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-blue-500 transition-colors"
                                     />
                                 </div>
                                 <div>
@@ -207,7 +207,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                                         value={itemPrice}
                                         onChange={(e) => setItemPrice(e.target.value)}
                                         placeholder="Nilai dalam GC"
-                                        className="w-full bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-blue-500 transition-colors"
+                                        className="w-full bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-blue-500 transition-colors"
                                     />
                                 </div>
                                 <div>
@@ -217,7 +217,7 @@ export const AdminBroadcast: React.FC<AdminBroadcastProps> = ({ onSendNotificati
                                         value={itemDescription}
                                         onChange={(e) => setItemDescription(e.target.value)}
                                         placeholder="Penjelasan singkat item"
-                                        className="w-full bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-blue-500 transition-colors"
+                                        className="w-full bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white outline-none focus:border-blue-500 transition-colors"
                                     />
                                 </div>
                             </div>

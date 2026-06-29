@@ -45,7 +45,7 @@ export const ImageCropModal: React.FC<ImageCropModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl border border-gray-200 dark:border-white/10">
+      <div className="bg-white dark:bg-ph-surface-panel rounded-2xl w-full max-w-md overflow-hidden flex flex-col shadow-2xl border border-gray-200 dark:border-white/10">
         <div className="p-4 border-b border-gray-200 dark:border-white/10 flex justify-between items-center">
           <h3 className="font-black uppercase tracking-wider text-gray-900 dark:text-white">{title}</h3>
           <button onClick={onCancel} className="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">

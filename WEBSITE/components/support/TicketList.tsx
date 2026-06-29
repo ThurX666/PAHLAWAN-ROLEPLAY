@@ -23,8 +23,8 @@ export const TicketList: React.FC<TicketListProps> = ({ tickets, selectedTicketI
   );
 
   return (
-    <div className={`${isHiddenOnMobile ? 'hidden md:flex' : 'flex'} w-full flex-1 h-full flex-col bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm`}>
-        <div className="p-5 bg-gray-50 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-white/5 font-black text-gray-400 dark:text-gray-500 uppercase text-[10px] tracking-widest flex items-center flex-shrink-0">
+    <div className={`${isHiddenOnMobile ? 'hidden md:flex' : 'flex'} w-full flex-1 h-full flex-col bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-sm`}>
+        <div className="p-5 bg-gray-50 dark:bg-ph-surface-panel border-b border-gray-200 dark:border-white/5 font-black text-gray-400 dark:text-gray-500 uppercase text-[10px] tracking-widest flex items-center flex-shrink-0">
             <Clock size={14} className="mr-2" /> {isAdmin ? 'Inbox Tiket' : 'Riwayat Tiket'}
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
@@ -38,7 +38,7 @@ export const TicketList: React.FC<TicketListProps> = ({ tickets, selectedTicketI
                     <div 
                         key={ticket.id}
                         onClick={() => onSelectTicket(ticket)}
-                        className={`p-4 md:p-3.5 rounded-xl cursor-pointer border transition-all relative group active:scale-[0.98] ${selectedTicketId === ticket.id ? 'bg-red-50 dark:bg-red-900/10 border-red-500/50 shadow-sm' : 'bg-white dark:bg-[#0a0a0a] border-gray-100 dark:border-white/5 hover:border-red-500/30 hover:bg-gray-50 dark:hover:bg-[#111]'}`}
+                        className={`p-4 md:p-3.5 rounded-xl cursor-pointer border transition-all relative group active:scale-[0.98] ${selectedTicketId === ticket.id ? 'bg-red-50 dark:bg-red-900/10 border-red-500/50 shadow-sm' : 'bg-white dark:bg-ph-surface-deep border-gray-100 dark:border-white/5 hover:border-red-500/30 hover:bg-gray-50 dark:hover:bg-[#111]'}`}
                     >
                         <div className="flex justify-between items-start mb-2">
                             <span className={`text-[9px] md:text-[10px] font-bold px-2 py-0.5 rounded border uppercase tracking-wider ${getStatusColor(ticket.status)}`}>{ticket.status}</span>
@@ -53,7 +53,7 @@ export const TicketList: React.FC<TicketListProps> = ({ tickets, selectedTicketI
             )}
         </div>
         {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-[#111]/50">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-ph-surface-deep/50">
                 <button 
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}

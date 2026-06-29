@@ -249,8 +249,8 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-200px)] min-h-[600px]">
             {/* LIST SECTION */}
-            <div className={`lg:col-span-4 flex flex-col bg-gray-50 dark:bg-[#151515] rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden ${selectedStory ? 'hidden lg:flex' : 'flex'}`}>
-                <div className="p-4 border-b border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1a1a]">
+            <div className={`lg:col-span-4 flex flex-col bg-gray-50 dark:bg-ph-surface-input rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden ${selectedStory ? 'hidden lg:flex' : 'flex'}`}>
+                <div className="p-4 border-b border-gray-200 dark:border-white/10 bg-white dark:bg-ph-surface-panel">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="font-black text-gray-900 dark:text-white uppercase italic">Daftar Cerita</h3>
                         <span className="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full">{filteredStories.length}</span>
@@ -293,13 +293,13 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
                             onClick={() => setSelectedStory(story)}
                             className={`p-3 rounded-xl border cursor-pointer transition-all hover:shadow-md ${
                                 selectedStory?.id === story.id 
-                                ? 'bg-white dark:bg-[#222] border-red-500 ring-1 ring-red-500' 
-                                : 'bg-white dark:bg-[#1a1a1a] border-gray-200 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/20'
+                                ? 'bg-white dark:bg-ph-surface-elevated border-red-500 ring-1 ring-red-500' 
+                                : 'bg-white dark:bg-ph-surface-panel border-gray-200 dark:border-white/5 hover:border-gray-300 dark:hover:border-white/20'
                             }`}
                         >
                             <div className="flex gap-3">
                                 {/* Photo */}
-                                <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 dark:border-white/10 shrink-0 bg-gray-100 dark:bg-[#121212]">
+                                <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 dark:border-white/10 shrink-0 bg-gray-100 dark:bg-ph-surface-card">
                                     {story.photoUrl || getCharacterPhotoUrl(story.characterName) ? (
                                         <img src={getCharacterPhotoUrl(story.characterName, story.photoUrl)} alt={story.characterName} className="w-full h-full object-cover" />
                                     ) : (
@@ -336,7 +336,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
 
                 {/* Pagination Controls */}
                 {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-[#111]/50 shrink-0">
+                    <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-ph-surface-deep/50 shrink-0">
                         <button 
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
@@ -359,7 +359,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
             </div>
 
             {/* DETAIL SECTION */}
-            <div className={`lg:col-span-8 flex flex-col bg-white dark:bg-[#151515] rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden relative transition-all duration-300 ${
+            <div className={`lg:col-span-8 flex flex-col bg-white dark:bg-ph-surface-input rounded-xl border border-gray-200 dark:border-white/10 overflow-hidden relative transition-all duration-300 ${
                 selectedStory 
                 ? '!fixed !inset-0 !z-[9999] !w-full !h-full !m-0 !rounded-none lg:!static lg:!h-auto lg:!rounded-xl lg:!border' 
                 : 'hidden lg:flex'
@@ -367,7 +367,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
                 {selectedStory ? (
                     <>
                         {/* Header */}
-                        <div className="p-4 md:p-6 border-b border-gray-200 dark:border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50 dark:bg-[#1a1a1a]">
+                        <div className="p-4 md:p-6 border-b border-gray-200 dark:border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gray-50 dark:bg-ph-surface-panel">
                             <div className="flex items-center gap-3 w-full md:w-auto">
                                 <button 
                                     onClick={() => setSelectedStory(null)}
@@ -377,7 +377,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
                                 </button>
                                 
                                 {/* Character Photo */}
-                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-white/10 shrink-0 bg-gray-100 dark:bg-[#121212]">
+                                <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-gray-200 dark:border-white/10 shrink-0 bg-gray-100 dark:bg-ph-surface-card">
                                     {selectedStory.photoUrl || getCharacterPhotoUrl(selectedStory.characterName) ? (
                                         <img src={getCharacterPhotoUrl(selectedStory.characterName, selectedStory.photoUrl)} alt={selectedStory.characterName} className="w-full h-full object-cover" />
                                     ) : (
@@ -409,7 +409,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
                             </div>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar bg-white dark:bg-[#151515]">
+                        <div className="flex-1 overflow-y-auto p-4 md:p-6 custom-scrollbar bg-white dark:bg-ph-surface-input">
                             
                             {/* Status Banner for non-Pending */}
                             {selectedStory.status !== 'Pending' && (
@@ -467,7 +467,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
                                         <span>{countParagraphs(selectedStory.content)} Paras</span>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-gray-50 dark:bg-[#0a0a0a] rounded-xl border border-gray-200 dark:border-white/10 text-sm leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+                                <div className="p-4 bg-gray-50 dark:bg-ph-surface-deep rounded-xl border border-gray-200 dark:border-white/10 text-sm leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
                                     {selectedStory.content}
                                 </div>
                             </div>
@@ -477,13 +477,13 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
 
                         {/* Action Form - Fixed at bottom (Only for Pending) */}
                         {selectedStory.status === 'Pending' && (
-                            <div className="p-3 border-t border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#1a1a1a] shrink-0">
+                            <div className="p-3 border-t border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-ph-surface-panel shrink-0">
                                 <div className="mb-2">
                                     <textarea 
                                         value={feedback}
                                         onChange={(e) => setFeedback(e.target.value)}
                                         placeholder="Feedback / Reason (Required for Revision/Reject)..."
-                                        className={`w-full bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-lg p-2 text-xs focus:border-indigo-500 outline-none min-h-[60px] resize-none transition-all ${isShaking ? 'border-red-500 ring-2 ring-red-500 animate-[shake_0.5s_ease-in-out]' : ''}`}
+                                        className={`w-full bg-white dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-lg p-2 text-xs focus:border-indigo-500 outline-none min-h-[60px] resize-none transition-all ${isShaking ? 'border-red-500 ring-2 ring-red-500 animate-[shake_0.5s_ease-in-out]' : ''}`}
                                     />
                                 </div>
 
@@ -524,7 +524,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
             {/* CUSTOM ALERT MODAL */}
             {alertState.isOpen && (
                 <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-[fadeIn_0.2s_ease-out]">
-                    <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-200 dark:border-white/10 transform animate-[scaleIn_0.2s_ease-out]">
+                    <div className="bg-white dark:bg-ph-surface-panel rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden border border-gray-200 dark:border-white/10 transform animate-[scaleIn_0.2s_ease-out]">
                         <div className={`p-4 flex items-center gap-3 border-b border-gray-100 dark:border-white/5 ${
                             alertState.type === 'error' ? 'bg-red-50 dark:bg-red-900/20' : 
                             alertState.type === 'success' ? 'bg-green-50 dark:bg-green-900/20' : 
@@ -542,7 +542,7 @@ export const AdminStories: React.FC<AdminStoriesProps> = ({ adminLevel, onStoryR
                         <div className="p-6">
                             <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{alertState.message}</p>
                         </div>
-                        <div className="p-4 bg-gray-50 dark:bg-[#151515] flex justify-end">
+                        <div className="p-4 bg-gray-50 dark:bg-ph-surface-input flex justify-end">
                             <button 
                                 onClick={closeAlert}
                                 className="px-6 py-2 bg-gray-900 dark:bg-white text-white dark:text-black rounded-xl font-bold text-sm hover:opacity-90 transition-opacity"

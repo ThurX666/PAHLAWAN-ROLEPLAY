@@ -234,7 +234,7 @@ export const VerifyForm: React.FC<VerifyFormProps> = ({ username: email, initial
               onChange={(e) => setOtp(e.target.value)}
               placeholder="XXXXXX"
               maxLength={6}
-              className="ph-input-focus w-full bg-[#fbfaf8] border border-gray-200 rounded-lg py-3.5 pl-11 pr-4 text-gray-900 placeholder-gray-300 font-mono text-center tracking-[0.6em] text-[20px] font-bold transition-all duration-200 shadow-sm"
+              className="ph-input-focus w-full bg-ph-surface-input border border-gray-200 rounded-lg py-3.5 pl-11 pr-4 text-gray-900 placeholder-gray-300 font-mono text-center tracking-[0.6em] text-[20px] font-bold transition-all duration-200 shadow-sm"
               required
             />
           </div>

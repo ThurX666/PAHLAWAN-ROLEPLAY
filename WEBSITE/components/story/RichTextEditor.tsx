@@ -34,9 +34,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, setCont
   };
 
   return (
-    <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-xl shadow-lg dark:shadow-none overflow-hidden flex flex-col h-[500px] md:h-[600px] lg:h-[75vh] transition-all duration-300">
+    <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-xl shadow-lg dark:shadow-none overflow-hidden flex flex-col h-[500px] md:h-[600px] lg:h-[75vh] transition-all duration-300">
         {/* Editor Toolbar */}
-        <div className="bg-gray-50 dark:bg-[#1a1a1a] border-b border-gray-200 dark:border-white/5 p-2 md:p-3 flex flex-wrap gap-1 md:gap-2 sticky top-0 z-20">
+        <div className="bg-gray-50 dark:bg-ph-surface-panel border-b border-gray-200 dark:border-white/5 p-2 md:p-3 flex flex-wrap gap-1 md:gap-2 sticky top-0 z-20">
             <EditorBtn icon={Bold} label="Bold" onClick={() => insertFormat('b')} />
             <EditorBtn icon={Italic} label="Italic" onClick={() => insertFormat('i')} />
             <EditorBtn icon={Underline} label="Underline" onClick={() => insertFormat('u')} />
@@ -49,9 +49,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, setCont
         </div>
 
         {/* Text Area Container */}
-        <div className="flex-1 relative bg-gray-100 dark:bg-[#0c0c0c] p-0 md:p-8 overflow-hidden">
+        <div className="flex-1 relative bg-gray-100 dark:bg-ph-surface-deep p-0 md:p-8 overflow-hidden">
             {/* Paper Effect on Desktop */}
-            <div className="w-full h-full md:max-w-4xl md:mx-auto bg-white dark:bg-[#121212] md:shadow-sm md:border md:border-gray-200 dark:md:border-white/5 relative flex flex-col">
+            <div className="w-full h-full md:max-w-4xl md:mx-auto bg-white dark:bg-ph-surface-card md:shadow-sm md:border md:border-gray-200 dark:md:border-white/5 relative flex flex-col">
                 <textarea
                     ref={textareaRef}
                     className="flex-1 w-full bg-transparent p-4 md:p-10 text-gray-900 dark:text-gray-200 outline-none resize-none text-sm md:text-base leading-relaxed font-serif custom-scrollbar"
@@ -62,7 +62,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({ content, setCont
                 ></textarea>
                 
                 {/* Static Info */}
-                <div className="absolute bottom-0 left-0 right-0 bg-white/90 dark:bg-[#121212]/90 backdrop-blur-sm border-t border-gray-100 dark:border-white/5 p-3 text-center text-xs font-mono text-gray-500">
+                <div className="absolute bottom-0 left-0 right-0 bg-white/90 dark:bg-ph-surface-card/90 backdrop-blur-sm border-t border-gray-100 dark:border-white/5 p-3 text-center text-xs font-mono text-gray-500">
                     Syarat pengiriman: Cerita harus memiliki minimal 300 kata dan dibagi menjadi minimal 3 paragraf.
                 </div>
             </div>

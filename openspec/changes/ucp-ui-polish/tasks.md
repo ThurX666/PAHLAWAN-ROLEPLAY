@@ -2,10 +2,10 @@
 
 ## 1. Design Token & Foundation
 
-- [ ] **1.1** Define CSS custom properties di `index.css` (palette, spacing, radius, shadow, font)
-- [ ] **1.2** Buat `theme.ts` utility untuk baca CSS var dari TypeScript
-- [ ] **1.3** Ganti semua inline hex color di komponen dengan CSS var
-- [ ] **1.4** Setup responsive breakpoint utility classes
+- [x] **1.1** Define CSS custom properties di `index.css` (palette, spacing, radius, shadow, font)
+- [x] **1.2** Buat `theme.ts` utility untuk baca CSS var dari TypeScript
+- [x] **1.3** Ganti semua inline hex color di komponen dengan CSS var
+- [x] **1.4** Setup responsive breakpoint utility classes
 
 ## 2. Auth Page Redesign
 

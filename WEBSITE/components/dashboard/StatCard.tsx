@@ -28,7 +28,7 @@ export const StatCard: React.FC<StatCardProps> = ({ title, value, icon: Icon, co
         //
         // Jika Anda ingin mengubah datanya, lakukan perubahan di StatsGrid.tsx.
         // ==================================================================================
-        <div className={`relative group rounded-xl md:rounded-2xl bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 shadow-sm md:shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-md p-3 md:p-6 flex flex-col justify-between min-h-[100px] md:min-h-[140px] ${hoverBorderColor}`}>
+        <div className={`relative group rounded-xl md:rounded-2xl bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 shadow-sm md:shadow-lg overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-md p-3 md:p-6 flex flex-col justify-between min-h-[100px] md:min-h-[140px] ${hoverBorderColor}`}>
             <div className="absolute top-0 right-0 p-2 md:p-3 opacity-5 pointer-events-none transform group-hover:scale-110 transition-transform duration-500">
                 <Icon className="w-10 h-10 md:w-16 md:h-16" />
             </div>

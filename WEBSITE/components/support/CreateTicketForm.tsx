@@ -40,8 +40,8 @@ export const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onClose, onS
   };
 
   return (
-    <div className="flex flex-col h-full animate-[fadeIn_0.3s_ease-out] bg-white dark:bg-[#121212]">
-        <div className="p-4 md:p-5 border-b border-gray-200 dark:border-white/5 flex items-center bg-gray-50 dark:bg-[#1a1a1a] sticky top-0 z-10">
+    <div className="flex flex-col h-full animate-[fadeIn_0.3s_ease-out] bg-white dark:bg-ph-surface-card">
+        <div className="p-4 md:p-5 border-b border-gray-200 dark:border-white/5 flex items-center bg-gray-50 dark:bg-ph-surface-panel sticky top-0 z-10">
             <button onClick={onClose} className="md:hidden text-gray-500 hover:text-red-500 p-2 -ml-2 mr-2 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors active:scale-95">
                 <ChevronLeft size={24} />
             </button>
@@ -52,7 +52,7 @@ export const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onClose, onS
             <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Kategori</label>
                 <select 
-                    className="w-full bg-gray-50 dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-xl p-4 text-sm md:text-base text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors appearance-none"
+                    className="w-full bg-gray-50 dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-xl p-4 text-sm md:text-base text-gray-900 dark:text-white outline-none focus:border-red-500 transition-colors appearance-none"
                     value={category}
                     onChange={e => setCategory(e.target.value)}
                 >
@@ -68,7 +68,7 @@ export const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onClose, onS
                 </div>
                 <input 
                     type="text" 
-                    className={`w-full bg-gray-50 dark:bg-[#0a0a0a] border rounded-xl p-4 text-sm md:text-base text-gray-900 dark:text-white outline-none transition-all ${errors.subject ? 'border-red-500 focus:border-red-600 bg-red-50/10' : 'border-gray-200 dark:border-white/10 focus:border-red-500'}`}
+                    className={`w-full bg-gray-50 dark:bg-ph-surface-deep border rounded-xl p-4 text-sm md:text-base text-gray-900 dark:text-white outline-none transition-all ${errors.subject ? 'border-red-500 focus:border-red-600 bg-red-50/10' : 'border-gray-200 dark:border-white/10 focus:border-red-500'}`}
                     placeholder="Judul Masalah"
                     value={subject}
                     onChange={e => handleInputChange(setSubject, e.target.value, 'subject')}
@@ -81,7 +81,7 @@ export const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onClose, onS
                 </div>
                 <textarea 
                     rows={8}
-                    className={`w-full flex-1 bg-gray-50 dark:bg-[#0a0a0a] border rounded-xl p-4 text-sm md:text-base text-gray-900 dark:text-white resize-none outline-none transition-all ${errors.message ? 'border-red-500 focus:border-red-600 bg-red-50/10' : 'border-gray-200 dark:border-white/10 focus:border-red-500'}`}
+                    className={`w-full flex-1 bg-gray-50 dark:bg-ph-surface-deep border rounded-xl p-4 text-sm md:text-base text-gray-900 dark:text-white resize-none outline-none transition-all ${errors.message ? 'border-red-500 focus:border-red-600 bg-red-50/10' : 'border-gray-200 dark:border-white/10 focus:border-red-500'}`}
                     placeholder="Jelaskan detail masalah Anda secara lengkap..."
                     value={message}
                     onChange={e => handleInputChange(setMessage, e.target.value, 'message')}

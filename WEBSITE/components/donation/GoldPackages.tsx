@@ -13,8 +13,8 @@ export const GoldPackages: React.FC<GoldPackagesProps> = ({ activePkg, onSelectP
 
   const goldPackages = [
     // Tier 1: Micro (No Bonus)
-    { amount: 100, price: "Rp 10.000", bonus: null, iconColor: "text-gray-400", bg: "bg-gray-50 dark:bg-[#151515]", border: "border-gray-200 dark:border-white/5" },
-    { amount: 250, price: "Rp 25.000", bonus: null, iconColor: "text-gray-300", bg: "bg-gray-50 dark:bg-[#151515]", border: "border-gray-200 dark:border-white/5" },
+    { amount: 100, price: "Rp 10.000", bonus: null, iconColor: "text-gray-400", bg: "bg-gray-50 dark:bg-ph-surface-input", border: "border-gray-200 dark:border-white/5" },
+    { amount: 250, price: "Rp 25.000", bonus: null, iconColor: "text-gray-300", bg: "bg-gray-50 dark:bg-ph-surface-input", border: "border-gray-200 dark:border-white/5" },
     
     // Tier 2: Low (5% Bonus)
     { amount: 525, price: "Rp 50.000", bonus: "+5%", iconColor: "text-blue-300", bg: "bg-blue-50/50 dark:bg-blue-900/10", border: "border-blue-100 dark:border-blue-900/20" },
@@ -150,7 +150,7 @@ export const GoldPackages: React.FC<GoldPackagesProps> = ({ activePkg, onSelectP
         </div>
 
         {/* CUSTOM TOP UP CALCULATOR */}
-        <div className="bg-gray-50 dark:bg-[#151515] border border-gray-200 dark:border-white/5 rounded-2xl md:rounded-3xl p-5 md:p-8 relative overflow-hidden">
+        <div className="bg-gray-50 dark:bg-ph-surface-input border border-gray-200 dark:border-white/5 rounded-2xl md:rounded-3xl p-5 md:p-8 relative overflow-hidden">
             <div className="absolute top-0 right-0 p-3 opacity-5">
                 <Calculator size={100} />
             </div>

@@ -251,7 +251,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-ph-crimson-700/40 to-transparent"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl h-[100dvh] md:h-[720px] flex md:rounded-[24px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.25),0_10px_30px_rgba(127,29,29,0.18)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.65),0_15px_40px_rgba(127,29,29,0.30)] border-0 md:border border-ph-gold-600/30 dark:border-ph-crimson-900/40 bg-white dark:bg-[#121218] animate-auth-fade-in">
+      <div className="relative z-10 w-full max-w-6xl h-[100dvh] md:h-[720px] flex md:rounded-[24px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.25),0_10px_30px_rgba(127,29,29,0.18)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.65),0_15px_40px_rgba(127,29,29,0.30)] border-0 md:border border-ph-gold-600/30 dark:border-ph-crimson-900/40 bg-white dark:bg-ph-surface-card animate-auth-fade-in">
         
         {/* Cinematic corner accents on the card */}
         <span className="ph-card-corner tl"></span>
@@ -411,7 +411,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
             </div>
 
             {activeFlowIndex >= 0 && (
-                <div className="mb-4 rounded-xl border border-gray-200/80 dark:border-white/10 bg-white/80 dark:bg-[#16161e] p-2.5 shadow-sm dark:shadow-none">
+                <div className="mb-4 rounded-xl border border-gray-200/80 dark:border-white/10 bg-white/80 dark:bg-ph-surface-input p-2.5 shadow-sm dark:shadow-none">
                     <div className="flex items-center justify-between gap-1.5">
                         {AUTH_FLOW_STEPS.map((step, index) => {
                             const isActive = index === activeFlowIndex;
@@ -420,7 +420,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                                 ? 'border-ph-gold-500/50 bg-ph-gold-500/15 text-ph-gold-600 dark:text-ph-gold-400'
                                 : isDone
                                     ? 'border-ph-crimson-500/40 bg-ph-crimson-600/10 text-ph-crimson-600 dark:text-ph-crimson-400'
-                                    : 'border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#1a1a24] text-gray-400';
+                                    : 'border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-ph-surface-panel text-gray-400';
                             const stepLabelClass = isActive
                                 ? 'text-gray-900 dark:text-white'
                                 : isDone

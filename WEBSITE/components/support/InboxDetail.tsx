@@ -32,8 +32,8 @@ export const InboxDetail: React.FC<InboxDetailProps> = ({ message, onClose, user
   };
 
   return (
-    <div className="flex flex-col h-full animate-[fadeIn_0.3s_ease-out] bg-white dark:bg-[#121212]">
-        <div className="p-4 md:p-5 border-b border-gray-200 dark:border-white/5 flex items-center bg-gray-50 dark:bg-[#1a1a1a] sticky top-0 z-10">
+    <div className="flex flex-col h-full animate-[fadeIn_0.3s_ease-out] bg-white dark:bg-ph-surface-card">
+        <div className="p-4 md:p-5 border-b border-gray-200 dark:border-white/5 flex items-center bg-gray-50 dark:bg-ph-surface-panel sticky top-0 z-10">
             <button onClick={onClose} className="md:hidden text-gray-500 hover:text-red-500 p-2 -ml-2 mr-2 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors active:scale-95">
                 <ChevronLeft size={24}/>
             </button>
@@ -89,19 +89,19 @@ export const InboxDetail: React.FC<InboxDetailProps> = ({ message, onClose, user
             )}
 
             {message.type === 'Voucher' && message.code && (
-            <div className="mt-8 bg-gray-100 dark:bg-[#0a0a0a] border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-4 md:p-6 flex flex-col items-center justify-center group relative overflow-hidden">
+            <div className="mt-8 bg-gray-100 dark:bg-ph-surface-deep border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-4 md:p-6 flex flex-col items-center justify-center group relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-2 opacity-10">
                     <Tag size={80} className="md:w-[100px] md:h-[100px]" />
                 </div>
                 
                 {message.itemName && (
                     <div className="mb-6 w-full max-w-md z-10">
-                        <div className="bg-white dark:bg-[#1a1a1a] border border-blue-200 dark:border-blue-500/50 rounded-xl p-4 flex items-center gap-4 shadow-lg shadow-blue-500/10 relative overflow-hidden group">
+                        <div className="bg-white dark:bg-ph-surface-panel border border-blue-200 dark:border-blue-500/50 rounded-xl p-4 flex items-center gap-4 shadow-lg shadow-blue-500/10 relative overflow-hidden group">
                             {/* Blue Glow Effect */}
                             <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                             
                             {/* Icon Container */}
-                            <div className="w-12 h-12 bg-blue-50 dark:bg-[#252525] rounded-lg flex items-center justify-center shrink-0 border border-blue-100 dark:border-white/5">
+                            <div className="w-12 h-12 bg-blue-50 dark:bg-ph-surface-elevated rounded-lg flex items-center justify-center shrink-0 border border-blue-100 dark:border-white/5">
                                 <Tag className="text-blue-500 dark:text-blue-400" size={24} />
                             </div>
                             
@@ -126,7 +126,7 @@ export const InboxDetail: React.FC<InboxDetailProps> = ({ message, onClose, user
                 )}
 
                 <p className="text-xs text-gray-500 uppercase font-bold mb-2">Kode Voucher Anda</p>
-                <div className="flex items-center gap-3 bg-white dark:bg-[#1a1a1a] p-2 pr-3 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm relative z-10 w-full max-w-md justify-between">
+                <div className="flex items-center gap-3 bg-white dark:bg-ph-surface-panel p-2 pr-3 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm relative z-10 w-full max-w-md justify-between">
                     <code className="text-sm sm:text-base md:text-2xl font-mono font-black text-gray-900 dark:text-white tracking-wider md:tracking-widest px-2 truncate">
                         {message.code}
                     </code>

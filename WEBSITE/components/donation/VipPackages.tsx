@@ -131,8 +131,8 @@ export const VipPackages: React.FC<VipPackagesProps> = ({ activePkg, onSelectPac
                     className={`
                         relative group rounded-2xl md:rounded-3xl flex flex-col h-full overflow-hidden transition-all duration-300 ${!isWarning ? 'cursor-pointer' : ''}
                         ${isLegendary 
-                            ? 'bg-gradient-to-b from-white to-blue-50 dark:from-[#1a1a1a] dark:to-[#0f172a] border shadow-2xl shadow-blue-900/10 dark:shadow-black/60' 
-                            : 'bg-white dark:bg-[#121212] border shadow-lg hover:border-gray-300 dark:hover:border-white/10'
+                            ? 'bg-gradient-to-b from-white to-blue-50 dark:from-ph-surface-panel dark:to-[#0f172a] border shadow-2xl shadow-blue-900/10 dark:shadow-black/60' 
+                            : 'bg-white dark:bg-ph-surface-card border shadow-lg hover:border-gray-300 dark:hover:border-white/10'
                         }
                         ${activePkg?.name === pkg.name 
                             ? 'ring-2 ring-red-500 border-red-500 dark:border-red-500 shadow-2xl shadow-red-500/20' 
@@ -205,7 +205,7 @@ export const VipPackages: React.FC<VipPackagesProps> = ({ activePkg, onSelectPac
                         
                         {/* Warning Overlay */}
                         {isWarning && (
-                            <div className="absolute inset-0 z-30 bg-white/95 dark:bg-[#121212]/95 backdrop-blur-md flex flex-col items-center justify-center p-5 md:p-8 text-center animate-in fade-in zoom-in-95 duration-200">
+                            <div className="absolute inset-0 z-30 bg-white/95 dark:bg-ph-surface-card/95 backdrop-blur-md flex flex-col items-center justify-center p-5 md:p-8 text-center animate-in fade-in zoom-in-95 duration-200">
                                 <div className="w-12 h-12 md:w-20 md:h-20 bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-500 rounded-full flex items-center justify-center mb-4 md:mb-6 shadow-inner">
                                     <AlertTriangle size={24} className="md:w-10 md:h-10 w-6 h-6" />
                                 </div>
@@ -244,7 +244,7 @@ export const VipPackages: React.FC<VipPackagesProps> = ({ activePkg, onSelectPac
                                                 ? 'bg-gray-500 hover:bg-gray-600 text-white shadow-lg shadow-gray-500/20'
                                                 : pkg.id === 'bronze'
                                                     ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20'
-                                                    : 'bg-gray-100 dark:bg-[#1A1A1A] hover:bg-gray-200 dark:hover:bg-[#222222] text-gray-900 dark:text-white border border-gray-200 dark:border-white/5'
+                                                    : 'bg-gray-100 dark:bg-ph-surface-panel hover:bg-gray-200 dark:hover:bg-ph-surface-elevated text-gray-900 dark:text-white border border-gray-200 dark:border-white/5'
                                 }
                             `}
                         >

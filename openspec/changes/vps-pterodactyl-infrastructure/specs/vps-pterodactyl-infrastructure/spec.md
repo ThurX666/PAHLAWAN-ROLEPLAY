@@ -99,7 +99,7 @@ The infrastructure SHALL define a deployment flow from either Git repository or 
 
 #### Scenario: Operator uploads project files from a local laptop
 - **WHEN** the operator does not want to rely only on `git clone` from the VPS
-- **THEN** the setup procedure provides beginner-friendly upload methods using `rsync`, `tar + scp`, and SFTP, including excludes for `.git`, `.hermes`, `node_modules`, logs, caches, and private SQL dumps
+- **THEN** the setup procedure provides beginner-friendly upload methods using `rsync`, `tar + scp`, and SFTP, including excludes for `.git`, `.hermes`, `.codex`, `.playwright-cli`, `.codex-plugin`, `node_modules`, logs, caches, and private SQL dumps
 
 ### Requirement: Smoke test validates all services are operational
 

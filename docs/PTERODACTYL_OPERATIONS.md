@@ -126,6 +126,9 @@ cd "C:/Users/guyub/Documents/PAHLAWAN ROLEPLAY"
 rsync -avz --delete \
   --exclude ".git/" \
   --exclude ".hermes/" \
+  --exclude ".codex/" \
+  --exclude ".playwright-cli/" \
+  --exclude ".codex-plugin/" \
   --exclude "node_modules/" \
   --exclude "WEBSITE/node_modules/" \
   --exclude "BOT/node_modules/" \

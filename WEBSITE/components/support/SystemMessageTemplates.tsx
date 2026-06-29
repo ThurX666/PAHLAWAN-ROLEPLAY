@@ -18,7 +18,7 @@ export const CharacterCreatedMessage: React.FC<{ metadata?: any }> = ({ metadata
             </div>
             
             <div className="bg-green-600/5 border border-green-600/15 rounded-2xl p-0.5 mb-6">
-                <div className="bg-white dark:bg-[#1a1a1a] rounded-[14px] overflow-hidden">
+                <div className="bg-white dark:bg-ph-surface-panel rounded-[14px] overflow-hidden">
                     <table className="w-full text-sm text-left border-collapse text-gray-800 dark:text-gray-200">
                         <tbody>
                             <tr className="border-b border-gray-500/10">
@@ -103,7 +103,7 @@ export const NewLoginDetectedMessage: React.FC<{ metadata?: any }> = ({ metadata
             </div>
             
             <div className="bg-red-500/5 border border-red-500/15 rounded-2xl p-0.5 mb-6">
-                <div className="bg-white dark:bg-[#1a1a1a] rounded-[14px] overflow-hidden">
+                <div className="bg-white dark:bg-ph-surface-panel rounded-[14px] overflow-hidden">
                     <table className="w-full text-sm text-left border-collapse text-gray-800 dark:text-gray-200">
                         <tbody>
                             <tr className="border-b border-gray-500/10">
@@ -182,7 +182,7 @@ export const OocProfileReviewMessage: React.FC<{ metadata?: any }> = ({ metadata
             </div>
             
             <div className="bg-blue-500/5 border border-blue-500/15 rounded-2xl p-0.5 mb-6">
-                <div className="bg-white dark:bg-[#1a1a1a] rounded-[14px] overflow-hidden">
+                <div className="bg-white dark:bg-ph-surface-panel rounded-[14px] overflow-hidden">
                     <table className="w-full text-sm text-left border-collapse text-gray-800 dark:text-gray-200">
                         <tbody>
                             <tr className="border-b border-gray-500/10">
@@ -222,7 +222,7 @@ export const CharacterStoryReviewMessage: React.FC<{ metadata?: any }> = ({ meta
             </div>
             
             <div className="bg-blue-500/5 border border-blue-500/15 rounded-2xl p-0.5 mb-6">
-                <div className="bg-white dark:bg-[#1a1a1a] rounded-[14px] overflow-hidden">
+                <div className="bg-white dark:bg-ph-surface-panel rounded-[14px] overflow-hidden">
                     <table className="w-full text-sm text-left border-collapse text-gray-800 dark:text-gray-200">
                         <tbody>
                             <tr className="border-b border-gray-500/10">
@@ -262,7 +262,7 @@ export const PaymentProcessedMessage: React.FC<{ metadata?: any }> = ({ metadata
             </div>
             
             <div className="bg-blue-500/5 border border-blue-500/15 rounded-2xl p-0.5 mb-6">
-                <div className="bg-white dark:bg-[#1a1a1a] rounded-[14px] overflow-hidden">
+                <div className="bg-white dark:bg-ph-surface-panel rounded-[14px] overflow-hidden">
                     <table className="w-full text-sm text-left border-collapse text-gray-800 dark:text-gray-200">
                         <tbody>
                             <tr className="border-b border-gray-500/10">
@@ -306,7 +306,7 @@ export const TicketClosedMessage: React.FC<{ metadata?: any }> = ({ metadata }) 
             </div>
             
             <div className="bg-[#5865F2]/5 border border-[#5865F2]/15 rounded-2xl p-0.5 mb-6">
-                <div className="bg-white dark:bg-[#1a1a1a] rounded-[14px] overflow-hidden">
+                <div className="bg-white dark:bg-ph-surface-panel rounded-[14px] overflow-hidden">
                     <table className="w-full text-sm text-left border-collapse text-gray-800 dark:text-gray-200">
                         <tbody>
                             <tr className="border-b border-gray-500/10">
@@ -346,7 +346,7 @@ export const ServerWarningMessage: React.FC<{ metadata?: any }> = ({ metadata })
             </div>
             
             <div className="bg-red-500/5 border border-red-500/15 rounded-2xl p-0.5 mb-6">
-                <div className="bg-white dark:bg-[#1a1a1a] rounded-[14px] overflow-hidden">
+                <div className="bg-white dark:bg-ph-surface-panel rounded-[14px] overflow-hidden">
                     <table className="w-full text-sm text-left border-collapse text-gray-800 dark:text-gray-200">
                         <tbody>
                             <tr className="border-b border-gray-500/10">
@@ -426,7 +426,7 @@ export const NamechangeSuccessMessage: React.FC<{ metadata?: any }> = ({ metadat
             </div>
             
             <div className="bg-purple-500/5 border border-purple-500/15 rounded-2xl p-0.5 mb-6">
-                <div className="bg-gray-50 dark:bg-[#0a0a0a] rounded-xl overflow-hidden">
+                <div className="bg-gray-50 dark:bg-ph-surface-deep rounded-xl overflow-hidden">
                     <table className="w-full border-collapse text-sm text-left">
                         <tbody>
                             <tr className="border-b border-gray-200 dark:border-white/10">

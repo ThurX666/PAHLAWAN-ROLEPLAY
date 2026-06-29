@@ -14,7 +14,7 @@ export const PromoShop: React.FC<PromoShopProps> = ({ promoItems, onSelectItem }
   if (activePromoItems.length === 0) return null;
 
   return (
-      <section className="relative overflow-hidden rounded-2xl border border-purple-100 dark:border-purple-500/20 bg-white dark:bg-[#121212] p-4 md:p-5 shadow-xl dark:shadow-purple-900/5 group/section">
+      <section className="relative overflow-hidden rounded-2xl border border-purple-100 dark:border-purple-500/20 bg-white dark:bg-ph-surface-card p-4 md:p-5 shadow-xl dark:shadow-purple-900/5 group/section">
         
         {/* Ambient Background Effects */}
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-500/10 dark:bg-purple-600/10 rounded-full blur-[80px] pointer-events-none group-hover/section:bg-purple-500/20 transition-colors duration-700"></div>
@@ -43,7 +43,7 @@ export const PromoShop: React.FC<PromoShopProps> = ({ promoItems, onSelectItem }
                 <div 
                     key={item.id} 
                     onClick={() => onSelectItem(item)}
-                    className="group relative cursor-pointer overflow-hidden rounded-2xl md:rounded-3xl border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-[#181818] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/10 hover:border-purple-500/30 dark:hover:border-purple-500/30 flex flex-col h-full min-h-[280px] md:min-h-[340px]"
+                    className="group relative cursor-pointer overflow-hidden rounded-2xl md:rounded-3xl border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-ph-surface-panel shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/10 hover:border-purple-500/30 dark:hover:border-purple-500/30 flex flex-col h-full min-h-[280px] md:min-h-[340px]"
                 >
                     {/* Badge: Limited */}
                     {item.isLimited && (

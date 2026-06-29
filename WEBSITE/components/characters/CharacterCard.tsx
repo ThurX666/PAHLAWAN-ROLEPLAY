@@ -31,7 +31,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character, onSelec
   };
 
   return (
-    <div className="group relative h-full bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-red-500/30 transition-all duration-500 flex flex-col">
+    <div className="group relative h-full bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:border-red-500/30 transition-all duration-500 flex flex-col">
         
         {/* Header Status & Name */}
         <div className="absolute top-0 left-0 w-full p-5 flex justify-between items-start z-20">
@@ -53,7 +53,7 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character, onSelec
         </div>
 
         {/* Skin Render Area */}
-        <div className="relative h-80 xl:h-96 w-full bg-gradient-to-b from-gray-100 to-white dark:from-[#1a1a1a] dark:to-[#121212] flex items-end justify-center overflow-hidden">
+        <div className="relative h-80 xl:h-96 w-full bg-gradient-to-b from-gray-100 to-white dark:from-ph-surface-panel dark:to-ph-surface-card flex items-end justify-center overflow-hidden">
             <div className="absolute inset-0  opacity-[0.03]" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/images/carbon-fibre.png)` }}></div>
             
             {/* Skin Image or Photo */}
@@ -64,14 +64,14 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({ character, onSelec
                     className="h-full w-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
             ) : (
-                <div className="h-full w-full flex flex-col items-center justify-center bg-gray-200 dark:bg-[#1a1a1a] text-gray-400 dark:text-gray-500">
+                <div className="h-full w-full flex flex-col items-center justify-center bg-gray-200 dark:bg-ph-surface-panel text-gray-400 dark:text-gray-500">
                     <User size={48} className="mb-2 opacity-50" />
                     <span className="text-[10px] font-bold uppercase tracking-widest opacity-50">No Image</span>
                 </div>
             )}
             
             {/* Gradient Overlay for Text Readability */}
-            <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-[#121212] dark:via-[#121212]/80 dark:to-transparent"></div>
+            <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-ph-surface-card dark:via-ph-surface-card/80 dark:to-transparent"></div>
         </div>
 
         {/* Metrics Grid */}

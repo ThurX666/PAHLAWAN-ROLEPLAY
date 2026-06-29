@@ -19,7 +19,7 @@ const AdminPanel = lazy(() => import('./components/admin/AdminPanel').then(modul
 const Requests = lazy(() => import('./components/requests/RequestsPage').then(module => ({ default: module.Requests })));
 
 const ScreenFallback: React.FC = () => (
-  <div className="flex min-h-screen w-full items-center justify-center bg-[#050505] relative overflow-hidden">
+  <div className="flex min-h-screen w-full items-center justify-center bg-ph-surface-deep relative overflow-hidden">
     <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-ph-crimson-700/[0.15] blur-[160px] animate-pulse-slow"></div>
     <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-ph-gold-700/[0.08] blur-[120px]"></div>
     <div className="relative z-10 flex flex-col items-center">
@@ -1240,7 +1240,7 @@ const App: React.FC = () => {
       {/* Custom Alert Modal */}
       {alertConfig && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-              <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-200 dark:border-white/10 text-center animate-in zoom-in-95 duration-200">
+              <div className="bg-white dark:bg-ph-surface-panel rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-gray-200 dark:border-white/10 text-center animate-in zoom-in-95 duration-200">
                   <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
                       alertConfig.type === 'success' 
                           ? 'bg-green-100 dark:bg-green-500/20 text-green-500' 

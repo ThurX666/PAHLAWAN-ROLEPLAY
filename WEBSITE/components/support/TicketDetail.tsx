@@ -26,8 +26,8 @@ export const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, isAdmin, onC
   }, [ticket.messages]);
 
   return (
-    <div className="flex flex-col h-full animate-[fadeIn_0.3s_ease-out] bg-white dark:bg-[#121212]">
-        <div className="p-4 md:p-5 border-b border-gray-200 dark:border-white/5 flex items-center bg-gray-50 dark:bg-[#1a1a1a] sticky top-0 z-10">
+    <div className="flex flex-col h-full animate-[fadeIn_0.3s_ease-out] bg-white dark:bg-ph-surface-card">
+        <div className="p-4 md:p-5 border-b border-gray-200 dark:border-white/5 flex items-center bg-gray-50 dark:bg-ph-surface-panel sticky top-0 z-10">
             <button onClick={onClose} className="md:hidden text-gray-500 hover:text-red-500 p-2 -ml-2 mr-2 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors active:scale-95">
                 <ChevronLeft size={24} />
             </button>
@@ -48,12 +48,12 @@ export const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, isAdmin, onC
             <button onClick={onClose} className="hidden md:block text-gray-500 p-2 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-colors"><XCircle size={24} /></button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white dark:bg-[#0a0a0a] custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white dark:bg-ph-surface-deep custom-scrollbar">
             {ticket.messages.map((msg, idx) => {
                 const isMe = isAdmin ? msg.sender === 'Admin' : msg.sender !== 'Admin';
                 return (
                     <div key={idx} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] md:max-w-[75%] rounded-2xl p-3 md:p-4 shadow-sm relative ${isMe ? 'bg-red-600 text-white rounded-tr-sm' : 'bg-gray-100 dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 rounded-tl-sm'}`}>
+                        <div className={`max-w-[85%] md:max-w-[75%] rounded-2xl p-3 md:p-4 shadow-sm relative ${isMe ? 'bg-red-600 text-white rounded-tr-sm' : 'bg-gray-100 dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 rounded-tl-sm'}`}>
                             <div className="flex justify-between items-center mb-1.5 gap-3">
                                 <span className={`text-[10px] font-bold uppercase ${isMe ? 'text-white/80' : 'text-red-500'}`}>{msg.sender}</span>
                                 <span className={`text-[9px] ${isMe ? 'text-white/60' : 'text-gray-500'}`}>{formatTime(msg.time)}</span>
@@ -66,7 +66,7 @@ export const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, isAdmin, onC
             <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-3 md:p-6 bg-gray-50 dark:bg-[#151515] border-t border-gray-200 dark:border-white/5 pb-[calc(12px+env(safe-area-inset-bottom))] md:pb-[calc(24px+env(safe-area-inset-bottom))]">
+        <div className="p-3 md:p-6 bg-gray-50 dark:bg-ph-surface-input border-t border-gray-200 dark:border-white/5 pb-[calc(12px+env(safe-area-inset-bottom))] md:pb-[calc(24px+env(safe-area-inset-bottom))]">
             {isAdmin && onUpdateStatus && (
                 <div className="flex flex-wrap gap-2 mb-3">
                     {ticket.status !== 'Proses' && ticket.status !== 'Ditutup' && (
@@ -101,7 +101,7 @@ export const TicketDetail: React.FC<TicketDetailProps> = ({ ticket, isAdmin, onC
             <form onSubmit={onReply} className="flex gap-2 md:gap-4 items-end">
                 <textarea 
                     rows={1}
-                    className={`flex-1 bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-2xl md:rounded-xl p-3 md:p-4 focus:border-red-600 outline-none text-gray-900 dark:text-white text-sm resize-none max-h-32 min-h-[44px] md:min-h-[52px] ${ticket.status === 'Ditutup' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`flex-1 bg-white dark:bg-ph-surface-deep border border-gray-200 dark:border-white/10 rounded-2xl md:rounded-xl p-3 md:p-4 focus:border-red-600 outline-none text-gray-900 dark:text-white text-sm resize-none max-h-32 min-h-[44px] md:min-h-[52px] ${ticket.status === 'Ditutup' ? 'opacity-50 cursor-not-allowed' : ''}`}
                     placeholder={ticket.status === 'Ditutup' ? "Tiket telah ditutup..." : "Ketik pesan..."}
                     value={replyMessage}
                     onChange={e => setReplyMessage(e.target.value)}

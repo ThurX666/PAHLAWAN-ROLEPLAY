@@ -37,10 +37,10 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
               </div>
           </div>
           
-          <div className="bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/5 rounded-xl overflow-hidden">
+          <div className="bg-gray-50 dark:bg-ph-surface-panel border border-gray-200 dark:border-white/5 rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-[11px] md:text-sm text-gray-600 dark:text-gray-400">
-                    <thead className="bg-gray-100 dark:bg-[#111] uppercase font-bold text-[9px] md:text-[10px] text-gray-500 border-b border-gray-200 dark:border-white/5">
+                    <thead className="bg-gray-100 dark:bg-ph-surface-deep uppercase font-bold text-[9px] md:text-[10px] text-gray-500 border-b border-gray-200 dark:border-white/5">
                         <tr>
                             <th className="px-3 py-3 md:px-6 md:py-4">Item</th>
                             <th className="px-3 py-3 md:px-6 md:py-4">Harga</th>
@@ -96,7 +96,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
               
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-[#111]/50">
+                  <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/5 bg-gray-100/50 dark:bg-ph-surface-deep/50">
                       <button 
                           onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                           disabled={currentPage === 1}

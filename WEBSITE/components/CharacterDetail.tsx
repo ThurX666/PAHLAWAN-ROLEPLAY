@@ -15,7 +15,7 @@ const ImageCropModal = lazy(() => import('./ui/ImageCropModal').then(module => (
 
 const CropperFallback: React.FC = () => (
   <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-    <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl w-full max-w-md border border-gray-200 dark:border-white/10 p-8 text-center shadow-2xl">
+    <div className="bg-white dark:bg-ph-surface-panel rounded-2xl w-full max-w-md border border-gray-200 dark:border-white/10 p-8 text-center shadow-2xl">
       <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-gray-900 dark:border-white/20 dark:border-t-white" />
       <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
         Memuat Cropper...
@@ -218,13 +218,13 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6 items-stretch">
         {/* LEFT COLUMN: Profile (Span 4) */}
         <div className="col-span-1 lg:col-span-4">
-            <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm flex flex-col items-center text-center overflow-hidden relative h-full">
+            <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm flex flex-col items-center text-center overflow-hidden relative h-full">
                 
                 {/* Background Pattern */}
                 <div className="absolute inset-0  opacity-[0.03]" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/images/carbon-fibre.png)` }}></div>
 
                 {/* Skin/Photo Render - Flexible Height */}
-                <div className="relative w-full flex-1 min-h-[250px] bg-gradient-to-b from-gray-100 to-white dark:from-[#1a1a1a] dark:to-[#121212] rounded-2xl flex items-end justify-center mb-6 overflow-hidden border border-gray-100 dark:border-white/5 group">
+                <div className="relative w-full flex-1 min-h-[250px] bg-gradient-to-b from-gray-100 to-white dark:from-ph-surface-panel dark:to-ph-surface-card rounded-2xl flex items-end justify-center mb-6 overflow-hidden border border-gray-100 dark:border-white/5 group">
                     <div className="absolute inset-0  opacity-[0.03]" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/images/carbon-fibre.png)` }}></div>
                     
                     {character.photoUrl || getCharacterPhotoUrl(character.name) ? (
@@ -234,7 +234,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
                             className="absolute inset-0 w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
                         />
                     ) : (
-                        <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-gray-200 dark:bg-[#1a1a1a] text-gray-400 dark:text-gray-500">
+                        <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-gray-200 dark:bg-ph-surface-panel text-gray-400 dark:text-gray-500">
                             <User size={64} className="mb-4 opacity-50" />
                             <span className="text-xs font-bold uppercase tracking-widest opacity-50">No Image</span>
                         </div>
@@ -244,7 +244,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
                     <div className="absolute bottom-4 right-4 z-20">
                         <button 
                             onClick={() => fileInputRef.current?.click()}
-                            className="flex items-center gap-2 bg-white/90 dark:bg-[#1a1a1a]/90 backdrop-blur-md px-4 py-2.5 rounded-full shadow-xl border border-gray-200 dark:border-white/10 hover:scale-105 active:scale-95 transition-all duration-300 group/btn"
+                            className="flex items-center gap-2 bg-white/90 dark:bg-ph-surface-panel/90 backdrop-blur-md px-4 py-2.5 rounded-full shadow-xl border border-gray-200 dark:border-white/10 hover:scale-105 active:scale-95 transition-all duration-300 group/btn"
                         >
                             <Camera size={16} className="text-gray-700 dark:text-gray-300 group-hover/btn:text-red-500 transition-colors" />
                             <span className="text-[10px] font-black uppercase tracking-wider text-gray-700 dark:text-gray-300 group-hover/btn:text-red-500 transition-colors">
@@ -261,7 +261,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
                     </div>
                     
                     {/* Gradient Overlay */}
-                    <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-[#121212] dark:via-[#121212]/80 dark:to-transparent z-10 pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-ph-surface-card dark:via-ph-surface-card/80 dark:to-transparent z-10 pointer-events-none"></div>
                 </div>
 
                 {/* Name & Level */}
@@ -317,7 +317,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
         <div className="col-span-1 lg:col-span-8 flex flex-col gap-4 md:gap-8 lg:gap-10">
             
             {/* Card 1: Vitals & Financials */}
-            <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm relative overflow-hidden">
+            <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm relative overflow-hidden">
                 <div className="absolute inset-0  opacity-[0.03]" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/images/carbon-fibre.png)` }}></div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
@@ -358,7 +358,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
             </div>
 
             {/* Card 2: Licenses */}
-            <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm relative overflow-hidden">
+            <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm relative overflow-hidden">
                 <div className="absolute inset-0  opacity-[0.03]" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/images/carbon-fibre.png)` }}></div>
                 
                 <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase italic tracking-tighter flex items-center gap-3 mb-6 relative z-10">
@@ -393,7 +393,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
       {/* BOTTOM ROW: Assets & Vehicles */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           {/* Assets */}
-          <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm relative overflow-hidden">
+          <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm relative overflow-hidden">
               <div className="absolute inset-0  opacity-[0.03]" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/images/carbon-fibre.png)` }}></div>
               
               <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase italic tracking-tighter flex items-center gap-3 mb-6 relative z-10">
@@ -414,7 +414,7 @@ export const CharacterDetail: React.FC<CharacterDetailProps> = ({ character, onB
           </div>
 
           {/* Vehicles */}
-          <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm relative overflow-hidden">
+          <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 rounded-3xl p-6 shadow-sm relative overflow-hidden">
               <div className="absolute inset-0  opacity-[0.03]" style={{ backgroundImage: `url(${import.meta.env.BASE_URL}assets/images/carbon-fibre.png)` }}></div>
               
               <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase italic tracking-tighter flex items-center gap-3 mb-6 relative z-10">

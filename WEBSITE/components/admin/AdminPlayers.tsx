@@ -139,7 +139,7 @@ export const AdminPlayers: React.FC = () => {
 
   return (
     <div className="animate-[fadeIn_0.3s_ease-out]">
-            <div className="bg-white dark:bg-[#0a0a0a] rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-ph-surface-deep rounded-xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm">
                 <div className="p-4 border-b border-gray-200 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-3">
                     <h3 className="font-bold text-gray-900 dark:text-white uppercase text-sm flex items-center gap-2">
                     <Users size={16} className="text-red-500"/> Manajemen Warga
@@ -170,7 +170,7 @@ export const AdminPlayers: React.FC = () => {
                 
                 <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-gray-600 dark:text-gray-400">
-                    <thead className="bg-gray-50 dark:bg-[#0f0f0f] uppercase font-bold text-[10px] text-gray-500 border-b border-gray-200 dark:border-white/5">
+                    <thead className="bg-gray-50 dark:bg-ph-surface-deep uppercase font-bold text-[10px] text-gray-500 border-b border-gray-200 dark:border-white/5">
                         <tr>
                             <th className="px-4 py-3">ID</th>
                             <th className="px-4 py-3">Nama Karakter</th>

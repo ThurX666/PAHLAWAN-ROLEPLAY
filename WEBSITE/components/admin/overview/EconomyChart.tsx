@@ -58,7 +58,7 @@ export const EconomyChart: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-[#121212] rounded-2xl border border-gray-100 dark:border-white/5 p-6 relative overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-300 h-full">
+    <div className="bg-white dark:bg-ph-surface-card rounded-2xl border border-gray-100 dark:border-white/5 p-6 relative overflow-hidden flex flex-col shadow-sm hover:shadow-md transition-shadow duration-300 h-full">
         <div className="flex flex-row justify-between items-center mb-6 gap-2">
             <div>
                 <h3 className="text-gray-900 dark:text-white font-black uppercase flex items-center text-sm tracking-widest">

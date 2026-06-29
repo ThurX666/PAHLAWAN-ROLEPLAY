@@ -87,7 +87,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
   };
 
   return (
-    <div className="flex h-[100dvh] bg-gray-50 dark:bg-[#050505] text-gray-900 dark:text-gray-100 overflow-hidden font-sans transition-colors duration-500 relative">
+    <div className="flex h-[100dvh] bg-gray-50 dark:bg-ph-surface-deep text-gray-900 dark:text-gray-100 overflow-hidden font-sans transition-colors duration-500 relative">
       {/* Background Pattern */}
       <div className="absolute inset-0 z-0 bg-grid-pattern-light dark:bg-grid-pattern opacity-[0.4] pointer-events-none"></div>
       
@@ -108,7 +108,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
           fixed md:relative inset-y-0 left-0 z-50 
           transition-transform duration-300 ease-in-out
           flex flex-col border-r border-white/20 dark:border-white/5 
-          bg-white/95 dark:bg-[#121212] md:bg-white dark:md:bg-[#0a0a0a]
+          bg-white/95 dark:bg-ph-surface-card md:bg-white dark:md:bg-ph-surface-deep
           shadow-2xl md:shadow-none overflow-visible whitespace-nowrap
           
           /* Dimensions */
@@ -125,7 +125,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
         {isMobileMenuOpen && (
             <button 
                  onClick={() => setIsMobileMenuOpen(false)} 
-                 className="md:hidden absolute top-8 -right-12 w-12 h-12 flex items-center justify-center z-50 bg-white/95 dark:bg-[#121212] border-y border-r border-gray-200 dark:border-white/5 rounded-r-xl shadow-[4px_0_15px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_15px_rgba(0,0,0,0.5)] text-gray-500 hover:text-red-500"
+                 className="md:hidden absolute top-8 -right-12 w-12 h-12 flex items-center justify-center z-50 bg-white/95 dark:bg-ph-surface-card border-y border-r border-gray-200 dark:border-white/5 rounded-r-xl shadow-[4px_0_15px_rgba(0,0,0,0.1)] dark:shadow-[4px_0_15px_rgba(0,0,0,0.5)] text-gray-500 hover:text-red-500"
             >
                  <X size={24} />
             </button>
@@ -189,11 +189,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
         </nav>
 
         {/* User Footer */}
-        <div className="p-4 mt-auto border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-[#0c0c0c] flex-shrink-0">
+        <div className="p-4 mt-auto border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-ph-surface-deep flex-shrink-0">
              <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3 min-w-0">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-amber-600 p-[1px] shadow-sm flex-shrink-0">
-                     <div className="w-full h-full bg-white dark:bg-[#121212] rounded-[7px] flex items-center justify-center overflow-hidden">
+                     <div className="w-full h-full bg-white dark:bg-ph-surface-card rounded-[7px] flex items-center justify-center overflow-hidden">
                         {discordAvatarUrl ? (
                             <img src={discordAvatarUrl} alt="Discord Avatar" className="w-full h-full object-cover rounded-[6px]" referrerPolicy="no-referrer" />
                         ) : (
@@ -213,7 +213,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
              <div className="grid grid-cols-2 gap-2">
                <button 
                  onClick={toggleTheme}
-                 className="flex items-center justify-center p-2 rounded-lg bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 text-gray-600 dark:text-gray-400 transition-colors"
+                 className="flex items-center justify-center p-2 rounded-lg bg-white dark:bg-ph-surface-panel border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 text-gray-600 dark:text-gray-400 transition-colors"
                >
                  {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
                </button>
@@ -234,7 +234,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
       <main className="flex-1 flex flex-col h-full relative z-10 overflow-hidden w-full min-w-0">
         
         {/* Mobile Header Bar */}
-        <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/5 bg-white/70 dark:bg-[#0a0a0a]/70 backdrop-blur-md sticky top-0 z-30">
+        <div className="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-white/5 bg-white/70 dark:bg-ph-surface-deep/70 backdrop-blur-md sticky top-0 z-30">
             <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 text-gray-600 dark:text-gray-300 active:scale-95 transition-transform">
                 <Menu size={24} />
             </button>
@@ -265,7 +265,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange
         </div>
 
         {/* Mobile Bottom Navigation */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-[#0a0a0a]/90 backdrop-blur-lg border-t border-gray-200 dark:border-white/10 z-40 pb-safe">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-ph-surface-deep/90 backdrop-blur-lg border-t border-gray-200 dark:border-white/10 z-40 pb-safe">
             <div className="flex items-center justify-around p-2">
                 {[
                     { id: 'dashboard', icon: LayoutDashboard, label: 'Home', action: () => onTabChange('dashboard') },

@@ -14,13 +14,13 @@ interface PlayerControlModalProps {
 export const PlayerControlModal: React.FC<PlayerControlModalProps> = ({ player, onClose, onAction, onSave, actionLoading }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-sm animate-[fadeIn_0.2s_ease-out]">
-        <div className="bg-white dark:bg-[#121212] border border-gray-200 dark:border-white/10 w-full max-w-2xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
+        <div className="bg-white dark:bg-ph-surface-card border border-gray-200 dark:border-white/10 w-full max-w-2xl rounded-t-3xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[95dvh] animate-in slide-in-from-bottom-full md:slide-in-from-bottom-0 md:zoom-in-95 duration-300">
             
             {/* Mobile Drag Handle */}
             <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full mx-auto mt-3 mb-1 md:hidden"></div>
 
             {/* Header */}
-            <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-[#151515]">
+            <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-white/5 bg-gray-50 dark:bg-ph-surface-input">
                 <div>
                     <h3 className="text-sm md:text-lg font-black text-gray-900 dark:text-white uppercase italic">Control Center: {player.name}</h3>
                     <p className="text-[10px] text-gray-500 font-mono">Database ID: #{player.id} | IP: 192.168.1.XX</p>

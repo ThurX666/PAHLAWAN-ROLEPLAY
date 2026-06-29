@@ -63,7 +63,7 @@ export const DiscordCard: React.FC<DiscordCardProps> = ({ discordId, onLink }) =
   };
 
   return (
-    <div className="h-full flex flex-col justify-center bg-white dark:bg-[#121212] p-6 md:p-8 rounded-2xl md:rounded-3xl border border-gray-200 dark:border-white/10 relative overflow-hidden group">
+    <div className="h-full flex flex-col justify-center bg-white dark:bg-ph-surface-card p-6 md:p-8 rounded-2xl md:rounded-3xl border border-gray-200 dark:border-white/10 relative overflow-hidden group">
         {/* Subtle glow effect */}
         <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#5865F2]/20 rounded-full blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
 
