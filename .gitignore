@@ -48,6 +48,7 @@ WEBSITE/dist/
 WEBSITE/dist-ssr/
 WEBSITE/.runtime-logs/
 WEBSITE/.playwright-cli/
+WEBSITE/.hermes/screenshots/
 WEBSITE/public/uploads/
 WEBSITE/public/api/.migrated_*
 

@@ -409,10 +409,10 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
 
           {/* Scrollable Form Area */}
           <div ref={formScrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 md:px-8 pb-6 pt-1 ph-scroll-thin">
-           <div className="ph-auth-panel-inner max-w-[430px] mx-auto w-full rounded-2xl px-5 md:px-7 py-5 md:py-6 my-1">
+           <div className="ph-auth-panel-inner max-w-[430px] mx-auto w-full rounded-2xl px-5 md:px-7 py-6 md:py-8 my-1">
 
              {/* Logo + sub-brand */}
-            <div className="flex flex-col items-center mb-4 mt-0">
+            <div className="flex flex-col items-center mb-6 mt-0">
                 <div className="relative">
                     <img
                         src={`${import.meta.env.BASE_URL}assets/images/logo1.png`}
