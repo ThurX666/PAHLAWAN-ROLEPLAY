@@ -44,17 +44,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
                 </p>
             </div>
 
-            <div className="mb-3 grid grid-cols-2 gap-2 text-left">
-                <div className="rounded-xl border border-gray-200/80 bg-gray-50/80 px-3 py-2">
-                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-500">Akses</p>
-                    <p className="mt-0.5 text-xs font-bold text-gray-900">UCP Warga</p>
-                </div>
-                <div className="rounded-xl border border-ph-gold-600/20 bg-ph-gold-600/[0.06] px-3 py-2">
-                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-ph-gold-700">Secure</p>
-                    <p className="mt-0.5 text-xs font-bold text-gray-900">OTP Guard</p>
-                </div>
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-2.5" noValidate>
                 <InputGroup
                     icon={User}
