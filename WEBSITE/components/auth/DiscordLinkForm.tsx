@@ -108,7 +108,7 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
       </div>
 
       <div className="mb-3 flex justify-center w-full">
-        <div className="w-16 h-16 bg-gradient-to-br from-[#5865F2]/10 to-[#5865F2]/5 rounded-xl flex items-center justify-center border border-[#5865F2]/18 shadow-sm">
+        <div className="w-16 h-16 bg-gradient-to-br from-[#5865F2]/10 to-[#5865F2]/5 rounded-xl flex items-center justify-center border border-[#5865F2]/18 shadow-sm ring-4 ring-[#5865F2]/5">
             <div className="text-[#5865F2]">
               <IconDiscord size={34} />
             </div>
@@ -149,7 +149,7 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
       <button
         onClick={handleLinkDiscord}
         disabled={loading}
-        className="relative w-full overflow-hidden rounded-xl group mb-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98] transition-all shadow-md hover:shadow-lg"
+        className="relative w-full overflow-hidden rounded-xl group mb-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98] transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-[#5865F2]/25"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[#5865F2] to-[#4752C4] transition-transform duration-300 group-hover:scale-[1.04] origin-center" />
         <div className="relative py-3.5 px-6 flex items-center justify-center">

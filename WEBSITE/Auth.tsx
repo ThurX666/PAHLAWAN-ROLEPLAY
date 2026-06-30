@@ -238,7 +238,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   const activeFlowIndex = AUTH_FLOW_STEPS.findIndex(step => step.view === view);
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-ph-surface-deep ph-page-vignette">
+    <div className="min-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-ph-surface-deep ph-page-vignette px-3 py-3 md:px-6 md:py-6 ph-safe-top ph-safe-bottom">
 
       {/* Dynamic Background â€” strong PHRP identity */}
       <div className="absolute inset-0 z-0">
@@ -251,7 +251,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-ph-crimson-700/40 to-transparent"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl h-[100dvh] md:h-[720px] flex md:rounded-[24px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.25),0_10px_30px_rgba(127,29,29,0.18)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.65),0_15px_40px_rgba(127,29,29,0.30)] border-0 md:border border-ph-gold-600/30 dark:border-ph-crimson-900/40 bg-white dark:bg-ph-surface-card animate-auth-fade-in">
+      <div className="relative z-10 w-full max-w-6xl min-h-[calc(100dvh-24px)] md:min-h-0 md:h-[720px] md:max-h-[calc(100dvh-48px)] flex md:rounded-[24px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.25),0_10px_30px_rgba(127,29,29,0.18)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.65),0_15px_40px_rgba(127,29,29,0.30)] border border-ph-gold-600/20 md:border-ph-gold-600/30 dark:border-ph-crimson-900/40 bg-white dark:bg-ph-surface-card animate-auth-fade-in">
         
         {/* Cinematic corner accents on the card */}
         <span className="ph-card-corner tl"></span>
@@ -260,10 +260,10 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
         <span className="ph-card-corner br"></span>
         
         {/* LEFT SIDE: Showcase Slideshow (Hidden on mobile) */}
-        <div className="hidden md:flex w-1/2 relative bg-black flex-col justify-between p-12 overflow-hidden">
+        <div className="hidden md:flex md:w-[52%] lg:w-[56%] relative bg-black flex-col justify-between p-8 lg:p-12 overflow-hidden">
              {/* Layered overlays for cinematic feel */}
              <div className="absolute inset-0 bg-gradient-to-br from-ph-crimson-950/30 via-transparent to-ph-gold-900/20 z-[5] mix-blend-overlay pointer-events-none"></div>
-             <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent z-[6] pointer-events-none"></div>
+             <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/20 to-transparent z-[6] pointer-events-none"></div>
              
              {SLIDES.map((slide, index) => (
                  <div 
@@ -338,7 +338,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
         </div>
 
         {/* RIGHT SIDE: Auth Form Container */}
-        <div className="w-full md:w-1/2 flex flex-col relative h-full ph-auth-surface overflow-hidden">
+        <div className="w-full md:w-[48%] lg:w-[44%] flex flex-col relative h-full ph-auth-surface overflow-hidden">
           
           {/* Top Accent Line */}
           <div className="absolute top-0 left-0 right-0 h-[3px] ph-auth-accent-line z-20 shadow-[0_1px_6px_rgba(220,38,38,0.35)]"></div>
@@ -346,7 +346,22 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
           {/* Eyebrow micro text (left of status) */}
           <div className="shrink-0 flex items-center justify-between px-5 md:px-7 pt-5 md:pt-6 pb-1.5">
               <span className="ph-eyebrow text-[9px] md:text-[10px]">User Control Panel</span>
-              <span className="text-[9px] font-mono font-bold tracking-widest text-gray-400 dark:text-gray-500 uppercase">v1.0</span>
+              <span className="text-[9px] font-mono font-bold tracking-widest text-gray-500 dark:text-gray-500 uppercase">v1.0</span>
+          </div>
+
+          {/* Mobile-only compact brand strip */}
+          <div className="md:hidden shrink-0 px-5 pb-3">
+              <div className="rounded-2xl border border-ph-gold-600/15 bg-white/75 px-4 py-3 shadow-sm backdrop-blur">
+                  <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-ph-gold-500 to-ph-crimson-600 flex items-center justify-center text-white shadow-md">
+                          <Star size={17} fill="currentColor" />
+                      </div>
+                      <div className="min-w-0">
+                          <p className="text-[12px] font-black uppercase tracking-[0.18em] text-gray-950 leading-none">Pahlawan RP</p>
+                          <p className="text-[11px] text-gray-500 mt-1 leading-none">UCP aman untuk warga kota</p>
+                      </div>
+                  </div>
+              </div>
           </div>
           
           {/* Server Status Bar â€” premium */}
@@ -384,10 +399,10 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                   </div>
 
                   {/* Divider */}
-                  <div className="w-px h-3 bg-gray-300 dark:bg-white/10"></div>
+                  <div className="hidden sm:block w-px h-3 bg-gray-300 dark:bg-white/10"></div>
 
                   {/* IP */}
-                  <div className="flex items-center gap-1.5">
+                  <div className="hidden sm:flex items-center gap-1.5">
                       <Wifi size={11} className="text-ph-gold-600 dark:text-ph-gold-500" />
                       <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-300 font-mono tracking-wide">{serverStats?.ip_address || "pahlawan-rp.com:7777"}</span>
                   </div>
@@ -395,23 +410,23 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
           </div>
 
           {/* Scrollable Form Area â€” wrapped in inner card section for premium feel */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 md:px-5 pb-5 pt-1 ph-scroll-thin">
-           <div className="ph-auth-panel-inner max-w-[420px] mx-auto w-full rounded-2xl px-5 md:px-7 py-5 md:py-6 my-2">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 xs:px-3 md:px-5 pb-8 md:pb-5 pt-1 ph-scroll-thin ph-safe-bottom">
+           <div className="ph-auth-panel-inner max-w-[420px] mx-auto w-full rounded-2xl px-4 xs:px-5 md:px-6 py-4 md:py-5 my-1">
             
             {/* Logo + sub-brand */}
-            <div className="flex flex-col items-center mb-5 mt-1">
+            <div className="flex flex-col items-center mb-3 mt-0">
                 <div className="relative">
                     <img 
                         src={`${import.meta.env.BASE_URL}assets/images/logo1.png`} 
                         alt="Pahlawan Roleplay" 
-                        className="w-36 md:w-40 max-h-16 md:max-h-20 object-contain hover:scale-[1.04] transition-transform duration-500 relative z-10" 
+                        className="w-28 md:w-32 max-h-12 md:max-h-14 object-contain hover:scale-[1.04] transition-transform duration-500 relative z-10" 
                     />
                     <div className="absolute inset-0 bg-ph-gold-400/20 blur-2xl -z-10"></div>
                 </div>
             </div>
 
             {activeFlowIndex >= 0 && (
-                <div className="mb-4 rounded-xl border border-gray-200/80 dark:border-white/10 bg-white/80 dark:bg-ph-surface-input p-2.5 shadow-sm dark:shadow-none">
+                <div className="mb-4 rounded-xl border border-gray-200/80 dark:border-white/10 bg-white/80 dark:bg-ph-surface-input p-2.5 shadow-sm dark:shadow-none" aria-label="Progress pendaftaran akun">
                     <div className="flex items-center justify-between gap-1.5">
                         {AUTH_FLOW_STEPS.map((step, index) => {
                             const isActive = index === activeFlowIndex;
@@ -430,7 +445,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                             return (
                                 <React.Fragment key={step.view}>
                                     <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
-                                        <div className={`flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-black transition-all ${stepCircleClass}`}>
+                                        <div className={`flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-black transition-all ${stepCircleClass}`} aria-current={isActive ? 'step' : undefined}>
                                             {index + 1}
                                         </div>
                                         <span className={`truncate text-[9px] font-bold tracking-wide ${stepLabelClass}`}>

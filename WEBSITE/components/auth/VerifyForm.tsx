@@ -230,13 +230,27 @@ export const VerifyForm: React.FC<VerifyFormProps> = ({ username: email, initial
             </div>
             <input
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="XXXXXX"
               maxLength={6}
               className="ph-input-focus w-full bg-ph-surface-input border border-gray-200 rounded-lg py-3.5 pl-11 pr-4 text-gray-900 placeholder-gray-300 font-mono text-center tracking-[0.6em] text-[20px] font-bold transition-all duration-200 shadow-sm"
               required
             />
+          </div>
+          <div className="mt-3 rounded-xl border border-gray-200/80 bg-gray-50/80 px-3 py-2.5">
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <span className="text-[10px] font-black uppercase tracking-[0.16em] text-gray-500">Waktu OTP</span>
+              <span className="font-mono text-[11px] font-bold text-gray-800">{formatCooldown(cooldown)}</span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-ph-gold-500 to-ph-crimson-600 transition-all duration-500"
+                style={{ width: `${Math.max(0, Math.min(100, (cooldown / Math.max(initialCooldown || 1800, 1)) * 100))}%` }}
+              />
+            </div>
           </div>
           {localAuthPreview && (
             <button

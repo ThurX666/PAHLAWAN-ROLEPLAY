@@ -200,6 +200,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                             setError('');
                         }}
                         error={error}
+                        hint="Kami akan mengirim kode OTP reset sandi."
                     />
 
                     <button
@@ -244,6 +245,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                             setError('');
                         }}
                         error={error}
+                        hint="Masukkan 6 digit kode dari email."
                     />
 
                     <InputGroup

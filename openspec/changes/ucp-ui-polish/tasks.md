@@ -9,14 +9,14 @@
 
 ## 2. Auth Page Redesign
 
-- [ ] **2.1** Redesign `Auth.tsx` layout: split screen (branding kiri, form kanan)
-- [ ] **2.2** Mobile layout: full-screen form + logo
-- [ ] **2.3** Polish `LoginForm.tsx` — spacing, typography, error states
-- [ ] **2.4** Polish `RegisterForm.tsx` — spacing, typography, validation feedback
-- [ ] **2.5** Polish `VerifyForm.tsx` — OTP input styling, timer visual
-- [ ] **2.6** Polish `ForgotPasswordForm.tsx` — consistent dengan form lainnya
-- [ ] **2.7** Polish `DiscordLinkForm.tsx` — branding, CTA button
-- [ ] **2.8** Flow indicator: step progress bar antar auth view
+- [x] **2.1** Redesign `Auth.tsx` layout: split screen (branding kiri, form kanan)
+- [x] **2.2** Mobile layout: full-screen form + logo
+- [x] **2.3** Polish `LoginForm.tsx` — spacing, typography, error states
+- [x] **2.4** Polish `RegisterForm.tsx` — spacing, typography, validation feedback
+- [x] **2.5** Polish `VerifyForm.tsx` — OTP input styling, timer visual
+- [x] **2.6** Polish `ForgotPasswordForm.tsx` — consistent dengan form lainnya
+- [x] **2.7** Polish `DiscordLinkForm.tsx` — branding, CTA button
+- [x] **2.8** Flow indicator: step progress bar antar auth view
 
 ## 3. Dashboard
 

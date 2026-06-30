@@ -34,9 +34,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
 
     return (
         <div className="animate-auth-slide-up">
-            <div className="text-center mb-5">
-               <span className="ph-eyebrow mb-3">Roleplay Identity</span>
-                <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">
+            <div className="text-center mb-3">
+               <span className="ph-eyebrow mb-2">Roleplay Identity</span>
+                <h2 className="text-[20px] md:text-[24px] font-extrabold text-gray-950 mb-1 tracking-tight leading-tight">
                   Selamat Datang
                 </h2>
                <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed">
@@ -44,7 +44,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-3" noValidate>
+            <div className="mb-3 grid grid-cols-2 gap-2 text-left">
+                <div className="rounded-xl border border-gray-200/80 bg-gray-50/80 px-3 py-2">
+                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-gray-500">Akses</p>
+                    <p className="mt-0.5 text-xs font-bold text-gray-900">UCP Warga</p>
+                </div>
+                <div className="rounded-xl border border-ph-gold-600/20 bg-ph-gold-600/[0.06] px-3 py-2">
+                    <p className="text-[9px] font-black uppercase tracking-[0.16em] text-ph-gold-700">Secure</p>
+                    <p className="mt-0.5 text-xs font-bold text-gray-900">OTP Guard</p>
+                </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-2.5" noValidate>
                 <InputGroup
                     icon={User}
                     type="text"
@@ -84,7 +95,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
                 <button
                     type="submit"
                     disabled={loading}
-                    className="ph-btn-primary w-full py-3.5 mt-1 flex items-center justify-center group"
+                    className="ph-btn-primary w-full py-3 mt-1 flex items-center justify-center group"
                 >
                     {loading ? <Loader2 className="animate-spin" size={20} /> : (
                         <span className="flex items-center text-sm font-bold tracking-wide">

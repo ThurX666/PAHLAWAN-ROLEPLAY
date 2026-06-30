@@ -183,6 +183,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
                     value={formData.username}
                     onChange={e => handleChange('username', e.target.value)}
                     error={errors.username}
+                    hint="4-24 karakter: huruf, angka, underscore."
                 />
 
                 <InputGroup
@@ -193,6 +194,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
                     value={formData.email}
                     onChange={e => handleChange('email', e.target.value)}
                     error={errors.email}
+                    hint="OTP verifikasi akan dikirim ke email ini."
                 />
 
                 <InputGroup
@@ -203,6 +205,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
                     value={formData.password}
                     onChange={e => handleChange('password', e.target.value)}
                     error={errors.password}
+                    hint="Gunakan 4-32 karakter sesuai aturan server."
                 />
 
                 <InputGroup

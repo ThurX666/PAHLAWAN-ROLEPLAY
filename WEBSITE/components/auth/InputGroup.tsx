@@ -5,9 +5,10 @@ import { LucideIcon, AlertCircle, Eye, EyeOff } from 'lucide-react';
 interface InputGroupProps extends React.InputHTMLAttributes<HTMLInputElement> {
     icon: LucideIcon;
     error?: string;
+    hint?: string;
 }
 
-export const InputGroup: React.FC<InputGroupProps> = ({ icon: Icon, error, type, ...props }) => {
+export const InputGroup: React.FC<InputGroupProps> = ({ icon: Icon, error, hint, type, ...props }) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPassword = type === 'password';
     const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
@@ -25,7 +26,8 @@ export const InputGroup: React.FC<InputGroupProps> = ({ icon: Icon, error, type,
                 />
                 <input
                     type={inputType}
-                    className={`ph-input-focus w-full bg-ph-surface-input border rounded-lg pl-11 pr-11 py-3.5 text-gray-900 placeholder-gray-400 transition-all duration-200 text-sm font-medium shadow-sm
+                    aria-invalid={Boolean(error)}
+                    className={`ph-input-focus w-full bg-ph-surface-input border rounded-lg pl-11 pr-11 py-3.5 text-gray-900 placeholder-gray-500 transition-all duration-200 text-sm font-medium shadow-sm
                         ${error
                             ? 'border-ph-crimson-600/60 bg-ph-crimson-600/[0.04] shadow-[0_0_0_3px_rgba(215,25,32,0.08)]'
                             : 'border-gray-200 hover:border-gray-300'
@@ -58,6 +60,11 @@ export const InputGroup: React.FC<InputGroupProps> = ({ icon: Icon, error, type,
                 <p className="text-[11px] text-ph-crimson-700 mt-1.5 ml-1 font-semibold animate-auth-slide-down flex items-center gap-1.5">
                     <span className="w-1 h-1 bg-ph-crimson-700 rounded-full inline-block shrink-0"></span>
                     {error}
+                </p>
+            )}
+            {!error && hint && (
+                <p className="text-[11px] text-gray-500 mt-1.5 ml-1 leading-relaxed">
+                    {hint}
                 </p>
             )}
         </div>
