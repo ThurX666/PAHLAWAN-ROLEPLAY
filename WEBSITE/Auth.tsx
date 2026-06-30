@@ -251,7 +251,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-ph-crimson-700/40 to-transparent"></div>
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl min-h-[calc(100dvh-24px)] md:min-h-0 md:h-[720px] md:max-h-[calc(100dvh-48px)] flex md:rounded-[24px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.25),0_10px_30px_rgba(127,29,29,0.18)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.65),0_15px_40px_rgba(127,29,29,0.30)] border border-ph-gold-600/20 md:border-ph-gold-600/30 dark:border-ph-crimson-900/40 bg-white dark:bg-ph-surface-card animate-auth-fade-in">
+      <div className="relative z-10 w-full max-w-6xl min-h-[calc(100dvh-24px)] md:min-h-0 md:max-h-[calc(100dvh-48px)] md:h-auto flex md:rounded-[24px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.25),0_10px_30px_rgba(127,29,29,0.18)] dark:shadow-[0_30px_80px_rgba(0,0,0,0.65),0_15px_40px_rgba(127,29,29,0.30)] border border-ph-gold-600/20 md:border-ph-gold-600/30 dark:border-ph-crimson-900/40 bg-white dark:bg-ph-surface-card animate-auth-fade-in">
         
         {/* Cinematic corner accents on the card */}
         <span className="ph-card-corner tl"></span>
@@ -411,15 +411,15 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
 
           {/* Scrollable Form Area â€” wrapped in inner card section for premium feel */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 xs:px-3 md:px-5 pb-8 md:pb-5 pt-1 ph-scroll-thin ph-safe-bottom">
-           <div className="ph-auth-panel-inner max-w-[420px] mx-auto w-full rounded-2xl px-4 xs:px-5 md:px-6 py-4 md:py-5 my-1">
+           <div className="ph-auth-panel-inner max-w-[420px] mx-auto w-full rounded-2xl px-4 xs:px-5 md:px-6 py-3.5 md:py-4 my-1">
             
             {/* Logo + sub-brand */}
-            <div className="flex flex-col items-center mb-3 mt-0">
+            <div className="flex flex-col items-center mb-2 mt-0">
                 <div className="relative">
                     <img 
                         src={`${import.meta.env.BASE_URL}assets/images/logo1.png`} 
                         alt="Pahlawan Roleplay" 
-                        className="w-28 md:w-32 max-h-12 md:max-h-14 object-contain hover:scale-[1.04] transition-transform duration-500 relative z-10" 
+                        className="w-24 md:w-28 max-h-10 md:max-h-12 object-contain hover:scale-[1.04] transition-transform duration-500 relative z-10" 
                     />
                     <div className="absolute inset-0 bg-ph-gold-400/20 blur-2xl -z-10"></div>
                 </div>

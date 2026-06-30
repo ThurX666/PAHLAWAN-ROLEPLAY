@@ -272,7 +272,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.18]"></div>
       </div>
 
-      <div className="relative z-10 grid w-full max-w-[1180px] h-full max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-40px)] md:h-[min(720px,calc(100dvh-48px))] md:max-h-[calc(100dvh-48px)] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
+      <div className="relative z-10 grid w-full max-w-[1180px] h-full max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-40px)] md:max-h-[calc(100dvh-48px)] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
 
         {/* LEFT SIDE: Roleplay highlight panel */}
         <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-9 lg:p-10 overflow-hidden">
@@ -408,22 +408,22 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
           </div>
 
           {/* Scrollable Form Area */}
-          <div ref={formScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 pb-6 pt-1 ph-scroll-thin">
-           <div className="ph-auth-panel-inner max-w-[430px] mx-auto w-full rounded-2xl px-5 md:px-7 py-6 md:py-7 my-1">
+          <div ref={formScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 pb-8 md:pb-5 pt-1 ph-scroll-thin ph-safe-bottom">
+           <div className="ph-auth-panel-inner max-w-[430px] mx-auto w-full rounded-2xl px-5 md:px-6 py-4 md:py-5 my-1">
 
              {/* Logo + sub-brand */}
-            <div className="flex flex-col items-center mb-6 mt-1">
+            <div className="flex flex-col items-center mb-3 mt-0">
                 <div className="relative">
                     <img
                         src={`${import.meta.env.BASE_URL}assets/images/logo1.png`}
                         alt="Pahlawan Roleplay"
-                        className="w-32 md:w-36 max-h-14 md:max-h-16 object-contain hover:scale-[1.02] transition-transform duration-500 relative z-10"
+                        className="w-24 md:w-28 max-h-10 md:max-h-12 object-contain hover:scale-[1.02] transition-transform duration-500 relative z-10"
                     />
                 </div>
             </div>
 
             {activeFlowIndex >= 0 && (
-                <div className="mb-5 rounded-xl border border-gray-200 bg-gray-50/70 p-2.5">
+                <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50/70 p-2.5" aria-label="Progress pendaftaran akun">
                     <div className="flex items-center justify-between gap-1.5">
                         {AUTH_FLOW_STEPS.map((step, index) => {
                             const isActive = index === activeFlowIndex;
@@ -442,7 +442,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                             return (
                                 <React.Fragment key={step.view}>
                                     <div className="flex min-w-0 flex-1 flex-col items-center gap-1">
-                                        <div className={`flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-black transition-all ${stepCircleClass}`}>
+                                        <div className={`flex h-6 w-6 items-center justify-center rounded-full border text-[10px] font-black transition-all ${stepCircleClass}`} aria-current={isActive ? 'step' : undefined}>
                                             {index + 1}
                                         </div>
                                         <span className={`truncate text-[9px] font-bold tracking-wide ${stepLabelClass}`}>
