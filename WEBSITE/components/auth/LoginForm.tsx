@@ -34,9 +34,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
 
     return (
         <div className="animate-auth-slide-up">
-            <div className="text-center mb-3">
-               <span className="ph-eyebrow mb-2">Roleplay Identity</span>
-                <h2 className="text-[20px] md:text-[24px] font-extrabold text-gray-950 mb-1 tracking-tight leading-tight">
+            <div className="text-center mb-6">
+               <span className="ph-eyebrow mb-2.5">Roleplay Identity</span>
+                <h2 className="text-[20px] md:text-[24px] font-extrabold text-gray-950 mb-2 tracking-tight leading-tight">
                   Selamat Datang
                 </h2>
                <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed">
@@ -44,7 +44,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-2.5" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-3.5" noValidate>
                 <InputGroup
                     icon={User}
                     type="text"
@@ -71,7 +71,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
                     error={errors.password}
                 />
 
-                <div className="flex justify-end mt-0.5 mb-2">
+                <div className="flex justify-end mt-1 mb-3">
                     <button
                         type="button"
                         onClick={() => setView('forgot')}
@@ -84,7 +84,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
                 <button
                     type="submit"
                     disabled={loading}
-                    className="ph-btn-primary w-full py-3 mt-1 flex items-center justify-center group"
+                    className="ph-btn-primary w-full py-3.5 mt-2 flex items-center justify-center group"
                 >
                     {loading ? <Loader2 className="animate-spin" size={20} /> : (
                         <span className="flex items-center text-sm font-bold tracking-wide">
@@ -95,8 +95,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, setView, loading
                 </button>
             </form>
 
-            <div className="mt-5 text-center">
-                <div className="flex items-center gap-3 mb-3">
+            <div className="mt-7 text-center">
+                <div className="flex items-center gap-3 mb-4">
                     <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200"></div>
                     <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400">Atau</span>
                     <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200"></div>
