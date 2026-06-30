@@ -263,7 +263,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
   const localAuthPreview = canUseLocalAuthPreview();
 
   return (
-    <div className="h-[100dvh] max-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-ph-surface-base ph-page-vignette p-3 sm:p-5 md:p-6 lg:p-8">
+    <div className="h-[100dvh] max-h-[100dvh] flex items-center justify-center relative overflow-hidden font-sans bg-ph-surface-base ph-page-vignette p-1 md:p-2">
 
       {/* Phase 4.15: light premium hosting x roleplay backdrop */}
       <div className="absolute inset-0 z-0">
@@ -272,7 +272,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.18]"></div>
       </div>
 
-      <div className="relative z-10 grid w-full max-w-[1180px] h-full max-h-[calc(100dvh-24px)] sm:max-h-[calc(100dvh-40px)] md:max-h-[calc(100dvh-48px)] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
+      <div className="relative z-10 grid w-full max-w-[1180px] h-[calc(100dvh-16px)] max-h-[calc(100dvh-16px)] md:grid-cols-[1.15fr_1fr] rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
 
         {/* LEFT SIDE: Roleplay highlight panel */}
         <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-9 lg:p-10 overflow-hidden">
@@ -344,12 +344,12 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          </div>
 
         {/* RIGHT SIDE: Auth Form Container */}
-        <div className="w-full flex flex-col relative h-full ph-auth-surface overflow-hidden">
+        <div className="w-full flex flex-col relative min-h-0 h-full ph-auth-surface overflow-hidden">
 
           {/* Top Accent Line */}
           <div className="absolute top-0 left-0 right-0 h-[2px] ph-auth-accent-line z-20"></div>
 
-          <div className="shrink-0 flex min-h-[76px] items-center justify-between gap-4 px-5 md:px-8 pt-6 md:pt-8 pb-4">
+          <div className="shrink-0 flex items-center justify-between gap-4 px-5 md:px-8 pt-3 md:pt-4 pb-1 md:pb-2">
               <div>
                   <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">Account Access</span>
                   <p className="mt-1 text-xs font-semibold text-gray-700">Secure UCP gateway</p>
@@ -358,10 +358,10 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
           </div>
 
           {/* Server Status Bar */}
-          <div className="shrink-0 px-5 md:px-8 pb-4">
-              <div className="grid grid-cols-[0.78fr_0.82fr_1.4fr] ph-status-pill rounded-xl overflow-hidden">
+          <div className="shrink-0 px-4 md:px-8 pb-1.5 md:pb-2.5">
+              <div className="flex flex-col divide-y divide-gray-200 sm:grid sm:grid-cols-2 md:grid-cols-[0.78fr_0.82fr_1.4fr] ph-status-pill rounded-xl overflow-hidden">
                   {/* Status */}
-                  <div className="min-w-0 px-3 py-2.5 border-r border-gray-200">
+                  <div className="min-w-0 px-3 py-2.5">
                     <p className="mb-1 text-[9px] font-bold uppercase tracking-[0.18em] text-gray-500">Status</p>
                     <div className="flex items-center gap-1.5">
                       <div className="relative flex h-2 w-2">
@@ -386,7 +386,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                   </div>
 
                   {/* Players */}
-                  <div className="min-w-0 px-3 py-2.5 border-r border-gray-200">
+                  <div className="min-w-0 px-3 py-2.5">
                     <p className="mb-1 text-[9px] font-bold uppercase tracking-[0.18em] text-gray-500">Players</p>
                     <div className="flex items-center gap-1.5">
                       <Users size={13} className="text-gray-500" />
@@ -397,7 +397,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                   </div>
 
                   {/* IP */}
-                  <div className="min-w-0 px-3 py-2.5">
+                  <div className="hidden sm:block min-w-0 px-3 py-2.5">
                     <p className="mb-1 text-[9px] font-bold uppercase tracking-[0.18em] text-gray-500">Server IP</p>
                     <div className="flex min-w-0 items-center gap-1.5">
                       <Wifi size={13} className="text-gray-500 shrink-0" />
@@ -481,38 +481,6 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
             {view === 'login' && (
                 <>
                     <LoginForm onSubmit={handleLoginSubmit} setView={setView} loading={loading} />
-                    {localAuthPreview && (
-                        <div className="mt-3 grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-gray-50/70 p-2">
-                            <button
-                                onClick={() => handleLoginSubmit('preview', 'preview123')}
-                                className="w-full rounded-lg border border-gray-200 bg-white py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
-                            >
-                                Preview Login Dashboard
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setVerifyUser("preview@pahlawan-rp.local");
-                                    setInitialCooldown(1800);
-                                    setView('verify');
-                                }}
-                                className="w-full rounded-lg border border-gray-200 bg-white py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
-                            >
-                                Preview OTP Verify
-                            </button>
-                            <button
-                                onClick={() => { setVerifyUser("PreviewPlayer"); setView('discord'); }}
-                                className="w-full rounded-lg border border-gray-200 bg-white py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
-                            >
-                                Preview Link Discord
-                            </button>
-                            <button
-                                onClick={() => setError(`Gagal menghubungi server. Details: Simulasi network error lokal | Pastikan API URL benar: ${API_URL}`)}
-                                className="w-full rounded-lg border border-gray-200 bg-white py-3 text-xs font-mono text-gray-600 transition-all hover:bg-ph-crimson-600/5 hover:text-ph-crimson-700"
-                            >
-                                Preview Network Error
-                            </button>
-                        </div>
-                    )}
                 </>
             )}
 
@@ -558,6 +526,42 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
           </div>
         </div>
       </div>
+
+      {/* Dev-only preview shortcuts — below main card, only on localhost */}
+      {localAuthPreview && view === 'login' && (
+          <div className="relative z-10 shrink-0 w-full max-w-[1180px] mx-auto mt-2 px-1">
+              <div className="flex flex-wrap justify-center gap-1.5">
+                  <button
+                      onClick={() => handleLoginSubmit('preview', 'preview123')}
+                      className="rounded-md border border-gray-300/50 bg-gray-100/70 backdrop-blur px-2.5 py-1 text-[10px] font-mono text-gray-500 transition-all hover:bg-gray-200/80 hover:text-ph-crimson-700"
+                  >
+                      Preview Login Dashboard
+                  </button>
+                  <button
+                      onClick={() => {
+                          setVerifyUser("preview@pahlawan-rp.local");
+                          setInitialCooldown(1800);
+                          setView('verify');
+                      }}
+                      className="rounded-md border border-gray-300/50 bg-gray-100/70 backdrop-blur px-2.5 py-1 text-[10px] font-mono text-gray-500 transition-all hover:bg-gray-200/80 hover:text-ph-crimson-700"
+                  >
+                      Preview OTP Verify
+                  </button>
+                  <button
+                      onClick={() => { setVerifyUser("PreviewPlayer"); setView('discord'); }}
+                      className="rounded-md border border-gray-300/50 bg-gray-100/70 backdrop-blur px-2.5 py-1 text-[10px] font-mono text-gray-500 transition-all hover:bg-gray-200/80 hover:text-ph-crimson-700"
+                  >
+                      Preview Link Discord
+                  </button>
+                  <button
+                      onClick={() => setError(`Gagal menghubungi server. Details: Simulasi network error lokal | Pastikan API URL benar: ${API_URL}`)}
+                      className="rounded-md border border-gray-300/50 bg-gray-100/70 backdrop-blur px-2.5 py-1 text-[10px] font-mono text-gray-500 transition-all hover:bg-gray-200/80 hover:text-ph-crimson-700"
+                  >
+                      Preview Network Error
+                  </button>
+              </div>
+          </div>
+      )}
     </div>
   );
 };
