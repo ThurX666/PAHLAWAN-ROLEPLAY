@@ -272,7 +272,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.18]"></div>
       </div>
 
-      <div className="relative z-10 grid grid-rows-1 w-full max-w-[1180px] max-h-[calc(100dvh-48px)] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
+      <div className="relative z-10 grid h-[calc(100dvh-48px)] w-full max-w-[1180px] md:grid-cols-2 grid-rows-[1fr] rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
 
         {/* LEFT SIDE: Roleplay highlight panel */}
         <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-9 lg:p-10 overflow-hidden">
@@ -344,7 +344,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          </div>
 
         {/* RIGHT SIDE: Auth Form Container */}
-        <div className="w-full flex flex-col relative min-h-0 h-full ph-auth-surface overflow-y-auto overflow-x-hidden">
+        <div className="w-full flex flex-col relative min-h-0 h-full ph-auth-surface overflow-hidden">
 
           {/* Top Accent Line */}
           <div className="absolute top-0 left-0 right-0 h-[2px] ph-auth-accent-line z-20"></div>
@@ -407,8 +407,9 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
               </div>
           </div>
 
-          {/* Scrollable Form Area */}
-          <div ref={formScrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 md:px-8 pb-6 pt-1 ph-scroll-thin">
+          {/* Scrollable Form Area — with scroll fade indicator */}
+          <div className="relative flex-1 min-h-0">
+          <div ref={formScrollRef} className="h-full overflow-y-auto overflow-x-hidden px-4 md:px-8 pb-6 pt-1 ph-scroll-thin" onScroll={(e) => { const el = e.currentTarget; const fade = el.parentElement?.querySelector('.ph-scroll-fade'); if(fade) fade.style.opacity = el.scrollTop + el.clientHeight >= el.scrollHeight - 8 ? '0' : '1'; }}>
            <div className="ph-auth-panel-inner max-w-[430px] mx-auto w-full rounded-2xl px-5 md:px-7 py-6 md:py-8 my-1">
 
              {/* Logo + sub-brand */}
@@ -523,6 +524,9 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
             )}
 
            </div>
+          </div>
+          {/* Scroll-fade indicator — fades when scrolled to bottom */}
+          <div className="ph-scroll-fade pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent transition-opacity duration-300"></div>
           </div>
         </div>
       </div>
