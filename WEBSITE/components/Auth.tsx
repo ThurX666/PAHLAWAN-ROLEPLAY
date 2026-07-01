@@ -272,7 +272,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.18]"></div>
       </div>
 
-      <div className="relative z-10 grid max-h-[680px] w-full max-w-[940px] md:grid-cols-[1fr_1fr] grid-rows-[1fr] rounded-[20px] overflow-hidden shadow-[0_20px_60px_rgba(24,24,30,0.12),0_6px_18px_rgba(159,18,31,0.08)] border border-black/10 bg-white animate-auth-fade-in">
+      <div className="relative z-10 grid h-[min(680px,calc(100dvh-32px))] w-full max-w-[940px] md:grid-cols-[1fr_1fr] grid-rows-[1fr] rounded-[20px] overflow-hidden shadow-[0_20px_60px_rgba(24,24,30,0.12),0_6px_18px_rgba(159,18,31,0.08)] border border-black/10 bg-white animate-auth-fade-in">
 
         {/* LEFT SIDE: Roleplay highlight panel */}
         <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-7 lg:p-8 overflow-hidden">
