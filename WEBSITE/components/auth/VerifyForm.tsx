@@ -194,20 +194,19 @@ export const VerifyForm: React.FC<VerifyFormProps> = ({ username: email, initial
 
   return (
     <div className="animate-auth-slide-up">
-      <div className="text-center mb-3">
-        <span className="ph-eyebrow mb-3">Email Verification</span>
+      <div className="text-center mb-5">
+        <span className="ph-eyebrow block mb-1.5">Email Verification</span>
       </div>
-      <div className="mb-3 flex justify-center">
-        <div className="w-14 h-14 bg-ph-crimson-600/[0.08] rounded-xl flex items-center justify-center border border-ph-crimson-600/20 shadow-sm">
-          <Mail size={26} className="text-ph-crimson-700" />
+      <div className="mb-2.5 flex justify-center">
+        <div className="w-12 h-12 bg-ph-crimson-600/[0.08] rounded-xl flex items-center justify-center border border-ph-crimson-600/20 shadow-sm">
+          <Mail size={22} className="text-ph-crimson-700" />
         </div>
       </div>
 
       <div className="text-center mb-4">
-        <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 tracking-tight mb-1.5 leading-tight">Verifikasi Email</h2>
-        <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed">
-          Kode 6 digit telah dikirim ke email <b className="text-gray-950">{email}</b>.
-          <br/>Silakan periksa kotak masuk atau folder spam Anda.
+        <h2 className="text-[18px] md:text-[22px] font-extrabold text-gray-950 mb-1 tracking-tight leading-tight">Verifikasi Email</h2>
+        <p className="text-gray-500 text-[11.5px] md:text-[12.5px] leading-[1.5]">
+          Kode 6 digit telah dikirim ke email <b className="text-gray-950">{email}</b>. Silakan periksa kotak masuk atau folder spam Anda.
         </p>
       </div>
 
@@ -219,7 +218,7 @@ export const VerifyForm: React.FC<VerifyFormProps> = ({ username: email, initial
           <div className="ph-alert ph-alert-success mb-4">{successMsg}</div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-2.5">
         <div>
           <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-[0.18em] mb-2 ml-0.5">
             Kode OTP <span className="text-ph-crimson-700">*</span>
@@ -266,7 +265,7 @@ export const VerifyForm: React.FC<VerifyFormProps> = ({ username: email, initial
         <button
           type="submit"
           disabled={loading || otp.length < 6}
-          className="ph-btn-primary w-full py-3.5 mt-1 flex items-center justify-center group"
+          className="ph-btn-primary w-full py-3 flex items-center justify-center group"
         >
           {loading ? (
             <Loader2 className="animate-spin" size={22} />
@@ -278,7 +277,7 @@ export const VerifyForm: React.FC<VerifyFormProps> = ({ username: email, initial
           )}
         </button>
 
-        <div className="text-center pt-1 space-y-2.5 flex flex-col items-center">
+        <div className="mt-6 text-center space-y-2.5 flex flex-col items-center">
             <button
                 type="button"
                 onClick={handleResend}

@@ -155,17 +155,17 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
 
     return (
         <div className="animate-auth-slide-up">
-            <div className="text-center mb-4">
-               <span className="ph-eyebrow mb-3">Account Enrollment</span>
-               <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">
+            <div className="text-center mb-5">
+               <span className="ph-eyebrow block mb-1.5">Account Enrollment</span>
+               <h2 className="text-[18px] md:text-[22px] font-extrabold text-gray-950 mb-1 tracking-tight leading-tight">
                  Buat Akun Baru
                </h2>
-               <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed">
-                 Mulai perjalanan roleplay Anda<br className="hidden md:block"/> di Pahlawan Roleplay.
+               <p className="text-gray-500 text-[11.5px] md:text-[12.5px] leading-[1.5]">
+                 Mulai perjalanan roleplay Anda di Pahlawan Roleplay.
                </p>
             </div>
 
-            <div className="mb-3.5 rounded-lg border border-ph-gold-600/20 bg-ph-gold-600/[0.08] px-3.5 py-2.5 text-[11px] md:text-xs leading-relaxed text-gray-600">
+            <div className="mb-3 rounded-lg border border-ph-gold-600/20 bg-ph-gold-600/[0.08] px-3 py-2 text-[10.5px] md:text-[11px] leading-relaxed text-gray-600">
                 <div className="flex items-start gap-2">
                     <div className="shrink-0 mt-0.5 w-4 h-4 rounded-full bg-ph-gold-600/12 flex items-center justify-center">
                         <span className="text-[9px] font-black text-ph-gold-700">!</span>
@@ -221,7 +221,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
                 <button
                     type="submit"
                     disabled={loading || isSubmitting}
-                    className="ph-btn-primary w-full py-3.5 mt-2 flex items-center justify-center group"
+                    className="ph-btn-primary w-full py-2.5 flex items-center justify-center group"
                 >
                     {loading || isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (
                         <span className="flex items-center text-sm font-bold tracking-wide">

@@ -160,12 +160,12 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
 
     return (
         <div className="animate-auth-slide-up">
-            <div className="text-center mb-4">
-               <span className="ph-eyebrow mb-3">Account Recovery</span>
-               <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">
+            <div className="text-center mb-7">
+               <span className="ph-eyebrow block mb-2">Account Recovery</span>
+               <h2 className="text-[20px] md:text-[24px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">
                  Atur Ulang Sandi
                </h2>
-               <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed">
+               <p className="text-gray-500 text-[12px] md:text-[13px] leading-[1.6]">
                  {step === 1 ? 'Masukkan email untuk menerima kode OTP' : 'Masukkan kode OTP dan sandi baru'}
                </p>
             </div>
@@ -206,7 +206,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="ph-btn-primary w-full py-3.5 mt-1 flex items-center justify-center group"
+                        className="ph-btn-primary w-full py-3 flex items-center justify-center group"
                     >
                         {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
                             <span className="flex items-center text-sm font-bold tracking-wide">
@@ -234,7 +234,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                     )}
                 </form>
             ) : (
-                <form onSubmit={handleResetPassword} className="space-y-2.5" noValidate>
+                <form onSubmit={handleResetPassword} className="space-y-3" noValidate>
                     <InputGroup
                         icon={KeyRound}
                         type="text"
@@ -273,7 +273,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="ph-btn-primary w-full py-3.5 mt-2 flex items-center justify-center group"
+                        className="ph-btn-primary w-full py-3 flex items-center justify-center group"
                     >
                         {isLoading ? <Loader2 className="animate-spin" size={20} /> : (
                             <span className="flex items-center text-sm font-bold tracking-wide">
@@ -285,7 +285,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onSubmit
                 </form>
             )}
 
-            <div className="mt-4 text-center">
+            <div className="mt-6 text-center">
                   <button onClick={() => setView('login')} className="text-gray-500 hover:text-ph-crimson-700 text-xs flex min-h-11 items-center justify-center w-full transition-colors font-semibold tracking-wide py-2 group">
                     <ChevronLeft size={14} className="mr-1 group-hover:-translate-x-0.5 transition-transform" /> Kembali ke Login
                  </button>

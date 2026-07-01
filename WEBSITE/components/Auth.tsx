@@ -272,7 +272,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.18]"></div>
       </div>
 
-      <div className="relative z-10 grid w-full max-w-[1180px] max-h-[calc(100dvh-48px)] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
+      <div className="relative z-10 grid grid-rows-1 w-full max-w-[1180px] max-h-[calc(100dvh-48px)] md:grid-cols-2 rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
 
         {/* LEFT SIDE: Roleplay highlight panel */}
         <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-9 lg:p-10 overflow-hidden">
@@ -344,7 +344,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          </div>
 
         {/* RIGHT SIDE: Auth Form Container */}
-        <div className="w-full flex flex-col relative min-h-0 h-full ph-auth-surface overflow-hidden">
+        <div className="w-full flex flex-col relative min-h-0 h-full ph-auth-surface overflow-y-auto overflow-x-hidden">
 
           {/* Top Accent Line */}
           <div className="absolute top-0 left-0 right-0 h-[2px] ph-auth-accent-line z-20"></div>
@@ -527,15 +527,15 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
         </div>
       </div>
 
-      {/* Dev-only preview shortcuts — below main card, only on localhost */}
-      {localAuthPreview && view === 'login' && (
-          <div className="relative z-10 shrink-0 w-full max-w-[1180px] mx-auto mt-2 px-1">
-              <div className="flex flex-wrap justify-center gap-1.5">
+      {/* Dev-only preview shortcuts — floating corner panel, only on localhost */}
+      {localAuthPreview && (
+          <div className="fixed bottom-3 right-3 z-50 flex flex-col gap-1.5 opacity-60 hover:opacity-100 transition-opacity">
+              {view === 'login' && (<>
                   <button
                       onClick={() => handleLoginSubmit('preview', 'preview123')}
-                      className="rounded-md border border-gray-300/50 bg-gray-100/70 backdrop-blur px-2.5 py-1 text-[10px] font-mono text-gray-500 transition-all hover:bg-gray-200/80 hover:text-ph-crimson-700"
+                      className="rounded-md border border-gray-300/50 bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-mono text-gray-500 shadow-sm hover:bg-gray-100 hover:text-ph-crimson-700 transition-all"
                   >
-                      Preview Login Dashboard
+                      Preview Login
                   </button>
                   <button
                       onClick={() => {
@@ -543,23 +543,31 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
                           setInitialCooldown(1800);
                           setView('verify');
                       }}
-                      className="rounded-md border border-gray-300/50 bg-gray-100/70 backdrop-blur px-2.5 py-1 text-[10px] font-mono text-gray-500 transition-all hover:bg-gray-200/80 hover:text-ph-crimson-700"
+                      className="rounded-md border border-gray-300/50 bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-mono text-gray-500 shadow-sm hover:bg-gray-100 hover:text-ph-crimson-700 transition-all"
                   >
-                      Preview OTP Verify
+                      Preview OTP
                   </button>
                   <button
                       onClick={() => { setVerifyUser("PreviewPlayer"); setView('discord'); }}
-                      className="rounded-md border border-gray-300/50 bg-gray-100/70 backdrop-blur px-2.5 py-1 text-[10px] font-mono text-gray-500 transition-all hover:bg-gray-200/80 hover:text-ph-crimson-700"
+                      className="rounded-md border border-gray-300/50 bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-mono text-gray-500 shadow-sm hover:bg-gray-100 hover:text-ph-crimson-700 transition-all"
                   >
-                      Preview Link Discord
+                      Preview Discord
                   </button>
                   <button
                       onClick={() => setError(`Gagal menghubungi server. Details: Simulasi network error lokal | Pastikan API URL benar: ${API_URL}`)}
-                      className="rounded-md border border-gray-300/50 bg-gray-100/70 backdrop-blur px-2.5 py-1 text-[10px] font-mono text-gray-500 transition-all hover:bg-gray-200/80 hover:text-ph-crimson-700"
+                      className="rounded-md border border-gray-300/50 bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-mono text-gray-500 shadow-sm hover:bg-gray-100 hover:text-ph-crimson-700 transition-all"
                   >
-                      Preview Network Error
+                      Preview Error
                   </button>
-              </div>
+              </>)}
+              {view !== 'login' && (
+                  <button
+                      onClick={() => setView('login')}
+                      className="rounded-md border border-gray-300/50 bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-mono text-gray-500 shadow-sm hover:bg-gray-100 hover:text-ph-crimson-700 transition-all"
+                  >
+                      ← Back to Login
+                  </button>
+              )}
           </div>
       )}
     </div>

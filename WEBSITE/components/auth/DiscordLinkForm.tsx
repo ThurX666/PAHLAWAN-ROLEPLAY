@@ -68,8 +68,8 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
       return (
           <div className="animate-auth-slide-up w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10 text-center">
 
-              <div className="text-center mb-3 w-full">
-                <span className="ph-eyebrow mb-3">Tautan Berhasil</span>
+              <div className="text-center mb-7 w-full">
+                <span className="ph-eyebrow block mb-2">Tautan Berhasil</span>
               </div>
 
               <div className="relative w-14 h-14 mb-4">
@@ -78,8 +78,8 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
                 </div>
               </div>
 
-              <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">Tautan Berhasil!</h2>
-              <p className="text-gray-500 text-[12px] md:text-[13px] mb-5 leading-relaxed max-w-[300px]">
+              <h2 className="text-[20px] md:text-[24px] font-extrabold text-gray-950 mb-1.5 tracking-tight leading-tight">Tautan Berhasil!</h2>
+              <p className="text-gray-500 text-[12px] md:text-[13px] mb-5 leading-[1.6] max-w-[300px]">
                   {authData?.roleSuccess === false
                     ? "Akun Discord Anda telah terhubung. Namun limitasi role (Admin/Owner) mencegah sistem mengatur nickname/role secara otomatis."
                     : "Akun Discord Anda telah terhubung. Anda kini memiliki role Warga di server komunitas kami. Selamat bermain!"}
@@ -89,7 +89,7 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
                   onClick={() => {
                       if (authData) onLinkSuccess(authData.username, authData.adminLevel, authData.gold);
                   }}
-                  className="ph-btn-primary w-full py-3.5 px-6 flex items-center justify-center group"
+                  className="ph-btn-primary w-full py-3 px-6 flex items-center justify-center group"
               >
                   <span className="flex items-center text-sm font-bold tracking-wide">
                     Lanjut ke Dashboard
@@ -103,8 +103,8 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
   return (
     <div className="animate-auth-slide-up w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10">
 
-      <div className="text-center mb-3 w-full">
-        <span className="ph-eyebrow mb-3">Komunitas PHRP</span>
+      <div className="text-center mb-7 w-full">
+        <span className="ph-eyebrow block mb-2">Komunitas PHRP</span>
       </div>
 
       <div className="mb-3 flex justify-center w-full">
@@ -116,10 +116,10 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
       </div>
 
       <div className="text-center mb-4 px-2">
-        <h2 className="text-[22px] md:text-[26px] font-extrabold text-gray-950 tracking-tight mb-1.5 leading-tight">
+        <h2 className="text-[20px] md:text-[24px] font-extrabold text-gray-950 tracking-tight mb-1.5 leading-tight">
           Hubungkan Discord
         </h2>
-        <p className="text-gray-500 text-[12px] md:text-[13px] leading-relaxed max-w-[300px] mx-auto">
+        <p className="text-gray-500 text-[12px] md:text-[13px] leading-[1.6] max-w-[300px] mx-auto">
           Selamat <b className="text-gray-950 font-bold">{username}</b>!<br />
           Satu langkah terakhir untuk mengaktifkan akses komunitas PHRP Anda.
         </p>
@@ -152,7 +152,7 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
         className="relative w-full overflow-hidden rounded-xl group mb-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98] transition-all shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-[#5865F2]/25"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-[#5865F2] to-[#4752C4] transition-transform duration-300 group-hover:scale-[1.04] origin-center" />
-        <div className="relative py-3.5 px-6 flex items-center justify-center">
+        <div className="relative py-3 px-6 flex items-center justify-center">
           {loading ? (
             <Loader2 className="animate-spin text-white" size={22} />
           ) : (
@@ -174,7 +174,7 @@ export const DiscordLinkForm: React.FC<DiscordLinkFormProps> = ({ username, onLi
           </button>
       )}
 
-      <div className="text-center pt-2">
+      <div className="mt-6 text-center">
           <button
               type="button"
               onClick={() => setView('login')}
