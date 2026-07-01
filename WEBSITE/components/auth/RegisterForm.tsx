@@ -155,9 +155,9 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
 
     return (
         <div className="animate-auth-slide-up">
-            <div className="text-center mb-5">
-               <span className="ph-eyebrow block mb-1.5">Account Enrollment</span>
-               <h2 className="text-[18px] md:text-[22px] font-extrabold text-gray-950 mb-1 tracking-tight leading-tight">
+            <div className="text-center mb-4">
+               <span className="ph-eyebrow block mb-1">Account Enrollment</span>
+               <h2 className="text-[17px] md:text-[20px] font-extrabold text-gray-950 mb-0.5 tracking-tight leading-tight">
                  Buat Akun Baru
                </h2>
                <p className="text-gray-500 text-[11.5px] md:text-[12.5px] leading-[1.5]">
@@ -174,7 +174,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-2.5" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-2" noValidate>
                 <InputGroup
                     icon={User}
                     type="text"
@@ -221,7 +221,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
                 <button
                     type="submit"
                     disabled={loading || isSubmitting}
-                    className="ph-btn-primary w-full py-2.5 flex items-center justify-center group"
+                    className="ph-btn-primary w-full py-2 flex items-center justify-center group"
                 >
                     {loading || isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (
                         <span className="flex items-center text-sm font-bold tracking-wide">
@@ -232,7 +232,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, setView, l
                 </button>
             </form>
 
-            <div className="mt-4 text-center">
+            <div className="mt-3 text-center">
                  <button onClick={() => setView('login')} className="text-gray-500 hover:text-ph-crimson-700 text-xs flex min-h-11 items-center justify-center w-full transition-colors font-semibold tracking-wide py-2 group">
                     <ChevronLeft size={14} className="mr-1 group-hover:-translate-x-0.5 transition-transform" /> Kembali ke Login
                  </button>

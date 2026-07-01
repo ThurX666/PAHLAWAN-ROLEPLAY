@@ -272,10 +272,10 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
          <div className="absolute inset-0 bg-dot-pattern-light opacity-[0.18]"></div>
       </div>
 
-      <div className="relative z-10 grid h-[calc(100dvh-48px)] w-full max-w-[1180px] md:grid-cols-2 grid-rows-[1fr] rounded-[22px] overflow-hidden shadow-[0_28px_90px_rgba(24,24,30,0.14),0_8px_22px_rgba(159,18,31,0.10)] border border-black/10 bg-white animate-auth-fade-in">
+      <div className="relative z-10 grid max-h-[680px] w-full max-w-[940px] md:grid-cols-[1fr_1fr] grid-rows-[1fr] rounded-[20px] overflow-hidden shadow-[0_20px_60px_rgba(24,24,30,0.12),0_6px_18px_rgba(159,18,31,0.08)] border border-black/10 bg-white animate-auth-fade-in">
 
         {/* LEFT SIDE: Roleplay highlight panel */}
-        <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-9 lg:p-10 overflow-hidden">
+        <div className="relative hidden md:flex min-h-0 bg-black flex-col justify-between p-7 lg:p-8 overflow-hidden">
              <div className="absolute inset-0 bg-gradient-to-t from-black/[0.72] via-black/[0.18] to-black/[0.10] z-[6] pointer-events-none"></div>
 
              {SLIDES.map((slide, index) => (
@@ -308,11 +308,11 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
 
              <div className="relative z-20 mt-auto max-w-[470px]">
                  <div key={activeSlide.id} className="animate-auth-fade-in">
-                     <p className="mb-3 inline-flex rounded-full border border-white/[0.18] bg-white/[0.10] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.20em] text-white/[0.82]">Live Server Access</p>
-                     <h1 className="text-[30px] md:text-[34px] font-extrabold text-white tracking-tight leading-tight mb-3">
+                     <p className="mb-2 inline-flex rounded-full border border-white/[0.18] bg-white/[0.10] px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.20em] text-white/[0.82]">Live Server Access</p>
+                     <h1 className="text-[24px] md:text-[28px] font-extrabold text-white tracking-tight leading-tight mb-2">
                         Pahlawan Roleplay UCP
                      </h1>
-                     <p className="text-white/[0.82] text-[13px] md:text-sm max-w-md leading-relaxed">
+                     <p className="text-white/[0.82] text-[12px] max-w-md leading-relaxed">
                         Kelola identitas roleplay Anda, verifikasi akun, dan masuk ke ekosistem komunitas Pahlawan Roleplay dari satu client-area yang rapi.
                      </p>
                      <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-2.5">
@@ -349,7 +349,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
           {/* Top Accent Line */}
           <div className="absolute top-0 left-0 right-0 h-[2px] ph-auth-accent-line z-20"></div>
 
-          <div className="shrink-0 flex min-h-[72px] items-center justify-between gap-4 px-5 md:px-8 pt-5 md:pt-7 pb-3 md:pb-4">
+          <div className="shrink-0 flex min-h-[56px] items-center justify-between gap-4 px-5 md:px-7 pt-4 md:pt-5 pb-2 md:pb-3">
               <div>
                   <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-gray-500">Account Access</span>
                   <p className="mt-1 text-xs font-semibold text-gray-700">Secure UCP gateway</p>
@@ -358,7 +358,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
           </div>
 
           {/* Server Status Bar */}
-          <div className="shrink-0 px-4 md:px-8 pb-3 md:pb-4">
+          <div className="shrink-0 px-4 md:px-7 pb-2 md:pb-3">
               <div className="flex flex-col divide-y divide-gray-200 sm:grid sm:grid-cols-2 md:grid-cols-[0.78fr_0.82fr_1.4fr] ph-status-pill rounded-xl overflow-hidden">
                   {/* Status */}
                   <div className="min-w-0 px-3 py-2.5">
@@ -410,21 +410,21 @@ export const Auth: React.FC<AuthProps> = ({ onLogin, serverStats }) => {
           {/* Scrollable Form Area — with scroll fade indicator */}
           <div className="relative flex-1 min-h-0">
           <div ref={formScrollRef} className="h-full overflow-y-auto overflow-x-hidden px-4 md:px-8 pb-6 pt-1 ph-scroll-thin" onScroll={(e) => { const el = e.currentTarget; const fade = el.parentElement?.querySelector('.ph-scroll-fade'); if(fade) fade.style.opacity = el.scrollTop + el.clientHeight >= el.scrollHeight - 8 ? '0' : '1'; }}>
-           <div className="ph-auth-panel-inner max-w-[430px] mx-auto w-full rounded-2xl px-5 md:px-7 py-6 md:py-8 my-1">
+           <div className="ph-auth-panel-inner max-w-[400px] mx-auto w-full rounded-2xl px-5 md:px-6 py-5 md:py-6 my-0.5">
 
              {/* Logo + sub-brand */}
-            <div className="flex flex-col items-center mb-6 mt-0">
+            <div className="flex flex-col items-center mb-4 mt-0">
                 <div className="relative">
                     <img
                         src={`${import.meta.env.BASE_URL}assets/images/logo1.png`}
                         alt="Pahlawan Roleplay"
-                        className="w-28 md:w-32 max-h-12 md:max-h-14 object-contain hover:scale-[1.02] transition-transform duration-500 relative z-10"
+                        className="w-24 md:w-28 max-h-10 md:max-h-12 object-contain hover:scale-[1.02] transition-transform duration-500 relative z-10"
                     />
                 </div>
             </div>
 
             {activeFlowIndex >= 0 && (
-                <div className="mb-5 rounded-xl border border-gray-200 bg-gray-50/70 p-2.5" aria-label="Progress pendaftaran akun">
+                <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50/70 p-2" aria-label="Progress pendaftaran akun">
                     <div className="flex items-center justify-between gap-1.5">
                         {AUTH_FLOW_STEPS.map((step, index) => {
                             const isActive = index === activeFlowIndex;
